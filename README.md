@@ -242,9 +242,9 @@ The response returns the `object` on the frontend. The object in general is the 
 }
 ```
 
-### Data
+#### Data
 
-If the content type on the server is "`application/json`", the response.data is automatically converted to a `JSON object`. If the content type is anything else, the result is returned as `plain text`.
+If the content type on the server is "`application/json`", the `response.data` is automatically converted to a `JSON object`. If the content type is anything else, the result is returned as `plain text`.
 
 PHP:
 ```php
@@ -255,6 +255,26 @@ echo json_encode($array);
 Laravel:
 ```php
 return response(json_encode($array), 200)->header('Content-Type', 'application/json; charset=utf-8');
+```
+
+```javascript
+Vue.ajax.get('http://mydomain.com', [data])
+    .then(function(response) {
+        console.log(response.data)
+    });
+```
+
+#### Error Handling
+
+```javascript
+Vue.ajax.get('http://mydomain.com/not-existing-path', [data])
+    .then(function(response) {
+        console.log(response.data)
+    }, function(response) {
+        console.log('Error: ', response.statusText);
+    });
+
+    // "Error: Not Found"
 ```
 
 # License

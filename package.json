@@ -1,0 +1,37 @@
+{
+    "name": "vue-ajax-plugin",
+    "version": "1.0.2",
+    "description": "A light XHR plugin for Vue 2.x. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `http`(). In addition to these, it also has its own practical features. For example, `file upload` and `preventing dublicate` features.",
+    "main": "src/Vue.ajax.js",
+    "directories": {
+        "example": "examples"
+    },
+    "scripts": {
+        "test": "Vue.ajax()"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/fattihkoca/vue.ajax.git"
+    },
+    "keywords": [
+        "vue",
+        "ajax",
+        "file-upload",
+        "delete",
+        "get",
+        "head",
+        "jsonp",
+        "patch",
+        "post",
+        "put"
+    ],
+    "dependencies": {
+        "vue": "2.x"
+    },
+    "author": "Fatih Koca",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/fattihkoca/vue.ajax/issues"
+    },
+    "homepage": "https://github.com/fattihkoca/vue.ajax#readme"
+}

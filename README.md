@@ -72,7 +72,7 @@ Vue.ajax(object configures)
 
 ## Configurations
 
-### Setting Asynchronous
+### Asynchronous
 Asynchronous setting should be a `boolean`. Default is `true`.
 ```javascript
 Vue.ajax.get('http://mydomain.com', [data], {
@@ -80,7 +80,7 @@ Vue.ajax.get('http://mydomain.com', [data], {
 });
 ```
 
-### Setting Cache
+### Cache
 Cache setting should be a `boolean`. Default value is `true`.
 ```javascript
 Vue.ajax.get('http://mydomain.com', [data], {
@@ -88,7 +88,7 @@ Vue.ajax.get('http://mydomain.com', [data], {
 });
 ```
 
-### Setting Complete Event
+### Complete Event
 Complete event setting should be a `function`.
 
 ```javascript
@@ -99,7 +99,7 @@ Vue.ajax.get('http://mydomain.com', [data], {
 });
 ```
 
-### Setting CSRF
+### CSRF
 CSRF setting should be a `boolean`. Default value is `true`. 
 
 However, in the html head tag it must be `csrf-token meta`. Like this: `<meta name="csrf-token" content="ABCDEFGHIJKLMN">`.
@@ -109,7 +109,7 @@ Vue.ajax.get('http://mydomain.com', [data], {
 });
 ```
 
-### Setting Data
+### Data
 Data setting should be an `object`.
 ```javascript
 Vue.ajax.get('http://mydomain.com', [data], {
@@ -120,7 +120,7 @@ Vue.ajax.get('http://mydomain.com', [data], {
 });
 ```
 
-### Setting File Uploading
+### File Uploading
 File uploading setting should be a `DOM object`. We recommend using the `post` method when uploading files.
 ```html
 <form>
@@ -143,7 +143,7 @@ You can also send multiple files with an input:
 <input type="file" name="my-input-3" id="my-input-3" multiple>
 ```
 
-### Setting HTTP Headers
+### HTTP Headers
 HTTP headers setting should be an `object`.
 ```javascript
 Vue.ajax.get('http://mydomain.com', [data], {
@@ -154,7 +154,7 @@ Vue.ajax.get('http://mydomain.com', [data], {
 });
 ```
 
-### Setting Method
+### Method
 URL data setting should be an `string`. Available values are:
 * `delete`
 * `get`
@@ -176,7 +176,7 @@ Instead, you might prefer to use the following shorthand:
 Vue.ajax.post('http://mydomain.com', [data]);
 ```
 
-### Setting Preventing Dublicate
+### Preventing Dublicate
 The duplicate prevention setting prevents sending requests to the same address or given key data. 
 
 Preventing dublicate setting should be a `boolean`. Default value is `true`.
@@ -196,7 +196,7 @@ Vue.ajax.get('http://mydomain.com', [data], {
 });
 ```
 
-### Setting Timeout
+### Timeout
 Timeout setting should be an `number`. Default value is `60`.
 ```javascript
 Vue.ajax.get('http://mydomain.com', [data], {
@@ -204,7 +204,7 @@ Vue.ajax.get('http://mydomain.com', [data], {
 });
 ```
 
-### Setting URL Data
+### URL Data
 URL data setting should be an `object`. With this setting, you can add serialized query string to the URL you are sending.
 ```javascript
 Vue.ajax.get('http://mydomain.com', [data], {
@@ -218,7 +218,7 @@ Vue.ajax.get('http://mydomain.com', [data], {
 The URL will be like this when sending the request:  
 `http://mydomain.com?page=15&category=Accessories`
 
-### Setting With Credentials
+### With Credentials
 With credentials setting should be a `boolean`. Default value is `true`. 
 
 There is a detailed explanation [here](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials).

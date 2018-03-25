@@ -98,7 +98,7 @@ const VueAjax = {
 
                 // Mükerrer işlem engellenmişse, artarda gelen işlemleri iptal eder
                 if (preventDublicate && config.method != 'JSONP' && requestAttemps.hasOwnProperty(key)) {
-                    //requestAttemps[key].abort();
+                    requestAttemps[key].abort();
                 }
 
                 // File uploading

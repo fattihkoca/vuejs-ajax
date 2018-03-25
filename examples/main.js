@@ -5,7 +5,7 @@
  */
 
 import Vue from 'vue'
-import ajax from "./../src/Vue.ajax";
+import ajax from "vue-ajax-plugin";
 
 window.Vue = Vue;
 Vue.use(ajax);

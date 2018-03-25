@@ -2,6 +2,30 @@
 
 A light XHR plugin for Vue 2.x. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `http`(). In addition to these, it also has its own practical features. For example, `file upload` and `preventing dublicate` features.
 
+## Setup
+
+```
+npm install vue-ajax-plugin --save
+```
+
+You have two ways to setup `vue-ajax-plugin`:
+
+#### CommonJS (Webpack/Browserify)
+
+- ES6
+
+```js
+import ajax from 'vue-ajax-plugin'
+Vue.use(ajax)
+```
+
+- ES5
+
+```js
+var ajax = require('vue-ajax-plugin')
+Vue.use(ajax)
+```
+
 ## Example
 ```javascript
 Vue.ajax.get('http://mydomain.com').then(function(response) {

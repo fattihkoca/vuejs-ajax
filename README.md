@@ -197,10 +197,10 @@ Vue.ajax.get('http://mydomain.com', [data], {
 ```
 
 ### Timeout
-Timeout setting should be an `number`. Default value is `60`.
+Timeout setting should be an `number`. Default value is `60000`. (Time in milliseconds)
 ```javascript
 Vue.ajax.get('http://mydomain.com', [data], {
-    timeout: 60
+    timeout: 60000 // Time in milliseconds
 });
 ```
 

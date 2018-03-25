@@ -92,13 +92,13 @@ const VueAjax = {
                     withCredentials = config.withCredentials !== undefined ? config.withCredentials : true,
                     readyStates = ['Uninitialized', 'Opened', 'Headers Received', 'Loading', 'Complete'],
                     fileInputs = config.fileInputs,
-                    timeout = typeof config.timeout == 'number' || (!isNaN(parseFloat(config.timeout)) && isFinite(config.timeout)) ? config.timeout : 60;
+                    timeout = typeof config.timeout == 'number' || (!isNaN(parseFloat(config.timeout)) && isFinite(config.timeout)) ? config.timeout : 60000; // time in milliseconds
 
                 method = method.toUpperCase();
 
                 // Mükerrer işlem engellenmişse, artarda gelen işlemleri iptal eder
                 if (preventDublicate && config.method != 'JSONP' && requestAttemps.hasOwnProperty(key)) {
-                    requestAttemps[key].abort();
+                    //requestAttemps[key].abort();
                 }
 
                 // File uploading

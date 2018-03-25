@@ -70,7 +70,7 @@ export default {
         }
       ],
       currentButton: {},
-      responseData: null,
+      responseData: {},
       responseDataError: {
         title: "Something went wrong"
       },
@@ -91,7 +91,7 @@ export default {
   methods: {
     prepareForm(button) {
       this.currentButton = button;
-      this.responseData = null;
+      this.responseData = {};
       this.responseError = null;
 
       if (this.currentButton.type != "file") {
@@ -175,7 +175,7 @@ export default {
 </script>
 
 <style>
-@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600");
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400");
 
 body {
   background: #f8f8f8;
@@ -234,7 +234,7 @@ body {
   margin-left: 10px;
   padding: 8px;
   border-color: rgba(0, 0, 0, 0.1);
-  font-weight: 600;
+  font-weight: bold;
 }
 .vue-ajax .rel-parameter {
   margin-bottom: 10px;

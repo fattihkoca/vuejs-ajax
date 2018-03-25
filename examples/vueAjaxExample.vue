@@ -5,7 +5,7 @@
         </h1>
         <div class="menu">
           <span class="button-container" v-for="button in buttons" :key="button.type"  :class="{'button-current' : currentButton.type == button.type}">
-              <label v-if="button.type == 'file'" :for="button.type" @click="currentButton = button; responseData.title = 'Waiting file(s)'; responseData.subtitle='Please select file(s)'" class="button">
+              <label v-if="button.type == 'file'" :for="button.type" @click="currentButton = button; responseData={}; responseData.title = 'Waiting file(s)'; responseData.subtitle='Please select file(s)'" class="button">
                   {{ button.label }}
               </label>
               <label v-else @click.prevent="fetchData(button)" class="button">
@@ -43,7 +43,7 @@
             </div>
             <div v-else>
                 <span class="result-loading">
-                    Yükleniyor...
+                    Loading...
                 </span>
             </div>
         </div>
@@ -70,7 +70,7 @@ export default {
         }
       ],
       currentButton: {},
-      responseData: {},
+      responseData: null,
       responseDataError: {
         title: "Something went wrong"
       },
@@ -91,7 +91,7 @@ export default {
   methods: {
     prepareForm(button) {
       this.currentButton = button;
-      this.responseData = {};
+      this.responseData = null;
       this.responseError = null;
 
       if (this.currentButton.type != "file") {
@@ -165,6 +165,7 @@ export default {
               },
               function(response) {
                 self.prepareResponse(false, response);
+                console.log("Error", response.statusText);
               }
             );
           break;

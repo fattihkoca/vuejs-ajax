@@ -1,4 +1,4 @@
-# Vue.ajax
+# <span style="color:#00bb7e">Vue</span><span style="color:#304a60;">.ajax</span>
 
 A light XHR plugin for Vue 2.x. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `http`(). In addition to these, it also has its own practical features. For example, `file upload` and `preventing dublicate` features.
 

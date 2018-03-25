@@ -26,7 +26,7 @@ Vue.ajax.get('http://mydomain.com', {
 
 ## Arguments
 ```javascript
-Vue.ajax.get(string url[, object data] [,object configures])
+Vue.ajax.get(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
@@ -36,7 +36,7 @@ A string containing the URL to which the request is sent.
 `data:` _object|null_  
 A plain object that is sent to the server with the request.
 
-`configures:` _object|null_  
+`configurations:` _object|null_  
 A set of key/value pairs that configure the Vue.ajax request.
 
 ## Methods
@@ -66,7 +66,7 @@ Vue.ajax({
 ```
 
 ```javascript
-Vue.ajax(object configures)
+Vue.ajax(object configurations)
     .then(function success[, function error])
 ```
 
@@ -81,7 +81,7 @@ Vue.ajax.get('http://mydomain.com', [data], {
 ```
 
 ### Cache
-Cache setting should be a `boolean`. Default value is `true`.
+Cache setting should be a `boolean`. Default value is `false`.
 ```javascript
 Vue.ajax.get('http://mydomain.com', [data], {
     async: false
@@ -242,7 +242,7 @@ The response returns the `object` on the frontend. The object in general is the 
 }
 ```
 
-#### Data
+#### Response Data
 
 If the content type on the server is "`application/json`", the `response.data` is automatically converted to a `JSON object`. If the content type is anything else, the result is returned as `plain text`.
 

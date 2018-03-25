@@ -260,4 +260,4 @@ return response(json_encode($array), 200)->header('Content-Type', 'application/j
 # License
 [MIT](LICENSE)
 
-Copyright (c) 2018 Fatih Koca
+Copyright (c) 2018 [Fatih Koca](http://fattih.com)

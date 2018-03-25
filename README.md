@@ -1,6 +1,6 @@
 # Vue.ajax
 
-A light XHR plugin for Vue 2x. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `http`(). In addition to these, it also has its own practical features. For example, file upload feature.
+A light XHR plugin for Vue 2x. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `http`(). In addition to these, it also has its own practical features. For example, `file upload` and `preventing dublicate` features.
 
 ## Example
 ```javascript
@@ -39,7 +39,7 @@ A plain object that is sent to the server with the request.
 `configures:` _object|null_  
 A set of key/value pairs that configure the Vue.ajax request.
 
-## Configures
+## Methods
 The example above uses the `.get` method of the `Vue.ajax` service.
 
 The `.get` method is a shortcut method of the `Vue.ajax` service. There are several shortcut methods:
@@ -230,7 +230,7 @@ Vue.ajax.get('http://mydomain.com', [data] {
 
 ## Response
 The response returns the `object` on the frontend. The object in general is the following structure:
-```json
+```javascript
 {
     data: [object|null],
     status: [string],

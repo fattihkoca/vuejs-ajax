@@ -1,4 +1,4 @@
-# <span style="color:#00bb7e">Vue</span><span style="color:#304a60;">.ajax</span>
+# Vue.ajax
 
 A light XHR plugin for Vue 2.x. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `http`(). In addition to these, it also has its own practical features. For example, `file upload` and `preventing dublicate` features.
 
@@ -108,7 +108,7 @@ Vue.ajax.get('http://mydomain.com', [data], {
 Cache setting should be a `boolean`. Default value is `false`.
 ```javascript
 Vue.ajax.get('http://mydomain.com', [data], {
-    async: false
+    cache: false
 });
 ```
 
@@ -243,12 +243,12 @@ The URL will be like this when sending the request:
 `http://mydomain.com?page=15&category=Accessories`
 
 ### With Credentials
-With credentials setting should be a `boolean`. Default value is `true`. 
+With credentials setting should be a `boolean`. Default value is `false`. 
 
 There is a detailed explanation [here](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials).
 ```javascript
 Vue.ajax.get('http://mydomain.com', [data] {
-    withCredentials: true
+    withCredentials: false
 });
 ```
 

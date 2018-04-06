@@ -89,7 +89,7 @@ const VueAjax = {
                     postData = null,
                     csrf = config.csrf !== undefined ? config.csrf : true,
                     preventDublicate = config.preventDublicate !== undefined ? config.preventDublicate : true,
-                    withCredentials = config.withCredentials !== undefined ? config.withCredentials : true,
+                    withCredentials = config.withCredentials !== undefined ? config.withCredentials : false,
                     readyStates = ['Uninitialized', 'Opened', 'Headers Received', 'Loading', 'Complete'],
                     fileInputs = config.fileInputs,
                     timeout = typeof config.timeout == 'number' || (!isNaN(parseFloat(config.timeout)) && isFinite(config.timeout)) ? config.timeout : 60000; // time in milliseconds
@@ -126,7 +126,7 @@ const VueAjax = {
                             postData.append(i, config.data[i]);
                         }
                     }
-                } else if (typeof config.data == 'object') {
+                } else if (typeof config.data == 'object' && data.length) {
                     data = serialize(config.data);
 
                     if (method == 'GET') {

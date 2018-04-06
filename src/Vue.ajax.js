@@ -102,7 +102,7 @@ const VueAjax = {
                 }
 
                 // File uploading
-                if (typeof fileInputs == 'object' && fileInputs.length) {
+                if (typeof fileInputs == 'object' && Object.keys(fileInputs).length) {
                     var postData = new FormData();
 
                     for (var i in fileInputs) {

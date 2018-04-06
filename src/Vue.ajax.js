@@ -102,7 +102,7 @@ const VueAjax = {
                 }
 
                 // File uploading
-                if (typeof fileInputs == 'object' && Object.keys(fileInputs).length) {
+                if (typeof fileInputs == 'object' && fileInputs.length) {
                     var postData = new FormData();
 
                     for (var i in fileInputs) {
@@ -126,7 +126,7 @@ const VueAjax = {
                             postData.append(i, config.data[i]);
                         }
                     }
-                } else if (typeof config.data == 'object' && data.length) {
+                } else if (typeof config.data == 'object' && Object.keys(config.data).length) {
                     data = serialize(config.data);
 
                     if (method == 'GET') {

@@ -197,6 +197,9 @@ const VueAjax = {
                     }
                 }
 
+                // Ajax request header
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
                 if (method == 'POST' && typeof fileInputs != 'object') {
                     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                 }

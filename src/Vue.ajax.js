@@ -278,6 +278,10 @@ const VueAjax = {
                                 if(document.body.querySelector(container)) {
                                     document.body.querySelector(container).innerHTML = responseData;
                                 }
+
+                                if(pjax.title) {
+                                    document.title = pjax.title;
+                                }
                             }
                         }
                         // Error callback

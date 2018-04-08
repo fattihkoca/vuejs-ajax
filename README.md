@@ -1,6 +1,6 @@
 # Vue.ajax
 
-A light XHR plugin for Vue 2.x. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `http`(). In addition to these, it also has its own practical features. For example, `file upload` and `preventing dublicate` features.
+A light XHR plugin for Vue 2.x. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `http`(). In addition to these, it also has its own practical features. For example, `file upload`, `pjax`, and `preventing dublicate request` features.
 
 ## Setup
 
@@ -75,6 +75,7 @@ The `.get` method is a shortcut method of the `Vue.ajax` service. There are seve
 * `Vue.ajax.patch()`
 * `Vue.ajax.post()`
 * `Vue.ajax.put()`
+* `Vue.ajax.pjax()`
 
 The methods above are all shortcuts of calling the `Vue.ajax` service:
 
@@ -187,6 +188,7 @@ URL data setting should be an `string`. Available values are:
 * `patch`
 * `post`
 * `put`
+* `pjax`
 
 ```javascript
 Vue.ajax({
@@ -199,6 +201,30 @@ Instead, you might prefer to use the following shorthand:
 ```javascript
 Vue.ajax.post('http://mydomain.com', [data]);
 ```
+
+### pjax (`pushState` + `ajax`)
+`pjax` setting should be an `object`. `pjax` is uses `ajax` and `pushState` to deliver a fast browsing experience with real permalinks, page titles, and a working back button. `pjax` not working with `jsonp` method.
+
+You only need to specify the url (String), the container element (CSS selector) whose content will change, and the document title (String). The default method of `pjax` request is `GET`.
+
+```javascript
+Vue.ajax.pjax('http://mydomain.com', '#container', 'New title!');
+```
+
+If you want to do some more specific configurations:
+```javascript
+Vue.ajax({
+    method : 'post',
+    url : 'http://mydomain.com',
+    pjax : {
+        container: '#container',
+        title: 'New title!',
+        history: true // Browser history (Default: true)
+    }
+});
+```
+
+`Notice`: pjax does not work with the `jsonp` method.
 
 ### Preventing Dublicate
 The duplicate prevention setting prevents sending requests to the same address or given key data. 
@@ -289,6 +315,26 @@ Vue.ajax.get('http://mydomain.com', [data])
 ```
 
 #### Error Handling
+
+```javascript
+Vue.ajax.get('http://mydomain.com/not-existing-path', [data])
+    .then(function(response) {
+        console.log(response.data)
+    }).catch(function(response) {
+        console.log('Error: ', response.statusText);
+    });
+
+    // "Error: Not Found"
+```
+
+```javascript
+Vue.ajax.get('http://mydomain.com/not-existing-path', [data])
+    .catch(function(response) {
+        console.log('Error: ', response.statusText);
+    });
+
+    // "Error: Not Found"
+```
 
 ```javascript
 Vue.ajax.get('http://mydomain.com/not-existing-path', [data])

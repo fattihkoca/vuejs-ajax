@@ -61,7 +61,7 @@ const VueAjax = {
                 var parsed = {};
 
                 if (typeof config == 'object') {
-                    parsed = config;   
+                    parsed = config;
                 }
 
                 if (typeof data == 'object') {
@@ -85,6 +85,7 @@ const VueAjax = {
                     async = config.async !== undefined ? config.async : true,
                     cache = config.cache !== undefined ? config.cache : false,
                     url = config.url,
+                    pjax = config.pjax !== undefined && typeof config.pjax == 'object' ? config.pjax : false,
                     data = null,
                     postData = null,
                     csrf = config.csrf !== undefined ? config.csrf : true,
@@ -138,7 +139,7 @@ const VueAjax = {
                 }
 
                 // Noncaching
-                if (!cache) {
+                if (!cache && !pjax) {
                     url = addQueryString(url, nonCacheQs());
                 }
 
@@ -204,6 +205,10 @@ const VueAjax = {
                     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                 }
 
+                if(pjax) {
+                    xhr.setRequestHeader('X-PJAX', 'true');
+                }
+
                 // withCredentials for Cross-Site
                 if (withCredentials) {
                     xhr.withCredentials = true;
@@ -231,7 +236,9 @@ const VueAjax = {
                         status: this.status,
                         statusText: this.statusText,
                         xhrStatus: readyStates.hasOwnProperty(this.readyState) ? readyStates[this.readyState] : 'Unknown'
-                    };
+                    },
+                    
+                    successStateFunc = randomString(5) + timestamp();
 
                     // Connection done
                     if (this.readyState == 4) {
@@ -245,13 +252,42 @@ const VueAjax = {
                         // Success callback
                         if (this.status == 200) {
                             if (typeof config.success == 'function') {
+                                window[successStateFunc] = function() {
+                                    return config.success(response);
+                                }
+                                
                                 config.success(response);
+                            }
+
+                            // Pjax commits
+                            if (pjax) {
+                                if((pjax.history == undefined || pjax.history) && history.pushState) {
+                                    history.pushState({
+                                        pjax: {
+                                            url: url,
+                                            method: method,
+                                            container: pjax.container,
+                                            title: pjax.title,
+                                            success: successStateFunc
+                                        }
+                                    }, pjax.title, url);
+                                }
+
+                                var container = pjax.container ? pjax.container : false;
+                                
+                                if(document.body.querySelector(container)) {
+                                    document.body.querySelector(container).innerHTML = responseData;
+                                }
                             }
                         }
                         // Error callback
                         else if (preventDublicate && this.status != 0) {
                             if (typeof config.error == 'function') {
                                 config.error(response);
+                            }
+
+                            if (pjax) {
+                                window.top.location.href = url;
                             }
                         }
                     }
@@ -356,12 +392,49 @@ const VueAjax = {
                 return script;
             };
 
+        window.addEventListener('popstate', function (e) {
+            if(!e.state || typeof e.state != 'object' || !e.state.pjax ||
+                typeof e.state.pjax != 'object') {
+                return;
+            }
+
+            var pjax = e.state.pjax,
+                method = pjax.method ? pjax.method : 'GET',
+                url = pjax.url ? pjax.url : false,
+                container = pjax.container ? document.body.querySelector(pjax.container) : false,
+                title = pjax.title ? pjax.title : null,
+                success = pjax.success;
+
+            if(!url || !container) {
+                window.top.location.href = url;
+                return;
+            }
+
+            Vue.ajax({
+                url: url,
+                method: method
+            }).then(function(response) {
+                container.innerHTML = response.data;
+
+                if(title != null && document.title) {
+                    document.title = title;
+                }
+
+                if(success && typeof window[success] == 'function') {
+                    window[success](response.data);
+                }
+            }, function() {
+                window.top.location.href = url;
+            });
+        });
+
         /**
          * Vue.ajax()
          * @param {Object} config
          */
         Vue.ajax = function (config) {
             Vue.ajax.config = config;
+            xhrSend(Vue.ajax.config);
             return Vue.ajax;
         };
 
@@ -375,6 +448,7 @@ const VueAjax = {
          */
         Vue.ajax.get = function (url, data, config) {
             this.config = parseConfigures('GET', url, data, config);
+            xhrSend(this.config);
             return this;
         };
 
@@ -386,6 +460,7 @@ const VueAjax = {
          */
         Vue.ajax.post = function (url, data, config) {
             this.config = parseConfigures('POST', url, data, config);
+            xhrSend(this.config);
             return this;
         };
 
@@ -397,6 +472,7 @@ const VueAjax = {
          */
         Vue.ajax.head = function (url, data, config) {
             this.config = parseConfigures('HEAD', url, data, config);
+            xhrSend(this.config);
             return this;
         };
 
@@ -408,6 +484,7 @@ const VueAjax = {
          */
         Vue.ajax.put = function (url, data, config) {
             this.config = parseConfigures('PUT', url, data, config);
+            xhrSend(this.config);
             return this;
         };
 
@@ -419,6 +496,7 @@ const VueAjax = {
          */
         Vue.ajax.delete = function (url, data, config) {
             this.config = parseConfigures('DELETE', url, data, config);
+            xhrSend(this.config);
             return this;
         };
 
@@ -430,6 +508,7 @@ const VueAjax = {
          */
         Vue.ajax.patch = function (url, data, config) {
             this.config = parseConfigures('PATCH', url, data, config);
+            xhrSend(this.config);
             return this;
         };
 
@@ -441,6 +520,25 @@ const VueAjax = {
          */
         Vue.ajax.jsonp = function (url, data, config) {
             this.config = parseConfigures('JSONP', url, data, config);
+            xhrSend(this.config);
+            return this;
+        };
+
+        /**
+         * Vue.ajax.pjax()
+         * @param {String} url
+         * @param {String} container
+         * @param {String} title
+         */
+        Vue.ajax.pjax = function (url, container, title) {
+            var config = {
+                pjax: {
+                    container: container,
+                    title: title
+                }
+            };
+            this.config = parseConfigures('GET', url, {}, config);
+            xhrSend(this.config);
             return this;
         };
 
@@ -452,7 +550,16 @@ const VueAjax = {
         Vue.ajax.then = function (success, error) {
             this.config['success'] = success;
             this.config['error'] = error;
-            return xhrSend(this.config);
+            return this;
+        };
+
+        /**
+         * Vue.ajax.catch()
+         * @param {Function} error
+         */
+        Vue.ajax.catch = function (error) {
+            this.config['error'] = error;
+            return this;
         };
     }
 };

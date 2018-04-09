@@ -28,7 +28,7 @@ Vue.use(ajax)
 
 ## Example
 ```javascript
-Vue.ajax.get('http://mydomain.com').then(function(response) {
+Vue.ajax.get('http://example.com').then(function(response) {
     console.log('Success', response.data)
 }, function(response) {
     console.log('Error', response.statusText)
@@ -38,7 +38,7 @@ Vue.ajax.get('http://mydomain.com').then(function(response) {
 If you want to send data to the backend:
 
 ```javascript
-Vue.ajax.get('http://mydomain.com', {
+Vue.ajax.get('http://example.com', {
     param1: 'First parameter',
     param2: 'Second parameter'
 }).then(function(response) {
@@ -58,7 +58,7 @@ Vue.ajax.get(string url[, object data] [,object configurations])
 A string containing the URL to which the request is sent.
 
 **`data:`** _object|null_  
-A plain object that is sent to the server with the request.
+A plain object that is sent to the server with the request.  
 
 **`configurations:`** _object|null_  
 A set of key/value pairs that configure the Vue.ajax request.
@@ -81,7 +81,7 @@ The methods above are all shortcuts of calling the `Vue.ajax` service:
 
 ```javascript
 Vue.ajax({
-    url: 'http://mydomain.com',
+    url: 'http://example.com',
     method: 'GET'
 }).then(function(response) {
     console.log('Success', response.data)
@@ -100,7 +100,7 @@ Vue.ajax(object configurations)
 ### Asynchronous
 Asynchronous setting should be a `boolean`. Default is `true`.
 ```javascript
-Vue.ajax.get('http://mydomain.com', [data], {
+Vue.ajax.get('http://example.com', [data], {
     async: true
 });
 ```
@@ -108,7 +108,7 @@ Vue.ajax.get('http://mydomain.com', [data], {
 ### Cache
 Cache setting should be a `boolean`. Default value is `false`.
 ```javascript
-Vue.ajax.get('http://mydomain.com', [data], {
+Vue.ajax.get('http://example.com', [data], {
     cache: false
 });
 ```
@@ -117,7 +117,7 @@ Vue.ajax.get('http://mydomain.com', [data], {
 Complete event setting should be a `function`.
 
 ```javascript
-Vue.ajax.get('http://mydomain.com', [data], {
+Vue.ajax.get('http://example.com', [data], {
     complete: function(response) {
         console.log(response.status)
     }
@@ -129,7 +129,7 @@ CSRF setting should be a `boolean`. Default value is `true`.
 
 However, in the html head tag it must be `csrf-token meta`. Like this: `<meta name="csrf-token" content="ABCDEFGHIJKLMN">`.
 ```javascript
-Vue.ajax.get('http://mydomain.com', [data], {
+Vue.ajax.get('http://example.com', [data], {
     csrf: true
 });
 ```
@@ -137,7 +137,7 @@ Vue.ajax.get('http://mydomain.com', [data], {
 ### Data
 Data setting should be an `object`.
 ```javascript
-Vue.ajax.get('http://mydomain.com', [data], {
+Vue.ajax.get('http://example.com', [data], {
     data: {
         param1: 'First parameter',
         param2: 'Second parameter'
@@ -155,7 +155,7 @@ File uploading setting should be a `DOM object`. We recommend using the `post` m
 ```
 
 ```javascript
-Vue.ajax.post('http://mydomain.com', [data], {
+Vue.ajax.post('http://example.com', [data], {
     fileInputs: [
         document.getElementById('my-input'),
         document.getElementById('my-input-2'),
@@ -171,7 +171,7 @@ You can also send multiple files with an input:
 ### HTTP Headers
 HTTP headers setting should be an `object`.
 ```javascript
-Vue.ajax.get('http://mydomain.com', [data], {
+Vue.ajax.get('http://example.com', [data], {
     headers: [
         {'Content-Type': 'application/json'},
         {'Accept': 'application/json, text/plain, */*'}
@@ -192,14 +192,14 @@ URL data setting should be an `string`. Available values are:
 
 ```javascript
 Vue.ajax({
-    url: 'http://mydomain.com',
+    url: 'http://example.com',
     method: 'post'
 });
 ```
 
 Instead, you might prefer to use the following shorthand:
 ```javascript
-Vue.ajax.post('http://mydomain.com', [data]);
+Vue.ajax.post('http://example.com', [data]);
 ```
 
 ### Pjax
@@ -207,27 +207,27 @@ Vue.ajax.post('http://mydomain.com', [data]);
 
 It need to specify the url (String), the container element (CSS selector) whose content will change and the document title (String). Also, you can specify the target element (CSS selector) to trigger the operation. If you want, you can choose which event to trigger for the target element. The trigger event default value is `click`. The default method of `pjax` request is `GET`.
 
-#### Usage
+**Usage**
 ```javascript
 Vue.ajax.pjax(url [, container ] [, title ] [, target ] [, event ]);
 ```
 
-**url:** **_Required_** `(String)` Destination url to install
-**container:** **_Required_** `(String)` CSS selector  
+**url:** [_Required_] `(String)` Destination url to install  
+**container:** [_Required_] `(String)` CSS selector  
 **title:** `(Title)` Document title  
 **target:** `(String)` CSS selector
-**event:** `(String)` Example values: `click`, `mouseover`, `mouseout`, etc
+**event:** `(String)` Example values: `click`, `mouseover`, etc
 
-#### Examples
+**Examples**
 ```javascript
-Vue.ajax.pjax('http://mydomain.com', '#container', 'New title!');
+Vue.ajax.pjax('http://example.com', '#container', 'New title!');
 ```
 
 If you want to do some more specific configurations:
 ```javascript
 Vue.ajax({
     method : 'post',
-    url : 'http://mydomain.com',
+    url : 'http://example.com',
     pjax : {
         container: '#container', // Container element
         title: 'New title!', // Document title
@@ -248,14 +248,14 @@ Preventing dublicate setting should be a `boolean`. Default value is `true`.
 
 The following example prevents sending requests over the same URL:
 ```javascript
-Vue.ajax.get('http://mydomain.com', [data], {
+Vue.ajax.get('http://example.com', [data], {
     preventDublicate: true
 });
 ```
 
 The following example prevents sending requests over the same given key data:
 ```javascript
-Vue.ajax.get('http://mydomain.com', [data], {
+Vue.ajax.get('http://example.com', [data], {
     preventDublicate: true,
     key: 'ABCDEFGH'
 });
@@ -264,7 +264,7 @@ Vue.ajax.get('http://mydomain.com', [data], {
 ### Timeout
 Timeout setting should be an `number`. Default value is `60000`. (Time in milliseconds)
 ```javascript
-Vue.ajax.get('http://mydomain.com', [data], {
+Vue.ajax.get('http://example.com', [data], {
     timeout: 60000 // Time in milliseconds
 });
 ```
@@ -272,7 +272,7 @@ Vue.ajax.get('http://mydomain.com', [data], {
 ### URL Data
 URL data setting should be an `object`. With this setting, you can add serialized query string to the URL you are sending.
 ```javascript
-Vue.ajax.get('http://mydomain.com', [data], {
+Vue.ajax.get('http://example.com', [data], {
     urlData: [
         {page: 15},
         {category: 'Accessories'}
@@ -281,14 +281,14 @@ Vue.ajax.get('http://mydomain.com', [data], {
 ```
 
 The URL will be like this when sending the request:  
-`http://mydomain.com?page=15&category=Accessories`
+`http://example.com?page=15&category=Accessories`
 
 ### With Credentials
 With credentials setting should be a `boolean`. Default value is `false`. 
 
 There is a detailed explanation [here](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials).
 ```javascript
-Vue.ajax.get('http://mydomain.com', [data] {
+Vue.ajax.get('http://example.com', [data] {
     withCredentials: false
 });
 ```
@@ -323,7 +323,7 @@ return response(json_encode($array), 200)->header('Content-Type', 'application/j
 ```
 
 ```javascript
-Vue.ajax.get('http://mydomain.com', [data])
+Vue.ajax.get('http://example.com', [data])
     .then(function(response) {
         console.log(response.data)
     });
@@ -332,7 +332,7 @@ Vue.ajax.get('http://mydomain.com', [data])
 #### Error Handling
 
 ```javascript
-Vue.ajax.get('http://mydomain.com/not-existing-path', [data])
+Vue.ajax.get('http://example.com/not-existing-path', [data])
     .then(function(response) {
         console.log(response.data)
     }).catch(function(response) {
@@ -343,7 +343,7 @@ Vue.ajax.get('http://mydomain.com/not-existing-path', [data])
 ```
 
 ```javascript
-Vue.ajax.get('http://mydomain.com/not-existing-path', [data])
+Vue.ajax.get('http://example.com/not-existing-path', [data])
     .catch(function(response) {
         console.log('Error: ', response.statusText);
     });
@@ -352,7 +352,7 @@ Vue.ajax.get('http://mydomain.com/not-existing-path', [data])
 ```
 
 ```javascript
-Vue.ajax.get('http://mydomain.com/not-existing-path', [data])
+Vue.ajax.get('http://example.com/not-existing-path', [data])
     .then(function(response) {
         console.log(response.data)
     }, function(response) {

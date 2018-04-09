@@ -54,13 +54,13 @@ Vue.ajax.get(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
-`url:` _string_   
+**`url:`** _string_   
 A string containing the URL to which the request is sent.
 
-`data:` _object|null_  
+**`data:`** _object|null_  
 A plain object that is sent to the server with the request.
 
-`configurations:` _object|null_  
+**`configurations:`** _object|null_  
 A set of key/value pairs that configure the Vue.ajax request.
 
 ## Methods
@@ -202,11 +202,23 @@ Instead, you might prefer to use the following shorthand:
 Vue.ajax.post('http://mydomain.com', [data]);
 ```
 
-### pjax (`pushState` + `ajax`)
+### Pjax
 `pjax` setting should be an `object`. `pjax` is uses `ajax` and `pushState` to deliver a fast browsing experience with real permalinks, page titles, and a working back button. `pjax` not working with `jsonp` method.
 
-You only need to specify the url (String), the container element (CSS selector) whose content will change, and the document title (String). The default method of `pjax` request is `GET`.
+It need to specify the url (String), the container element (CSS selector) whose content will change and the document title (String). Also, you can specify the target element (CSS selector) to trigger the operation. If you want, you can choose which event to trigger for the target element. The trigger event default value is `click`. The default method of `pjax` request is `GET`.
 
+#### Usage
+```javascript
+Vue.ajax.pjax(url [, container ] [, title ] [, target ] [, event ]);
+```
+
+**url:** **_Required_** `(String)` Destination url to install
+**container:** **_Required_** `(String)` CSS selector  
+**title:** `(Title)` Document title  
+**target:** `(String)` CSS selector
+**event:** `(String)` Example values: `click`, `mouseover`, `mouseout`, etc
+
+#### Examples
 ```javascript
 Vue.ajax.pjax('http://mydomain.com', '#container', 'New title!');
 ```
@@ -217,9 +229,12 @@ Vue.ajax({
     method : 'post',
     url : 'http://mydomain.com',
     pjax : {
-        container: '#container',
-        title: 'New title!',
-        history: true // Browser history (Default: true)
+        container: '#container', // Container element
+        title: 'New title!', // Document title
+        target: '#container', // Trigger target element
+        event: 'click', // (Default: click) Trigger event of target element
+        scroll: true, // (Default: true) Scrolling the container top after the load
+        history: true // (Default: true) Browser history
     }
 });
 ```

@@ -205,8 +205,9 @@ const VueAjax = {
                     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                 }
 
-                if(pjax) {
+                if (pjax) {
                     xhr.setRequestHeader('X-PJAX', 'true');
+                    xhr.setRequestHeader('X-PJAX-Version', randomString(5) + timestamp());
                 }
 
                 // withCredentials for Cross-Site
@@ -229,16 +230,15 @@ const VueAjax = {
 
                     // Preparing response object
                     var response = {
-                        config: config,
-                        data: responseData,
-                        headers: xhr.getAllResponseHeaders(),
-                        request: this,
-                        status: this.status,
-                        statusText: this.statusText,
-                        xhrStatus: readyStates.hasOwnProperty(this.readyState) ? readyStates[this.readyState] : 'Unknown'
-                    },
-                    
-                    successStateFunc = randomString(5) + timestamp();
+                            config: config,
+                            data: responseData,
+                            headers: xhr.getAllResponseHeaders(),
+                            request: this,
+                            status: this.status,
+                            statusText: this.statusText,
+                            xhrStatus: readyStates.hasOwnProperty(this.readyState) ? readyStates[this.readyState] : 'Unknown'
+                        },
+                        stateCallName = randomString(8) + timestamp();
 
                     // Connection done
                     if (this.readyState == 4) {
@@ -252,35 +252,53 @@ const VueAjax = {
                         // Success callback
                         if (this.status == 200) {
                             if (typeof config.success == 'function') {
-                                window[successStateFunc] = function() {
+                                window[stateCallName] = function () {
                                     return config.success(response);
-                                }
-                                
-                                config.success(response);
+                                };
+
+                                window[stateCallName]();
+                            } else {
+                                window[stateCallName] = function () {
+                                    return response;
+                                };
                             }
 
                             // Pjax commits
                             if (pjax) {
-                                if((pjax.history == undefined || pjax.history) && history.pushState) {
-                                    history.pushState({
-                                        pjax: {
-                                            url: url,
-                                            method: method,
-                                            container: pjax.container,
-                                            title: pjax.title,
-                                            success: successStateFunc
-                                        }
-                                    }, pjax.title, url);
+                                // For push state object
+                                var stateObj = {
+                                    pjax: {
+                                        url: url,
+                                        method: method,
+                                        container: pjax.container,
+                                        title: pjax.title,
+                                        target: pjax.target,
+                                        event: pjax.event,
+                                        history: pjax.history,
+                                        scroll: pjax.scroll,
+                                        callName: stateCallName
+                                    }
+                                },
+                                state = window.history.state && window.history.state.pjax ? window.history.state.pjax : {},
+                                availablePushState = (pjax.history == undefined || pjax.history) && window.history.pushState && (!state || !state.url || state.url != pjax.url || (state.target && state.target != pjax.target)),
+                                container = pjax.container && document.body.querySelector(pjax.container);
+
+                                if (availablePushState) {
+                                    window.history.pushState(stateObj, pjax.title, url); 
                                 }
 
-                                var container = pjax.container ? pjax.container : false;
-                                
-                                if(document.body.querySelector(container)) {
-                                    document.body.querySelector(container).innerHTML = responseData;
+                                if (container) {
+                                    container.innerHTML = responseData;
+                                } else {
+                                    locationRedirect(url);
                                 }
 
-                                if(pjax.title) {
+                                if (pjax.title) {
                                     document.title = pjax.title;
+                                }
+
+                                if (!pjax.scroll || pjax.scroll) {
+                                    scrollTop(container);
                                 }
                             }
                         }
@@ -291,7 +309,7 @@ const VueAjax = {
                             }
 
                             if (pjax) {
-                                window.top.location.href = url;
+                                locationRedirect(url);
                             }
                         }
                     }
@@ -308,7 +326,7 @@ const VueAjax = {
                 var method = 'GET',
                     name = randomString(10) + '_' + jsonpAttempSize++,
                     url = config.url,
-                    async = config.async !== undefined ? config.async : true,
+                    async = config.async || true,
                     callbackParam = config.jsonpCallbackParam || 'callback',
                     key = config.key;
 
@@ -394,41 +412,74 @@ const VueAjax = {
                 }
 
                 return script;
+            },
+            locationRedirect = function (url) {
+                window.history.replaceState(null, "", url);
+
+                if (!url) {
+                    window.location.reload();
+                    return;
+                }
+
+                window.location.replace(url);
+            },
+            scrollTop = function(item) {
+                if(item && item.scrollTop) {
+                    item.scrollTo (0, 0);
+                    return;
+                }
+                
+                window.scrollTo (0, 0);
             };
 
         window.addEventListener('popstate', function (e) {
-            if(!e.state || typeof e.state != 'object' || !e.state.pjax ||
-                typeof e.state.pjax != 'object') {
-                return;
+            if (!e.state || !e.state.pjax) {
+                return locationRedirect();
             }
 
             var pjax = e.state.pjax,
-                method = pjax.method ? pjax.method : 'GET',
-                url = pjax.url ? pjax.url : false,
-                container = pjax.container ? document.body.querySelector(pjax.container) : false,
-                title = pjax.title ? pjax.title : null,
-                success = pjax.success;
+                url = pjax.url || null,
+                method = pjax.method || 'GET',
+                containerSel = pjax.container || false,
+                container = containerSel ? document.body.querySelector(containerSel) : false,
+                title = pjax.title || null,
+                targetSel = pjax.target || false,
+                target = targetSel ? document.body.querySelector(targetSel) : false,
+                event = pjax.event || 'click',
+                callName = pjax.callName || false,
+                history = pjax.history || false;
 
-            if(!url || !container) {
-                window.top.location.href = url;
-                return;
+            // If url does not exists
+            if (!url || !container) {
+                return locationRedirect();
             }
 
+            // If window reloaded
+            else if (!callName || typeof window[callName] != 'function') {
+                // If target element does not exists
+                if (!target || !event) {
+                    return locationRedirect(url);
+                }
+
+                // Element event trigger
+                return target[event]();
+            }
+
+            // If window not reloaded
             Vue.ajax({
                 url: url,
-                method: method
-            }).then(function(response) {
-                container.innerHTML = response.data;
-
-                if(title != null && document.title) {
-                    document.title = title;
+                method: method,
+                pjax: {
+                    container: containerSel,
+                    title: title,
+                    target: targetSel,
+                    event: event,
+                    history: history
                 }
-
-                if(success && typeof window[success] == 'function') {
-                    window[success](response.data);
-                }
-            }, function() {
-                window.top.location.href = url;
+            }).then(function (response) {
+                window[callName](response);
+            }, function () {
+                return locationRedirect(url);
             });
         });
 
@@ -534,11 +585,13 @@ const VueAjax = {
          * @param {String} container
          * @param {String} title
          */
-        Vue.ajax.pjax = function (url, container, title) {
+        Vue.ajax.pjax = function (url, container, title, target, event) {
             var config = {
                 pjax: {
                     container: container,
-                    title: title
+                    title: title,
+                    target: target,
+                    event: event
                 }
             };
             this.config = parseConfigures('GET', url, {}, config);

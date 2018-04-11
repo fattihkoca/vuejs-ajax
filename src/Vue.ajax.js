@@ -18,6 +18,7 @@ const VueAjax = {
             jsonpAttempSize = 0;
 
         const
+            xhrStatuses = ['Uninitialized', 'Opened', 'Headers Received', 'Loading', 'Complete'],
             // Timestamp method
             timestamp = function () {
                 return String((new Date().getTime()))
@@ -56,6 +57,77 @@ const VueAjax = {
                 var prefix = url.indexOf('?') !== -1 ? '&' : '?';
                 return url + prefix + qs;
             },
+            // Location redirect for pjax
+            locationRedirect = function (url) {
+                window.history.replaceState(null, "", url);
+
+                if (!url) {
+                    window.location.reload();
+                    return;
+                }
+
+                window.location.replace(url);
+            },
+            // Scrolling when pjax loaded
+            scrollTop = function(item) {
+                if(item && item.scrollTop) {
+                    item.scrollTo (0, 0);
+                    return;
+                }
+                
+                window.scrollTo (0, 0);
+            },
+            fileExtension = function(filename) {
+                return filename.split('.').pop();
+            },
+            // Adding assets for pjax 
+            pushAssets = function(asset) {
+                if(typeof asset == 'object') {
+                    for(var i in asset) {
+                        pushAssets(asset[i]);
+                    }
+                    return;
+                } else if(typeof asset != 'string') {
+                    return;
+                }
+
+                var extension = fileExtension(asset),
+                    newElement = null;
+
+                switch (extension) {
+                    case 'css':
+                        if(document.head.querySelector('link[href="'+ asset +'"]')){
+                            return
+                        }
+                        newElement = document.createElement("link");
+                        newElement.rel = 'stylesheet';
+                        newElement.type = 'text/css';
+                        newElement.href = asset;
+                        break;
+                
+                    case 'js':
+                        if(document.head.querySelector('script[src="'+ asset +'"]')){
+                            return
+                        }
+                        newElement = document.createElement("script");
+                        newElement.type = 'text/javascript';
+                        newElement.src = asset;
+                        break;
+                }
+
+                if(newElement) {
+                    document.head.appendChild(newElement);
+                }
+            },
+            pjaxVersion = function() {
+                var meta = document.head.querySelector('meta[http-equiv=x-pjax-version][content]');
+                return meta ? meta.getAttribute('content') : false;
+            },
+            availableHistory = function(pjax) {
+                var state = window.history.state || {};
+                return (pjax.history == undefined || pjax.history) && 
+                    window.history.pushState && (!state || !state.url || state.url != pjax.url);
+            },
             // Parsing received configures
             parseConfigures = function (method, url, data, config) {
                 var parsed = {};
@@ -91,9 +163,12 @@ const VueAjax = {
                     csrf = config.csrf !== undefined ? config.csrf : true,
                     preventDublicate = config.preventDublicate !== undefined ? config.preventDublicate : true,
                     withCredentials = config.withCredentials !== undefined ? config.withCredentials : false,
-                    readyStates = ['Uninitialized', 'Opened', 'Headers Received', 'Loading', 'Complete'],
                     fileInputs = config.fileInputs,
-                    timeout = typeof config.timeout == 'number' || (!isNaN(parseFloat(config.timeout)) && isFinite(config.timeout)) ? config.timeout : 60000; // time in milliseconds
+
+                    // time in milliseconds
+                    timeout = typeof config.timeout == 'number' || 
+                    (!isNaN(parseFloat(config.timeout)) && isFinite(config.timeout)) ? config.timeout : 60000,
+                    currentPjaxVersion = pjaxVersion();
 
                 method = method.toUpperCase();
 
@@ -109,7 +184,8 @@ const VueAjax = {
                     for (var i in fileInputs) {
                         if (fileInputs[i].files) {
                             var files = fileInputs[i].files,
-                                fileName = fileInputs[i].hasAttribute('name') ? fileInputs[i].getAttribute('name') : 'file_' + i;
+                                fileName = fileInputs[i].hasAttribute('name') ? 
+                                    fileInputs[i].getAttribute('name') : 'file_' + i;
 
                             if (files.length > 1) {
                                 fileName += '[]';
@@ -166,6 +242,7 @@ const VueAjax = {
                 // Starting XHR
                 var xhr = new XMLHttpRequest();
 
+                // Adding request key
                 if (key) {
                     requestAttemps[key] = xhr;
                 }
@@ -192,6 +269,7 @@ const VueAjax = {
                     }
                 }
 
+                // Adding http headers
                 if (typeof config.headers == 'object') {
                     for (var i in config.headers) {
                         xhr.setRequestHeader(i, config.headers[i]);
@@ -205,16 +283,21 @@ const VueAjax = {
                     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                 }
 
+                // Adding http headers for pjax
                 if (pjax) {
                     xhr.setRequestHeader('X-PJAX', 'true');
-                    xhr.setRequestHeader('X-PJAX-Version', randomString(5) + timestamp());
+
+                    if(currentPjaxVersion) {
+                        xhr.setRequestHeader('X-PJAX-Version', currentPjaxVersion);
+                    }
                 }
 
-                // withCredentials for Cross-Site
+                // WithCredentials option for Cross-Site
                 if (withCredentials) {
                     xhr.withCredentials = true;
                 }
 
+                // XHR responsing
                 xhr.onreadystatechange = function () {
                     var responseData = this.response,
                         contentType = xhr.getResponseHeader("content-type");
@@ -236,7 +319,8 @@ const VueAjax = {
                             request: this,
                             status: this.status,
                             statusText: this.statusText,
-                            xhrStatus: readyStates.hasOwnProperty(this.readyState) ? readyStates[this.readyState] : 'Unknown'
+                            xhrStatus: xhrStatuses.hasOwnProperty(this.readyState) ? 
+                                xhrStatuses[this.readyState] : 'Unknown'
                         },
                         stateCallName = randomString(8) + timestamp();
 
@@ -265,26 +349,29 @@ const VueAjax = {
 
                             // Pjax commits
                             if (pjax) {
+                                var latestPjaxVersion = xhr.getResponseHeader('X-PJAX-Version');
+                                if(currentPjaxVersion && latestPjaxVersion && 
+                                    currentPjaxVersion !== latestPjaxVersion) {
+                                    return locationRedirect(url);
+                                }
+
                                 // For push state object
                                 var stateObj = {
-                                    pjax: {
-                                        url: url,
-                                        method: method,
-                                        container: pjax.container,
-                                        title: pjax.title,
-                                        target: pjax.target,
-                                        event: pjax.event,
-                                        history: pjax.history,
-                                        scroll: pjax.scroll,
-                                        callName: stateCallName
-                                    }
+                                    url: url,
+                                    method: method,
+                                    container: pjax.container,
+                                    title: pjax.title,
+                                    target: pjax.target,
+                                    event: pjax.event,
+                                    assets: pjax.assets,
+                                    history: pjax.history,
+                                    scroll: pjax.scroll,
+                                    callName: stateCallName
                                 },
-                                state = window.history.state && window.history.state.pjax ? window.history.state.pjax : {},
-                                availablePushState = (pjax.history == undefined || pjax.history) && window.history.pushState && (!state || !state.url || state.url != pjax.url || (state.target && state.target != pjax.target)),
                                 container = pjax.container && document.body.querySelector(pjax.container);
 
-                                if (availablePushState) {
-                                    window.history.pushState(stateObj, pjax.title, url); 
+                                if (availableHistory(pjax)) {
+                                    window.history.pushState(stateObj, pjax.title, url);
                                 }
 
                                 if (container) {
@@ -295,6 +382,10 @@ const VueAjax = {
 
                                 if (pjax.title) {
                                     document.title = pjax.title;
+                                }
+
+                                if(pjax.assets) {
+                                    pushAssets(pjax.assets);
                                 }
 
                                 if (!pjax.scroll || pjax.scroll) {
@@ -412,32 +503,14 @@ const VueAjax = {
                 }
 
                 return script;
-            },
-            locationRedirect = function (url) {
-                window.history.replaceState(null, "", url);
-
-                if (!url) {
-                    window.location.reload();
-                    return;
-                }
-
-                window.location.replace(url);
-            },
-            scrollTop = function(item) {
-                if(item && item.scrollTop) {
-                    item.scrollTo (0, 0);
-                    return;
-                }
-                
-                window.scrollTo (0, 0);
             };
 
         window.addEventListener('popstate', function (e) {
-            if (!e.state || !e.state.pjax) {
+            if (!e.state) {
                 return locationRedirect();
             }
 
-            var pjax = e.state.pjax,
+            var pjax = e.state,
                 url = pjax.url || null,
                 method = pjax.method || 'GET',
                 containerSel = pjax.container || false,
@@ -446,6 +519,8 @@ const VueAjax = {
                 targetSel = pjax.target || false,
                 target = targetSel ? document.body.querySelector(targetSel) : false,
                 event = pjax.event || 'click',
+                assets = pjax.assets,
+                scroll = pjax.scroll,
                 callName = pjax.callName || false,
                 history = pjax.history || false;
 
@@ -474,7 +549,9 @@ const VueAjax = {
                     title: title,
                     target: targetSel,
                     event: event,
-                    history: history
+                    assets: assets,
+                    history: history,
+                    scroll: scroll
                 }
             }).then(function (response) {
                 window[callName](response);
@@ -585,15 +662,11 @@ const VueAjax = {
          * @param {String} container
          * @param {String} title
          */
-        Vue.ajax.pjax = function (url, container, title, target, event) {
+        Vue.ajax.pjax = function (url, data, config) {
             var config = {
-                pjax: {
-                    container: container,
-                    title: title,
-                    target: target,
-                    event: event
-                }
+                pjax: data || {}
             };
+
             this.config = parseConfigures('GET', url, {}, config);
             xhrSend(this.config);
             return this;

@@ -48,11 +48,47 @@ Vue.ajax.get('http://example.com', {
 })
 ```
 
-## Arguments
+## Methods
+```javascript
+Vue.ajax.delete(string url[, object data] [,object configurations])
+    .then(function success[, function error])
+```
+
 ```javascript
 Vue.ajax.get(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
+
+```javascript
+Vue.ajax.head(string url[, object data] [,object configurations])
+    .then(function success[, function error])
+```
+
+```javascript
+Vue.ajax.jsonp(string url[, object data] [,object configurations])
+    .then(function success[, function error])
+```
+
+```javascript
+Vue.ajax.patch(string url[, object data] [,object configurations])
+    .then(function success[, function error])
+```
+
+```javascript
+Vue.ajax.post(string url[, object data] [,object configurations])
+    .then(function success[, function error])
+```
+
+```javascript
+Vue.ajax.put(string url[, object data] [,object configurations])
+    .then(function success[, function error])
+```
+
+```javascript
+Vue.ajax.pjax(string url[, object data] [,object configurations])
+    .then(function success[, function error])
+```
+[Look at](#pjax) to details for `pjax` method.
 
 **`url:`** _string_   
 A string containing the URL to which the request is sent.
@@ -63,26 +99,12 @@ A plain object that is sent to the server with the request.
 **`configurations:`** _object|null_  
 A set of key/value pairs that configure the Vue.ajax request.
 
-## Methods
-The example above uses the `.get` method of the `Vue.ajax` service.
-
-The `.get` method is a shortcut method of the `Vue.ajax` service. There are several shortcut methods:
-
-* `Vue.ajax.delete()`
-* `Vue.ajax.get()`
-* `Vue.ajax.head()`
-* `Vue.ajax.jsonp()`
-* `Vue.ajax.patch()`
-* `Vue.ajax.post()`
-* `Vue.ajax.put()`
-* `Vue.ajax.pjax()`
-
-The methods above are all shortcuts of calling the `Vue.ajax` service:
+All of the above methods are a shortcut method of the `Vue.ajax` service:
 
 ```javascript
 Vue.ajax({
     url: 'http://example.com',
-    method: 'GET'
+    method: 'get' // post, pjax, etc
 }).then(function(response) {
     console.log('Success', response.data)
 }, function() {
@@ -93,6 +115,12 @@ Vue.ajax({
 ```javascript
 Vue.ajax(object configurations)
     .then(function success[, function error])
+
+// Or
+
+Vue.ajax(object configurations)
+    .then(function success)
+    .catch(function error)
 ```
 
 ## Configurations
@@ -188,7 +216,7 @@ URL data setting should be an `string`. Available values are:
 * `patch`
 * `post`
 * `put`
-* `pjax`
+* [`pjax`](#pjax)
 
 ```javascript
 Vue.ajax({
@@ -202,47 +230,67 @@ Instead, you might prefer to use the following shorthand:
 Vue.ajax.post('http://example.com', [data]);
 ```
 
-### Pjax
-`pjax` setting should be an `object`. `pjax` is uses `ajax` and `pushState` to deliver a fast browsing experience with real permalinks, page titles, and a working back button. `pjax` not working with `jsonp` method.
+### <a name="pjax"></a> Pjax
+`pjax` setting should be an `object`. `pjax` is uses `ajax` and `pushState` to deliver a fast browsing experience with real permalinks, page titles, and a working back button. Detailed information is available [here](https://blog.lateral.io/2015/07/the-awesomeness-of-pjax/). 
 
-It need to specify the url (String), the container element (CSS selector) whose content will change and the document title (String). Also, you can specify the target element (CSS selector) to trigger the operation. If you want, you can choose which event to trigger for the target element. The trigger event default value is `click`. The default method of `pjax` request is `GET`.
+It need to specify the url (String) and the container element (CSS selector) whose content will change. Also, you can specify the target element (CSS selector) to trigger the operation. If you want, you can choose which event to trigger for the target element. The trigger event default value is `click`. The default method of `pjax` request is `GET`.
 
 **Usage**
 ```javascript
-Vue.ajax.pjax(url [, container ] [, title ] [, target ] [, event ]);
+Vue.ajax.pjax(string url[, object data] [,object configurations]);
 ```
 
-**url:** [_Required_] `(String)` Destination url to install  
-**container:** [_Required_] `(String)` CSS selector  
-**title:** `(Title)` Document title  
-**target:** `(String)` CSS selector
-**event:** `(String)` Example values: `click`, `mouseover`, etc
+#### Pjax Data Parameters 
+* **container:** [_Required_] `(String)` The container element. (CSS selector)
+* **title:** `(Title)` The document title.
+* **target:** `(String)` Trigger target element. (CSS selector)
+* **event:** `(String)` Trigger event of target element. Default value is `click`.  
+_Example values: `click`, `mouseover`, etc_
+* **assets:** `(String|Object)` CSS or JS file url.  
+**Available values:**
+    * 'path/css/style.css'
+    * ['path/css/style.css', 'path/js/script.js']
+* **history:** `(Boolean)` Scrolling the container top after the load.
+Default value is `true`
+* **scroll:** `(Boolean)` Browser history. Default value is `true`.
 
 **Examples**
 ```javascript
-Vue.ajax.pjax('http://example.com', '#container', 'New title!');
+Vue.ajax.pjax('http://example.com', {
+    container: '#container',
+    title: 'New title!'
+});
 ```
 
 If you want to do some more specific configurations:
+```javascript
+Vue.ajax.pjax('http://example.com', {
+    container: '#container',
+    title: 'New title!',
+    target: '#container',
+    event: 'click',
+    assets: ['path/css/style.css', 'path/js/script.js'],
+    scroll: true,
+    history: true
+});
+```
+
+If you want to use with another method:
 ```javascript
 Vue.ajax({
     method : 'post',
     url : 'http://example.com',
     pjax : {
         container: '#container', // Container element
-        title: 'New title!', // Document title
-        target: '#container', // Trigger target element
-        event: 'click', // (Default: click) Trigger event of target element
-        scroll: true, // (Default: true) Scrolling the container top after the load
-        history: true // (Default: true) Browser history
+        title: 'New title!' // Document title
     }
 });
 ```
 
-`Notice`: pjax does not work with the `jsonp` method.
+`Notice`: pjax request does not work with the `jsonp` method.
 
 ### Preventing Dublicate
-The duplicate prevention setting prevents sending requests to the same address or given key data. 
+This setting prevents sending dublicate requests to the same address or given key data. 
 
 Preventing dublicate setting should be a `boolean`. Default value is `true`.
 

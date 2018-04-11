@@ -49,54 +49,14 @@ Vue.ajax.get('http://example.com', {
 ```
 
 ## Methods & Requests
-#### Delete Method
-```javascript
-Vue.ajax.delete(string url[, object data] [,object configurations])
-    .then(function success[, function error])
-```
 
-#### Get Method
+### Get Method
 ```javascript
 Vue.ajax.get(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
-#### Head Method
-```javascript
-Vue.ajax.head(string url[, object data] [,object configurations])
-    .then(function success[, function error])
-```
-
-#### Jsonp Request
-```javascript
-Vue.ajax.jsonp(string url[, object data] [,object configurations])
-    .then(function success[, function error])
-```
-
-#### Patch Method
-```javascript
-Vue.ajax.patch(string url[, object data] [,object configurations])
-    .then(function success[, function error])
-```
-
-#### Post Method
-```javascript
-Vue.ajax.post(string url[, object data] [,object configurations])
-    .then(function success[, function error])
-```
-
-#### Put Method
-```javascript
-Vue.ajax.put(string url[, object data] [,object configurations])
-    .then(function success[, function error])
-```
-
-#### Pjax Request
-[Look at](#pjax) to details for `pjax` method.
-```javascript
-Vue.ajax.pjax(string url[, object data] [,object configurations])
-    .then(function success[, function error])
-```
+### Arguments
 
 **`url:`** _string_   
 A string containing the URL to which the request is sent.
@@ -107,12 +67,56 @@ A plain object that is sent to the server with the request.
 **`configurations:`** _object|null_  
 A set of key/value pairs that configure the Vue.ajax request.
 
-All of the above methods are a shortcut method of the `Vue.ajax` service:
+**Other methods and requests are the same:**
+
+##### Post Method
+```javascript
+Vue.ajax.post(string url[, object data] [,object configurations])
+    .then(function success[, function error])
+```
+
+##### Delete Method
+```javascript
+Vue.ajax.delete(string url[, object data] [,object configurations])
+    .then(function success[, function error])
+```
+
+##### Head Method
+```javascript
+Vue.ajax.head(string url[, object data] [,object configurations])
+    .then(function success[, function error])
+```
+
+##### Jsonp Request
+```javascript
+Vue.ajax.jsonp(string url[, object data] [,object configurations])
+    .then(function success[, function error])
+```
+
+##### Patch Method
+```javascript
+Vue.ajax.patch(string url[, object data] [,object configurations])
+    .then(function success[, function error])
+```
+
+##### Put Method
+```javascript
+Vue.ajax.put(string url[, object data] [,object configurations])
+    .then(function success[, function error])
+```
+
+##### Pjax Request [(Look at for details)](#pjax)
+```javascript
+Vue.ajax.pjax(string url[, object data] [,object configurations])
+    .then(function success[, function error])
+```
+
+All of the above methods are a shortcut method of the `Vue.ajax()`:
 
 ```javascript
 Vue.ajax({
     url: 'http://example.com',
-    method: 'get' // post, pjax, etc
+    method: 'get' // post, jsonp, etc
 }).then(function(response) {
     console.log('Success', response.data)
 }, function() {
@@ -120,12 +124,16 @@ Vue.ajax({
 })
 ```
 
+**Response Handling:**
+
+_Success and error together in `then()` method:_
 ```javascript
 Vue.ajax(object configurations)
     .then(function success[, function error])
+```
 
-// Or
-
+_Success and error together in in separate methods:_
+```javascript
 Vue.ajax(object configurations)
     .then(function success)
     .catch(function error)
@@ -356,7 +364,7 @@ Vue.ajax.get('http://example.com', [data] {
 });
 ```
 
-## Response
+## Response Handling
 The response returns the `object` on the frontend. The object in general is the following structure:
 ```javascript
 {

@@ -1,7 +1,7 @@
 {
     "name": "vue-ajax-plugin",
     "version": "1.1.2",
-    "description": "A light XHR plugin for Vue ^2.x. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `http`(). In addition to these, it also has its own practical features. For example, `file upload`, `pjax`, and `preventing dublicate request` features.",
+    "description": "A light XHR plugin for Vue 2.x. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `http`(). In addition to these, it also has its own practical features. For example, `file upload`, `pjax`, and `preventing dublicate request` features.",
     "main": "src/Vue.ajax.js",
     "directories": {
         "example": "examples"

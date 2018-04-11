@@ -203,8 +203,7 @@ File uploading setting should be a `DOM object`. We recommend using the `post` m
 ```javascript
 Vue.ajax.post('http://example.com', [data], {
     fileInputs: [
-        document.getElementById('my-input'),
-        document.getElementById('my-input-2'),
+        document.getElementById('my-input')
     ]
 });
 ```

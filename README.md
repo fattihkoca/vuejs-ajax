@@ -1,6 +1,6 @@
 # Vue.ajax
 
-A light XHR plugin for Vue 2.x. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `http`(). In addition to these, it also has its own practical features. For example, `file upload`, `pjax`, and `preventing dublicate request` features.
+A light XHR plugin for Vue 2.x and and above versions. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `http()`. In addition to these, it also has its own practical features. For example, `file upload`, `history`, `title`, and `preventing dublicate request` features.
 
 ## Setup
 
@@ -105,12 +105,6 @@ Vue.ajax.put(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
-##### Pjax Request [(Look at for details)](#pjax)
-```javascript
-Vue.ajax.pjax(string url[, object data] [,object configurations])
-    .then(function success[, function error])
-```
-
 All of the above methods are a shortcut method of the `Vue.ajax()`:
 
 ```javascript
@@ -141,8 +135,25 @@ Vue.ajax(object configurations)
 
 ## Configurations
 
+### Assets
+Assets setting is used to push new asset files (CSS or JS) in the document. Available values, `string` or `object`.
+
+**Pushing single asset file**
+```javascript
+Vue.ajax.get('http://example.com', [data], {
+    assets: 'path/css/style.css'
+});
+```
+
+**Pushing multiple asset files**
+```javascript
+Vue.ajax.get('http://example.com', [data], {
+    assets: ['assets/css/style.css', 'assets/js/script.js']
+});
+```
+
 ### Asynchronous
-Asynchronous setting should be a `boolean`. Default is `true`.
+Asynchronous setting should be `boolean`. Default is `true`.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     async: true
@@ -150,7 +161,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ### Cache
-Cache setting should be a `boolean`. Default value is `false`.
+Cache setting should be `boolean`. Default value is `false`.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     cache: false
@@ -158,7 +169,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ### Complete Event
-Complete event setting should be a `function`.
+Complete event setting should be `function`.
 
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
@@ -169,7 +180,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ### CSRF
-CSRF setting should be a `boolean`. Default value is `true`. However, in the html head tag it must be `csrf-token meta`. Like this:
+CSRF setting should be `boolean`. Default value is `true`. However, in the html head tag it must be `csrf-token meta`. Like this:
 
 ```html
 <meta name="csrf-token" content="ABCDEFGHIJKLMN">
@@ -182,7 +193,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ### Data
-Data setting should be an `object`.
+Data setting should be `object`.
 ```javascript
 Vue.ajax('http://example.com', {
     url: 'http://example.com',
@@ -195,7 +206,7 @@ Vue.ajax('http://example.com', {
 ```
 
 ### File Uploading
-File uploading setting should be a `DOM object`. We recommend using the `post` method when uploading files. The important thing here is that you should not forget the `name` attribute.
+File uploading setting should be `DOM object`. We recommend using the `post` method when uploading files. The important thing here is that you should not forget the `name` attribute.
 ```html
 <input type="file" name="my-input" id="my-input">
 ```
@@ -218,8 +229,25 @@ You can add the `multiple` attribute to send multiple files with an input elemen
 <input type="file" name="my-input-3" id="my-input-3" multiple>
 ```
 
+### History
+History setting is usage of PushState (HTML history API). History setting should be  `boolean`. Default value is `false`. 
+
+PushState (changing the URL of the page without refreshing the page) to create a faster browsing experience.  This means less elements to load and therefore faster browsing.
+
+```javascript
+Vue.ajax.get('http://example.com', [data], {
+    history: true
+});
+```
+
+**Adding version for history**  
+Layouts can be forced to do a hard reload when assets or html changes. First set the initial layout version in your header with a custom `meta` tag.
+```html
+<meta http-equiv="x-history-version" content="ABCDEFGH">
+```
+
 ### HTTP Headers
-HTTP headers setting should be an `object`.
+HTTP headers setting should be `object`.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     headers: [
@@ -230,7 +258,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ### Method
-URL data setting should be an `string`. Available values are:
+URL data setting should be `string`. Available values are:
 * `delete`
 * `get`
 * `head`
@@ -251,69 +279,10 @@ Instead, you might prefer to use the following shorthand:
 Vue.ajax.post('http://example.com', [data]);
 ```
 
-### <a name="pjax"></a> Pjax
-`pjax` setting should be an `object`. `pjax` is uses `ajax` and `pushState` to deliver a fast browsing experience with real permalinks, page titles, and a working back button. Detailed information is available [here](https://blog.lateral.io/2015/07/the-awesomeness-of-pjax/). 
-
-It need to specify the url (String) and the container element (CSS selector) whose content will change. Also, you can specify the target element (CSS selector) to trigger the operation. If you want, you can choose which event to trigger for the target element. The trigger event default value is `click`. The default method of `pjax` request is `GET`.
-
-**Usage**
-```javascript
-Vue.ajax.pjax(string url[, object data] [,object configurations]);
-```
-
-#### Pjax Data Parameters 
-* **container:** [_Required_] `(String)` The container element. (CSS selector)
-* **title:** `(Title)` The document title.
-* **target:** `(String)` Trigger target element. (CSS selector)
-* **event:** `(String)` Trigger event of target element. Default value is `click`.  
-_Example values: `click`, `mouseover`, etc_
-* **assets:** `(String|Object)` CSS or JS file url.  
-_Available values:_
-    * _'path/css/style.css'_
-    * _['path/css/style.css', 'path/js/script.js']_
-* **history:** `(Boolean)` Scrolling the container top after the load.
-Default value is `true`
-* **scroll:** `(Boolean)` Browser history. Default value is `true`.
-
-**Examples**
-```javascript
-Vue.ajax.pjax('http://example.com', {
-    container: '#container',
-    title: 'New title!'
-});
-```
-
-More specific configurations:
-```javascript
-Vue.ajax.pjax('http://example.com', {
-    container: '#container',
-    title: 'New title!',
-    target: '#container',
-    event: 'click',
-    assets: ['path/css/style.css', 'path/js/script.js'],
-    scroll: true,
-    history: true
-});
-```
-
-Request with another method:
-```javascript
-Vue.ajax({
-    method : 'post',
-    url : 'http://example.com',
-    pjax : {
-        container: '#container',
-        title: 'New title!'
-    }
-});
-```
-
-`Notice`: pjax request does not work with the `jsonp` method.
-
 ### Preventing Dublicate
 This setting prevents sending dublicate requests to the same address or given key data. 
 
-Preventing dublicate setting should be a `boolean`. Default value is `true`.
+Preventing dublicate setting should be `boolean`. Default value is `true`.
 
 The following example prevents sending requests over the same URL:
 ```javascript
@@ -330,8 +299,16 @@ Vue.ajax.get('http://example.com', [data], {
 });
 ```
 
+### Scroll Top
+scrollTop setting is used to scroll to top of the document when loading the request. Default value is `false`.
+```javascript
+Vue.ajax.get('http://example.com', [data], {
+    scrollTop: true
+});
+```
+
 ### Timeout
-Timeout setting should be an `number`. Default value is `60000` (60 seconds).   
+Timeout setting should be `numeric`. Default value is `60000` (60 seconds). 
 _(Time in milliseconds)_
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
@@ -339,8 +316,17 @@ Vue.ajax.get('http://example.com', [data], {
 });
 ```
 
+### Title
+Title setting is used to change the document title value. It should be `string`.
+```javascript
+Vue.ajax.get('http://example.com', [data], {
+    title: 'New title'
+});
+```
+
+
 ### URL Data
-URL data setting should be an `object`. With this setting, you can add serialized query string to the URL you are sending.
+URL data setting should be `object`. With this setting, you can add serialized query string to the URL you are sending.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     urlData: [
@@ -354,7 +340,7 @@ The URL will be like this when sending the request:
 `http://example.com?page=15&category=Accessories`
 
 ### With Credentials
-With credentials setting should be a `boolean`. Default value is `false`. 
+With credentials setting should be `boolean`. Default value is `false`. 
 
 There is a detailed explanation [here](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials).
 ```javascript

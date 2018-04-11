@@ -214,7 +214,7 @@ You can only add the `accept` attribute to send images.
 <input type="file" name="my-input-2" id="my-input-2" accept="image/*">
 ```
 
-You can add the `accept` attribute to send multiple files with an input element:
+You can add the `multiple` attribute to send multiple files with an input element:
 ```html
 <input type="file" name="my-input-3" id="my-input-3" multiple>
 ```

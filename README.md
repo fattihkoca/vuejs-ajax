@@ -48,47 +48,55 @@ Vue.ajax.get('http://example.com', {
 })
 ```
 
-## Methods
+## Methods & Requests
+#### Delete Method
 ```javascript
 Vue.ajax.delete(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
+#### Get Method
 ```javascript
 Vue.ajax.get(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
+#### Head Method
 ```javascript
 Vue.ajax.head(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
+#### Jsonp Request
 ```javascript
 Vue.ajax.jsonp(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
+#### Patch Method
 ```javascript
 Vue.ajax.patch(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
+#### Post Method
 ```javascript
 Vue.ajax.post(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
+#### Put Method
 ```javascript
 Vue.ajax.put(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
+#### Pjax Request
+[Look at](#pjax) to details for `pjax` method.
 ```javascript
 Vue.ajax.pjax(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
-[Look at](#pjax) to details for `pjax` method.
 
 **`url:`** _string_   
 A string containing the URL to which the request is sent.
@@ -153,9 +161,12 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ### CSRF
-CSRF setting should be a `boolean`. Default value is `true`. 
+CSRF setting should be a `boolean`. Default value is `true`. However, in the html head tag it must be `csrf-token meta`. Like this:
 
-However, in the html head tag it must be `csrf-token meta`. Like this: `<meta name="csrf-token" content="ABCDEFGHIJKLMN">`.
+```html
+<meta name="csrf-token" content="ABCDEFGHIJKLMN">
+```
+
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     csrf: true
@@ -165,7 +176,9 @@ Vue.ajax.get('http://example.com', [data], {
 ### Data
 Data setting should be an `object`.
 ```javascript
-Vue.ajax.get('http://example.com', [data], {
+Vue.ajax('http://example.com', {
+    url: 'http://example.com',
+    method: 'get',
     data: {
         param1: 'First parameter',
         param2: 'Second parameter'
@@ -174,12 +187,9 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ### File Uploading
-File uploading setting should be a `DOM object`. We recommend using the `post` method when uploading files.
+File uploading setting should be a `DOM object`. We recommend using the `post` method when uploading files. The important thing here is that you should not forget the `name` attribute.
 ```html
-<form>
-    <input type="file" name="my-input" id="my-input">
-    <input type="file" name="my-input-2" id="my-input-2" accept="image/*">
-</form>
+<input type="file" name="my-input" id="my-input">
 ```
 
 ```javascript
@@ -191,7 +201,12 @@ Vue.ajax.post('http://example.com', [data], {
 });
 ```
 
-You can also send multiple files with an input:
+You can only add the `accept` attribute to send images.
+```html
+<input type="file" name="my-input-2" id="my-input-2" accept="image/*">
+```
+
+You can add the `accept` attribute to send multiple files with an input element:
 ```html
 <input type="file" name="my-input-3" id="my-input-3" multiple>
 ```
@@ -246,9 +261,9 @@ Vue.ajax.pjax(string url[, object data] [,object configurations]);
 * **event:** `(String)` Trigger event of target element. Default value is `click`.  
 _Example values: `click`, `mouseover`, etc_
 * **assets:** `(String|Object)` CSS or JS file url.  
-**Available values:**
-    * 'path/css/style.css'
-    * ['path/css/style.css', 'path/js/script.js']
+_Available values:_
+    * _'path/css/style.css'_
+    * _['path/css/style.css', 'path/js/script.js']_
 * **history:** `(Boolean)` Scrolling the container top after the load.
 Default value is `true`
 * **scroll:** `(Boolean)` Browser history. Default value is `true`.
@@ -261,7 +276,7 @@ Vue.ajax.pjax('http://example.com', {
 });
 ```
 
-If you want to do some more specific configurations:
+More specific configurations:
 ```javascript
 Vue.ajax.pjax('http://example.com', {
     container: '#container',
@@ -274,14 +289,14 @@ Vue.ajax.pjax('http://example.com', {
 });
 ```
 
-If you want to use with another method:
+Request with another method:
 ```javascript
 Vue.ajax({
     method : 'post',
     url : 'http://example.com',
     pjax : {
-        container: '#container', // Container element
-        title: 'New title!' // Document title
+        container: '#container',
+        title: 'New title!'
     }
 });
 ```
@@ -309,10 +324,11 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ### Timeout
-Timeout setting should be an `number`. Default value is `60000`. (Time in milliseconds)
+Timeout setting should be an `number`. Default value is `60000` (60 seconds).   
+_(Time in milliseconds)_
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
-    timeout: 60000 // Time in milliseconds
+    timeout: 60000
 });
 ```
 
@@ -354,7 +370,7 @@ The response returns the `object` on the frontend. The object in general is the 
 }
 ```
 
-#### Response Data
+#### Response Format
 
 If the content type on the server is "`application/json`", the `response.data` is automatically converted to a `JSON object`. If the content type is anything else, the result is returned as `plain text`.
 
@@ -366,9 +382,13 @@ echo json_encode($array);
 
 Laravel:
 ```php
-return response(json_encode($array), 200)->header('Content-Type', 'application/json; charset=utf-8');
+Route::get('respone', function () {
+    return response(json_encode($array), 200)
+        ->header('Content-Type', 'application/json; charset=utf-8');
+});
 ```
 
+VueJS
 ```javascript
 Vue.ajax.get('http://example.com', [data])
     .then(function(response) {
@@ -378,35 +398,24 @@ Vue.ajax.get('http://example.com', [data])
 
 #### Error Handling
 
-```javascript
-Vue.ajax.get('http://example.com/not-existing-path', [data])
-    .then(function(response) {
-        console.log(response.data)
-    }).catch(function(response) {
-        console.log('Error: ', response.statusText);
-    });
-
-    // "Error: Not Found"
-```
-
-```javascript
-Vue.ajax.get('http://example.com/not-existing-path', [data])
-    .catch(function(response) {
-        console.log('Error: ', response.statusText);
-    });
-
-    // "Error: Not Found"
-```
-
+In `then()` method
 ```javascript
 Vue.ajax.get('http://example.com/not-existing-path', [data])
     .then(function(response) {
         console.log(response.data)
     }, function(response) {
         console.log('Error: ', response.statusText);
-    });
+    }); // "Error: Not Found"
+```
 
-    // "Error: Not Found"
+In `catch()` method
+```javascript
+Vue.ajax.get('http://example.com/not-existing-path', [data])
+    .then(function(response) {
+        console.log(response.data)
+    }).catch(function(response) {
+        console.log('Error: ', response.statusText);
+    }); // "Error: Not Found"
 ```
 
 # License

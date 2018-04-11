@@ -216,7 +216,6 @@ URL data setting should be an `string`. Available values are:
 * `patch`
 * `post`
 * `put`
-* [`pjax`](#pjax)
 
 ```javascript
 Vue.ajax({

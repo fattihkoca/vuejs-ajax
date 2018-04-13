@@ -118,9 +118,11 @@ const VueAjax = {
 
                 switch (extension) {
                     case 'css':
-                        if (document.head.querySelector('link[href="' + asset + '"]')) {
-                            return
+                        var previousEl = document.head.querySelector('link[href="' + asset + '"]');
+                        if (previousEl) {
+                            previousEl.remove();
                         }
+
                         newElement = document.createElement("link");
                         newElement.rel = 'stylesheet';
                         newElement.type = 'text/css';
@@ -128,8 +130,9 @@ const VueAjax = {
                         break;
 
                     case 'js':
-                        if (document.head.querySelector('script[src="' + asset + '"]')) {
-                            return
+                        var previousEl = document.head.querySelector('script[src="' + asset + '"]');
+                        if (previousEl) {
+                            previousEl.remove();
                         }
                         newElement = document.createElement("script");
                         newElement.type = 'text/javascript';

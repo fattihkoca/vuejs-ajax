@@ -539,12 +539,12 @@ const VueAjax = {
             }
 
             // Pjax configurations
-            var assets = state.assets,
+            var state = e.state,
+                assets = state.assets,
                 callName = state.callName || false,
                 history = state.history || false,
                 method = state.method || 'GET',
                 scrollTop = state.scrollTop,
-                state = e.state,
                 title = state.title || null,
                 url = state.url || null;
 

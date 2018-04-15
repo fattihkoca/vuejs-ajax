@@ -114,13 +114,15 @@ const VueAjax = {
                 }
 
                 var extension = getFileExtension(asset),
-                    newElement = null;
+                    newElement = null,
+                    findElement = function(selector) {
+                        return document.head.querySelector(selector);
+                    };
 
                 switch (extension) {
                     case 'css':
-                        var previousEl = document.head.querySelector('link[href="' + asset + '"]');
-                        if (previousEl) {
-                            previousEl.remove();
+                        if (findElement('link[href="' + asset + '"]')) {
+                            return;
                         }
 
                         newElement = document.createElement("link");
@@ -130,9 +132,8 @@ const VueAjax = {
                         break;
 
                     case 'js':
-                        var previousEl = document.head.querySelector('script[src="' + asset + '"]');
-                        if (previousEl) {
-                            previousEl.remove();
+                        if (findElement('script[src="' + asset + '"]')) {
+                            return;
                         }
                         newElement = document.createElement("script");
                         newElement.type = 'text/javascript';

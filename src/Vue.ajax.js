@@ -315,9 +315,9 @@ const VueAjax = {
                 }
 
                 // Adding http headers
-                if (typeof config.headers == 'object') {
-                    for (var i in config.headers) {
-                        xhr.setRequestHeader(i, config.headers[i]);
+                if (typeof config.headers == 'object' && typeof config.headers[0] == 'object') {
+                    for (var i in config.headers[0]) {
+                        xhr.setRequestHeader(i, config.headers[0][i]);
                     }
                 }
 

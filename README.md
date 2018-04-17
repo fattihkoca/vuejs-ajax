@@ -1,6 +1,12 @@
 # Vue.ajax
 
-A light XHR plugin for Vue 2.x and and above versions. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `http()`. In addition to these, it also has its own practical features. For example, `file upload`, `history`, `title`, and `preventing dublicate request` features.
+A light XHR plugin for Vue 2.x and and above versions. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `$http()`. In addition to these, it also has its own important features: 
+* [`Assets`](#assets)
+* [`Dynamic & async Vue components`: (_**`componentShifter`**_)](#component-shifter)
+* [`File uploading`](#file-uploading)
+* [`History`](#history)
+* [`Title`](#title)
+* [`Preventing dublicate requests`](#preventing-dublicate)
 
 ## Setup
 
@@ -70,37 +76,37 @@ A set of key/value pairs that configure the Vue.ajax request.
 **Other methods and requests are the same:**
 
 ##### Post Method
-```javascript
+```
 Vue.ajax.post(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 ##### Delete Method
-```javascript
+```
 Vue.ajax.delete(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 ##### Head Method
-```javascript
+```
 Vue.ajax.head(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 ##### Jsonp Request
-```javascript
+```
 Vue.ajax.jsonp(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 ##### Patch Method
-```javascript
+```
 Vue.ajax.patch(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 ##### Put Method
-```javascript
+```
 Vue.ajax.put(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
@@ -121,21 +127,87 @@ Vue.ajax({
 **Response Handling:**
 
 _Success and error together in `then()` method:_
-```javascript
+```
 Vue.ajax(object configurations)
     .then(function success[, function error])
 ```
 
 _Success and error together in in separate methods:_
-```javascript
+```
 Vue.ajax(object configurations)
     .then(function success)
     .catch(function error)
 ```
 
-## Configurations
+## <a name="component-shifter"></a> Component Shifter
+With componentShifter() you can load (with `Vue.ajax`) and render your `Vue template` (html) in your application by dynamic & async `Vue.component()`. You can also add components and run them nested.
 
-### Assets
+It also supports `Vue.ajax`'s `history` feature. And the component is automatically update when navigating to the previous - next page.
+
+```
+vm.componentShifter(object configurations[, function success] [,function error])
+```
+
+* __configurations__: _Object_  
+`Vue.ajax` configurations. For detailed information, [see](#configurations).  
+Required properties:
+    * is: (_String_) Component name
+    * url: (_String_) Request url
+* __success__: _function_  
+Your custom callback on success.
+* __error__: _function_  
+Your custom callback on error.
+
+**Example**
+
+_index.html_
+```html
+<div id="app">
+    <a href="/page" @click.prevent="openPage('/page', 'New page')">Link</a>
+
+    <!-- Your container component -->
+    <component :is="myPage"></component>
+</div>
+```
+
+_app.js_
+```javascript
+var vm = new Vue({
+    el: '#classest',
+    data() {
+        return {
+            myPage: null, // Component name
+            pageLoaded: false
+        }
+    },
+    methods: {
+        openPage(url, title) {
+            // Calling componentShifter
+            this.componentShifter({
+                is: 'myPage', // Component name (Must be in quotes)
+                url: url,
+                title: title,
+                history: true
+            }, function (response) {
+                console.log("Component changed!");
+                pageLoaded = true;
+            }, function (response) {
+                console.log("Component could not be changed!", response);
+                pageLoaded = false;
+            });
+        }
+    },
+    created() {
+        if(!pageLoaded) {
+            this.openPage('/page', 'New page')
+        }
+    }
+});
+```
+
+## <a name="configurations"></a> Vue Ajax Configurations
+
+### <a name="assets"></a> Assets
 Assets setting is used to push new asset files (CSS or JS) in the document. Available values, `string` or `object`.
 
 **Pushing single asset file**
@@ -205,7 +277,7 @@ Vue.ajax('http://example.com', {
 });
 ```
 
-### File Uploading
+### <a name="file-uploading"></a> File Uploading
 File uploading setting should be `DOM object`. We recommend using the `post` method when uploading files. The important thing here is that you should not forget the `name` attribute.
 ```html
 <input type="file" name="my-input" id="my-input">
@@ -229,7 +301,7 @@ You can add the `multiple` attribute to send multiple files with an input elemen
 <input type="file" name="my-input-3" id="my-input-3" multiple>
 ```
 
-### History
+### <a name="history"></a> History
 History setting is usage of PushState (HTML history API). History setting should be  `boolean`. Default value is `false`. 
 
 PushState (changing the URL of the page without refreshing the page) to create a faster browsing experience.  This means less elements to load and therefore faster browsing.
@@ -250,10 +322,10 @@ Layouts can be forced to do a hard reload when assets or html changes. First set
 HTTP headers setting should be `object`.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
-    headers: [
-        {'Content-Type': 'application/json'},
-        {'Accept': 'application/json, text/plain, */*'}
-    ]
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json, text/plain, */*'
+    }
 });
 ```
 
@@ -279,7 +351,7 @@ Instead, you might prefer to use the following shorthand:
 Vue.ajax.post('http://example.com', [data]);
 ```
 
-### Preventing Dublicate
+### <a name="preventing-dublicate"></a> Preventing Dublicate
 This setting prevents sending dublicate requests to the same address or given key data. 
 
 Preventing dublicate setting should be `boolean`. Default value is `true`.
@@ -316,7 +388,7 @@ Vue.ajax.get('http://example.com', [data], {
 });
 ```
 
-### Title
+### <a name="title"></a> Title
 Title setting is used to change the document title value. It should be `string`.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {

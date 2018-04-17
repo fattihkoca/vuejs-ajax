@@ -15,31 +15,47 @@
 
 const VueAjax = {
     install(Vue, options) {
-        Vue.mixin({
-            /**
-             * mounted: Called after the instance has been mounted
-             */
-            mounted() {
-                if (typeof options == 'object' && typeof options.mounted == 'function') {
-                    return options.mounted();
-                }
-            }
-        });
-
-        var
-            // Request attemps for previnting dublicate requests
-            requestAttemps = {},
-
-            // Jsonp attemp size for naming jsonp callbaks
-            jsonpAttempSize = 0;
-
         const
             // XHR response status types
             xhrStatuses = ['Uninitialized', 'Opened', 'Headers Received', 'Loading', 'Complete'],
 
-            versionName = {
-                header: 'X-History-Version',
-                meta: 'x-history-version',
+            // Static names
+            names = {
+                version: 'X-History-Version',
+                component: 'x-component-item',
+                componentState: 'x-history-state',
+            },
+
+            // Getting current history version
+            historyVersion = function () {
+                var 
+                name = names.version.toLowerCase(),
+                meta = document.head.querySelector('meta[http-equiv=' + name + '][content]');
+
+                if(!meta) {
+                    meta = document.createElement("meta");
+                    meta.setAttribute('http-equiv', name);
+                    meta.content = randomString(40);
+                    document.head.appendChild(meta);
+                }
+
+                return meta ? meta.getAttribute('content') : false;
+            },
+
+            getComponentState = function () {
+                return document.head.querySelector('meta[http-equiv=' + names.componentState + ']')
+            },
+            
+            componentState = function (status) {
+                var meta = getComponentState();
+
+                if (!meta) {
+                    meta = document.createElement("meta");
+                    meta.setAttribute('http-equiv', names.componentState);
+                    document.head.appendChild(meta);
+                }
+
+                meta.content = status
             },
 
             // Timestamp method
@@ -135,6 +151,7 @@ const VueAjax = {
                         if (findElement('script[src="' + asset + '"]')) {
                             return;
                         }
+
                         newElement = document.createElement("script");
                         newElement.type = 'text/javascript';
                         newElement.src = asset;
@@ -144,12 +161,6 @@ const VueAjax = {
                 if (newElement) {
                     document.head.appendChild(newElement);
                 }
-            },
-
-            // Getting current history version
-            historyVersion = function () {
-                var meta = document.head.querySelector('meta[http-equiv=' + versionName.meta + '][content]');
-                return meta ? meta.getAttribute('content') : false;
             },
 
             // Checking to history feature
@@ -315,9 +326,9 @@ const VueAjax = {
                 }
 
                 // Adding http headers
-                if (typeof config.headers == 'object' && typeof config.headers[0] == 'object') {
-                    for (var i in config.headers[0]) {
-                        xhr.setRequestHeader(i, config.headers[0][i]);
+                if (typeof config.headers == 'object') {
+                    for (var i in config.headers) {
+                        xhr.setRequestHeader(i, config.headers[i]);
                     }
                 }
 
@@ -330,7 +341,7 @@ const VueAjax = {
 
                 // Adding http headers for history
                 if (history && currentHistoryVersion) {
-                    xhr.setRequestHeader(versionName.header, currentHistoryVersion);
+                    xhr.setRequestHeader(names.version, currentHistoryVersion);
                 }
 
                 // WithCredentials option for Cross-Site
@@ -389,7 +400,7 @@ const VueAjax = {
 
                             // Pjax commits
                             if (history) {
-                                var latestHistoryVersion = xhr.getResponseHeader(versionName.header);
+                                var latestHistoryVersion = xhr.getResponseHeader(names.version);
 
                                 // If version mismatching
                                 if (currentHistoryVersion && latestHistoryVersion && currentHistoryVersion !== latestHistoryVersion) {
@@ -531,8 +542,18 @@ const VueAjax = {
                 return script;
             };
 
+        var
+            // Request attemps for previnting dublicate requests
+            requestAttemps = {},
+
+            // Jsonp attemp size for naming jsonp callbaks
+            jsonpAttempSize = 0;
+
         // Pjax history (Benefits of HTML5 histroy api)
         window.addEventListener('popstate', function (e) {
+            // Set true to meta for component updating
+            componentState(true);
+
             // If browser doesn't has state in history
             if (!e.state) {
                 // History fallback
@@ -570,6 +591,74 @@ const VueAjax = {
                 // History fallback
                 return locationRedirect(url);
             });
+        });
+
+        Vue.mixin({
+            methods: {
+                /**
+                 * Dynamic & async Vue components
+                 * @param {Object} config Vue.ajax configurations
+                 * @param {Function} success On success callback
+                 * @param {Function} error On error callback
+                 */
+                componentShifter(config, success, error) {
+                    config.method = config.method || 'GET';
+                    var componentName = config.is || names.component,
+                        self = this;
+
+                    // Adding dynamic template for resolving
+                    if (!document.body.querySelector('template[id=' + componentName + ']')) {
+                        var newElement = document.createElement("template");
+                        newElement.id = componentName;
+                        document.body.appendChild(newElement);
+                    }
+
+                    componentState(false);
+
+                    // Run Vue.component
+                    Vue.component(componentName, function (resolve, reject) {
+                        // Load remote template
+                        Vue.ajax(config).then(function (response) {
+                            if (getComponentState().content == 'false') {
+                                // Resolve response data
+                                resolve({
+                                    template: response.data
+                                });
+
+                                // Run callback after success
+                                if (typeof success == 'function') {
+                                    success(response);
+                                }
+
+                                return;
+                            }
+
+                            // If on popstate set component from history
+                            self.componentShifter(config, success);
+                        }, function(response) {
+                            // If has error callback
+                            if (typeof error == 'function') {
+                                error(response);
+                                return;
+                            }
+                            // Or hard reload the page
+                            window.top.location.reload();
+                        });
+                    });
+
+                    self[componentName] = null;
+                    self[componentName] = componentName;
+                }
+            },
+            created() {
+                historyVersion();
+                componentState(false);
+            },
+            mounted() {
+                if (typeof options == 'object' && typeof options.mounted == 'function') {
+                    return options.mounted();
+                }
+            }
         });
 
         /**

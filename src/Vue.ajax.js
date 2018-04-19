@@ -640,10 +640,7 @@ const VueAjax = {
                         // If has error callback
                         if (typeof error == 'function') {
                             error(response);
-                            return;
                         }
-                        // Or hard reload the page
-                        window.top.location.reload();
                     });
                 }
             },

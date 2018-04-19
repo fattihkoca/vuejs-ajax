@@ -606,48 +606,45 @@ const VueAjax = {
                     var componentName = config.is || names.component,
                         self = this;
 
-                    // Adding dynamic template for resolving
-                    if (!document.body.querySelector('template[id=' + componentName + ']')) {
-                        var newElement = document.createElement("template");
-                        newElement.id = componentName;
-                        document.body.appendChild(newElement);
-                    }
-
+                    // Set component state to false
                     componentState(false);
 
-                    // Run Vue.component
-                    Vue.component(componentName, function (resolve, reject) {
-                        // Load remote template
-                        Vue.ajax(config).then(function (response) {
-                            if (getComponentState().content == 'false') {
+                    // Load template by xhr
+                    Vue.ajax(config).then(function (response) {
+                        if (getComponentState().content == 'false') {
+                            var template = response.data;
+
+                            // Run Vue.component
+                            Vue.component(componentName, function (resolve, reject) {
                                 // Resolve response data
                                 resolve({
-                                    template: response.data
+                                    template: template
                                 });
+                            });
 
-                                // Run callback after success
-                                if (typeof success == 'function') {
-                                    success(response);
-                                }
-
-                                return;
+                            // Run callback after success
+                            if (typeof success == 'function') {
+                                success(response);
                             }
 
-                            // If on popstate set component from history
-                            self.componentShifter(config, success);
-                        }, function(response) {
-                            // If has error callback
-                            if (typeof error == 'function') {
-                                error(response);
-                                return;
-                            }
-                            // Or hard reload the page
-                            window.top.location.reload();
-                        });
+                            // Update component name
+                            self[componentName] = null;
+                            self[componentName] = componentName;
+
+                            return;
+                        }
+
+                        // If on popstate set component from history
+                        self.componentShifter(config, success);
+                    }, function(response) {
+                        // If has error callback
+                        if (typeof error == 'function') {
+                            error(response);
+                            return;
+                        }
+                        // Or hard reload the page
+                        window.top.location.reload();
                     });
-
-                    self[componentName] = null;
-                    self[componentName] = componentName;
                 }
             },
             created() {

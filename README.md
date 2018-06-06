@@ -1,5 +1,7 @@
 # Vue.ajax
 
+![image](https://user-images.githubusercontent.com/1655312/41012120-c9f6f6de-6948-11e8-8afa-582e33c2eb54.png)
+
 A light XHR plugin for Vue 2.x and and above versions. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `$http()`. In addition to these, it also has its own important features: 
 * [`Assets`](#assets)
 * [`Dynamic & async Vue components`: (_**`componentShifter`**_)](#component-shifter)

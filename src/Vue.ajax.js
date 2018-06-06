@@ -13,9 +13,9 @@
 // var ajax = require('vue-ajax-plugin')
 // Vue.use(ajax)
 
-const VueAjax = {
-    install(Vue, options) {
-        const
+var VueAjax = {
+    install: function(Vue, options) {
+        var
             // XHR response status types
             xhrStatuses = ['Uninitialized', 'Opened', 'Headers Received', 'Loading', 'Complete'],
 
@@ -43,7 +43,7 @@ const VueAjax = {
             },
 
             getComponentState = function () {
-                return document.head.querySelector('meta[http-equiv=' + names.componentState + ']')
+                return document.head.querySelector('meta[http-equiv=' + names.componentState + ']');
             },
             
             componentState = function (status) {
@@ -55,17 +55,17 @@ const VueAjax = {
                     document.head.appendChild(meta);
                 }
 
-                meta.content = status
+                meta.content = status;
             },
 
             // Timestamp method
             timestamp = function () {
-                return String((new Date().getTime()))
+                return String((new Date().getTime()));
             },
 
             // Random string creator
-            randomString = function (m) {
-                var m = m || 9;
+            randomString = function (charSize) {
+                var m = charSize || 9;
                 var s = '',
                     r = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
                 for (var i = 0; i < m; i++) {
@@ -179,11 +179,11 @@ const VueAjax = {
                 }
 
                 if (typeof data == 'object') {
-                    parsed['data'] = data;
+                    parsed.data = data;
                 }
 
-                parsed['method'] = method;
-                parsed['url'] = url;
+                parsed.method = method;
+                parsed.url = url;
 
                 return parsed;
             },
@@ -235,7 +235,7 @@ const VueAjax = {
 
                 // File uploading
                 if (typeof fileInputs == 'object' && fileInputs.length) {
-                    var postData = new FormData();
+                    postData = new FormData();
 
                     for (var i in fileInputs) {
                         if (fileInputs[i].files) {
@@ -255,8 +255,8 @@ const VueAjax = {
                     }
 
                     if (typeof config.data == 'object') {
-                        for (var i in config.data) {
-                            postData.append(i, config.data[i]);
+                        for (var o in config.data) {
+                            postData.append(o, config.data[o]);
                         }
                     }
                 } else if (typeof config.data == 'object' && Object.keys(config.data).length) {
@@ -327,8 +327,8 @@ const VueAjax = {
 
                 // Adding http headers
                 if (typeof config.headers == 'object') {
-                    for (var i in config.headers) {
-                        xhr.setRequestHeader(i, config.headers[i]);
+                    for (var h in config.headers) {
+                        xhr.setRequestHeader(h, config.headers[h]);
                     }
                 }
 
@@ -496,9 +496,9 @@ const VueAjax = {
 
                     window[name] = function (data) {
                         if (typeof config.success == 'function') {
-                            response['data'] = data;
-                            response['status'] = 1;
-                            response['statusText'] = 'OK';
+                            response.data = data;
+                            response.status = 1;
+                            response.statusText = 'OK';
                             config.success(response);
                         }
 
@@ -514,18 +514,18 @@ const VueAjax = {
 
                     script.onload = function (e) {
                         if (typeof config.complete == 'function') {
-                            response['request'] = e;
-                            response['status'] = 1;
-                            response['statusText'] = 'OK';
+                            response.request = e;
+                            response.status = 1;
+                            response.statusText = 'OK';
                             config.complete(response);
                         }
                     };
 
                     script.onerror = function (e) {
                         if (typeof config.error == 'function') {
-                            response['status'] = 0;
-                            response['statusText'] = 'Error';
-                            response['request'] = e;
+                            response.status = 0;
+                            response.statusText = 'Error';
+                            response.request = e;
                             config.error(response);
                         }
 
@@ -601,7 +601,7 @@ const VueAjax = {
                  * @param {Function} success On success callback
                  * @param {Function} error On error callback
                  */
-                componentShifter(config, success, error) {
+                componentShifter: function(config, success, error) {
                     config.method = config.method || 'GET';
                     var componentName = config.is || names.component,
                         self = this;
@@ -644,11 +644,11 @@ const VueAjax = {
                     });
                 }
             },
-            created() {
+            created: function() {
                 historyVersion();
                 componentState(false);
             },
-            mounted() {
+            mounted: function() {
                 if (typeof options == 'object' && typeof options.mounted == 'function') {
                     return options.mounted();
                 }
@@ -758,8 +758,8 @@ const VueAjax = {
          * @param {Function} error
          */
         Vue.ajax.then = function (success, error) {
-            this.config['success'] = success;
-            this.config['error'] = error;
+            this.config.success = success;
+            this.config.error = error;
             return this;
         };
 
@@ -768,10 +768,10 @@ const VueAjax = {
          * @param {Function} error
          */
         Vue.ajax.catch = function (error) {
-            this.config['error'] = error;
+            this.config.error = error;
             return this;
         };
     }
 };
 
-export default VueAjax;
+module.exports = VueAjax;

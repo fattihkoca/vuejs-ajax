@@ -4,8 +4,8 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-import Vue from 'vue'
-import ajax from "vue-ajax-plugin";
+var Vue = require("vue");
+var ajax = require("vue-ajax-plugin");
 
 window.Vue = Vue;
 Vue.use(ajax);

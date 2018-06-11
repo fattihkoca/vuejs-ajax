@@ -5,7 +5,7 @@
  */
 
 var Vue = require("vue");
-var ajax = require("vue-ajax-plugin");
+var ajax = require("vuejs-ajax");
 
 window.Vue = Vue;
 Vue.use(ajax);

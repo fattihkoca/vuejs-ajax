@@ -11,24 +11,24 @@ A light XHR plugin for Vue 2.x and and above versions. It has many similar featu
 ## Setup
 
 ```
-npm install vue-ajax-plugin --save
+npm install vuejs-ajax --save
 ```
 
-You have two ways to setup `vue-ajax-plugin`:
+You have two ways to setup `vuejs-ajax`:
 
 #### CommonJS (Webpack/Browserify)
 
 - ES6
 
 ```js
-import ajax from 'vue-ajax-plugin'
+import ajax from 'vuejs-ajax'
 Vue.use(ajax)
 ```
 
 - ES5
 
 ```js
-var ajax = require('vue-ajax-plugin')
+var ajax = require('vuejs-ajax')
 Vue.use(ajax)
 ```
 

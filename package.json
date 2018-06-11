@@ -2,7 +2,7 @@
     "name": "vuejs-ajax",
     "version": "1.2.4",
     "description": "A light XHR plugin for Vue 2.x and and above versions. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `http()`. In addition to these, it also has its own practical features. For example, `assets`, `dynamic & async Vue components`, `file upload`, `history`, `title`, and `preventing dublicate request` features.",
-    "main": "src/Vue.ajax.js",
+    "main": "src/vuejs-ajax.js",
     "directories": {
         "example": "examples"
     },
@@ -11,7 +11,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/fattihkoca/vue.ajax.git"
+        "url": "git+https://github.com/fattihkoca/vuejs-ajax.git"
     },
     "keywords": [
         "vue",
@@ -36,7 +36,7 @@
     "author": "Fatih Koca",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/fattihkoca/vue.ajax/issues"
+        "url": "https://github.com/fattihkoca/vuejs-ajax/issues"
     },
-    "homepage": "https://github.com/fattihkoca/vue.ajax#readme"
+    "homepage": "https://github.com/fattihkoca/vuejs-ajax#readme"
 }

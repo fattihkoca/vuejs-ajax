@@ -26,6 +26,10 @@ var VueAjax = {
                 componentState: 'x-history-state',
             },
 
+            urlEncodedMethods = ['POST', 'PUT', 'PATCH', 'DELETE'],
+
+            defaultMethod = 'GET',
+
             // Getting current history version
             historyVersion = function () {
                 var 
@@ -199,6 +203,10 @@ var VueAjax = {
                     window.scrollTo(0, 0);
                 }
             },
+            
+            isUrlEncodedMethod = function(method) {
+                return urlEncodedMethods.indexOf(method) != -1;
+            },
 
             // XHR send method
             xhrSend = function (config) {
@@ -217,7 +225,7 @@ var VueAjax = {
                     fileInputs = config.fileInputs,
                     history = config.history || false,
                     key = config.key || config.url,
-                    method = config.method || 'GET',
+                    method = config.method || defaultMethod,
                     title = config.title || false,
                     url = config.url,
                     preventDublicate = config.preventDublicate !== undefined ? config.preventDublicate : true,
@@ -262,15 +270,11 @@ var VueAjax = {
                 } else if (typeof config.data == 'object' && Object.keys(config.data).length) {
                     data = serialize(config.data);
 
-                    switch (method) {                        
-                        case 'POST': case 'PUT': case 'PATCH': case 'DELETE':
-                            postData = data;
-                            data = null;
-                            break;
-                    
-                        default:
-                            url = addQueryString(url, data);
-                            break;
+                    if(isUrlEncodedMethod(method)) {
+                        postData = data;
+                        data = null;
+                    } else {
+                        url = addQueryString(url, data);
                     }
                 }
 
@@ -339,7 +343,7 @@ var VueAjax = {
                 // Ajax request header
                 xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
-                if (method == 'POST' && typeof fileInputs != 'object') {
+                if (isUrlEncodedMethod(method) && typeof fileInputs != 'object') {
                     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                 }
 
@@ -720,18 +724,6 @@ var VueAjax = {
         };
 
         /**
-         * Vue.ajax.delete()
-         * @param {String} url 
-         * @param {Object} data
-         * @param {Object} config
-         */
-        Vue.ajax.delete = function (url, data, config) {
-            this.config = parseConfigures('DELETE', url, data, config);
-            xhrSend(this.config);
-            return this;
-        };
-
-        /**
          * Vue.ajax.patch()
          * @param {String} url 
          * @param {Object} data
@@ -739,6 +731,18 @@ var VueAjax = {
          */
         Vue.ajax.patch = function (url, data, config) {
             this.config = parseConfigures('PATCH', url, data, config);
+            xhrSend(this.config);
+            return this;
+        };
+
+        /**
+         * Vue.ajax.delete()
+         * @param {String} url 
+         * @param {Object} data
+         * @param {Object} config
+         */
+        Vue.ajax.delete = function (url, data, config) {
+            this.config = parseConfigures('DELETE', url, data, config);
             xhrSend(this.config);
             return this;
         };

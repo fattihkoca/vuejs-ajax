@@ -213,13 +213,13 @@ var VueAjax = {
                     csrf = config.csrf !== undefined ? config.csrf : true,
                     currentHistoryVersion = historyVersion(),
                     data = null,
+                    postData = null,
                     fileInputs = config.fileInputs,
                     history = config.history || false,
                     key = config.key || config.url,
                     method = config.method || 'GET',
                     title = config.title || false,
                     url = config.url,
-                    postData = null,
                     preventDublicate = config.preventDublicate !== undefined ? config.preventDublicate : true,
                     scrollTop = config.scrollTop || false,
                     stateCallName = randomString(8) + timestamp(),
@@ -262,11 +262,15 @@ var VueAjax = {
                 } else if (typeof config.data == 'object' && Object.keys(config.data).length) {
                     data = serialize(config.data);
 
-                    if (method == 'GET') {
-                        url = addQueryString(url, data);
-                    } else if (method == 'POST' || method == 'PUT' || method == 'DELETE' || method == 'PATCH') {
-                        data = null;
-                        postData = data;
+                    switch (method) {                        
+                        case 'POST': case 'PUT': case 'PATCH': case 'DELETE':
+                            postData = data;
+                            data = null;
+                            break;
+                    
+                        default:
+                            url = addQueryString(url, data);
+                            break;
                     }
                 }
 
@@ -454,7 +458,6 @@ var VueAjax = {
                 var async = config.async || true,
                     callbackParam = config.jsonpCallbackParam || 'callback',
                     key = config.key,
-                    method = 'GET',
                     name = randomString(10) + '_' + jsonpAttempSize++,
                     url = config.url;
 
@@ -615,7 +618,7 @@ var VueAjax = {
                             var template = response.data;
 
                             // Run Vue.component
-                            Vue.component(componentName, function (resolve, reject) {
+                            Vue.component(componentName, function (resolve) {
                                 // Resolve response data
                                 resolve({
                                     template: template

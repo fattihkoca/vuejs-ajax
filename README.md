@@ -1,5 +1,10 @@
 ![vuejs-ajax](https://user-images.githubusercontent.com/1655312/41012120-c9f6f6de-6948-11e8-8afa-582e33c2eb54.png)
 
+[![Travis Build](https://img.shields.io/travis/fattihkoca/vuejs-ajax.svg)](https://travis-ci.org/fattihkoca/vuejs-ajax)
+[![Version](https://img.shields.io/npm/v/vuejs-ajax.svg)](https://www.npmjs.com/package/vuejs-ajax)
+[![Coverage Status](https://coveralls.io/repos/github/fattihkoca/vuejs-ajax/badge.svg)](https://coveralls.io/github/fattihkoca/vuejs-ajax)
+[![Downloads](https://img.shields.io/npm/dm/vuejs-ajax.svg)](https://www.npmjs.com/package/vuejs-ajax)
+
 A light XHR plugin for Vue 2.x and and above versions. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `$http()`. In addition to these, it also has its own important features: 
 * [`Assets`](#assets)
 * [`Component shifter`](#component-shifter)

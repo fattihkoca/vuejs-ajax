@@ -71,11 +71,11 @@ Vue.ajax.post(string url[, object data] [,object configurations])
 
 ### Arguments
 
-| Property         | Value Type       | Description                                                   |
+| Property         | Type             | Description                                                   |
 | ---------------- | ---------------- | ------------------------------------------------------------- |
-| `url`            | `string`         | A string containing the URL to which the request is sent.     |
-| `data`           | `object`, `null` | A plain object that is sent to the server with the request.   |
-| `configurations` | `object`, `null` | A set of key/value pairs that configure the Vue.ajax request. |
+| url              | String           | A string containing the URL to which the request is sent.     |
+| data             | Object           | A plain object that is sent to the server with the request.   |
+| configurations   | Object           | A set of key/value pairs that configure the Vue.ajax request. |
 
 **Other methods and requests are the same:**
 
@@ -109,12 +109,12 @@ Vue.ajax.put(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
-All of the above methods are a shortcut method of the `Vue.ajax()`:
+All of the above methods are a shorthand method of the `Vue.ajax()`:
 
 ```javascript
 Vue.ajax({
     url: 'http://example.com',
-    method: 'get' // post, jsonp, etc
+    method: 'get' // post, put, patch, delete, head, jsonp
 }).then(function(response) {
     console.log('Success', response.data)
 }, function() {
@@ -131,15 +131,14 @@ It also supports `Vue.ajax`'s `history` feature. And the component is automatica
 vm.componentShifter(object configurations[, function success] [,function error])
 ```
 
-* __configurations__: _Object_  
-`Vue.ajax` configurations. For detailed information, [see](#configurations).  
-Required properties:
-    * is: (_String_) Component name
-    * url: (_String_) Request url
-* __success__: _function_  
-Your custom callback on success.
-* __error__: _function_  
-Your custom callback on error.
+### Settings:
+| Property         | Required | Value     | Description                        |
+| ---------------- | -------- | --------- | ---------------------------------- |
+| is               | Yes      | String    | Unique dynamic component name      |
+| url              | Yes      | String    | Component resources url            |
+| success          | No       | Function  | Your custom callback on success    |
+| error            | No       | Function  | Your custom callback on error      |
+
 
 **Example**
 
@@ -190,25 +189,28 @@ var vm = new Vue({
 
 ## <a name="configurations"></a> Vue Ajax Configurations
 
-| Configuration | Value Types | Available Values | Default Value |
-| -- | -- | -- | -- |
-| `assets` | `string`, `object` | - | - |
-| `async` | `boolean` | `true`, `false` | `true` |
-| `cache` | `boolean` | `true`, `false` | `false` |
-| `complete` | `function` | - | - |
-| `csrf` | `boolean` | `true`, `false` | `true` |
-| `data` | `object` | - | - |
-| `fileInputs` | `Form Element` | `true`, `false` | `true` |
-| `history` | `boolean` | `true`, `false` | `false` |
-| `headers` | `object` | - | - |
-| `headers` | `object` | - | - |
-| `method` | `string` | `delete`, `get`, `head`, `jsonp`, `patch`, `post`, `put` | `get` |
-| `preventDublicate` | `boolean` | `true`, `false` | `true` |
-| `scrollTop` | `boolean` | `true`, `false` | `false` |
-| `timeout` | `integer` | `Time in milliseconds` | `60000` |,
-| `title` | `string` | - | - |
-| `urlData` | `object` | - | - |
-| `withCredentials` | `boolean` | `true`, `false` | `false` |
+| Configuration         | Type             | Default | Available                                  |
+| --------------------- | ---------------- | ------- | ------------------------------------------ |
+| assets                | String \| Object | -       | -                                          |
+| async                 | Boolean          | true    | true, false                                |
+| cache                 | Boolean          | false   | true, false                                |
+| complete              | Function         | -       | -                                          |
+| csrf                  | Boolean          | true    | true, false                                |
+| data                  | Object           | -       | -                                          |
+| fileInputs            | Element Object   | true    | true, false                                |
+| history               | Boolean          | false   | true, false                                |
+| headers               | Object           | -       | -                                          |
+| headers               | Object           | -       | -                                          |
+| method                | String           | get     | delete, get, head, jsonp, patch, post, put |
+| preventDublicate      | Boolean          | true    | true, false                                |
+| scrollTop             | Boolean          | false   | true, false                                |
+| timeout               | Integer          | 60000   | Time in milliseconds                       |
+| title                 | String           | -       | -                                          |
+| url                   | String           | -       | -                                          |
+| urlData               | Object           | -       | -                                          |
+| withCredentials       | Boolean          | false   | true, false                                |
+
+## <a name="examples"></a> Vue Ajax Configuration Examples
 
 ### <a name="assets"></a> Assets
 Assets setting is used to push new asset files (CSS or JS) in the document.
@@ -228,7 +230,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ### Asynchronous
-By default, all requests are sent asynchronously (i.e. this is set to `true` by default). If you need synchronous requests, set this option to `false`.
+By default, all requests are sent asynchronously (i.e. this is set to true by default). If you need synchronous requests, set this option to `false`.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     async: true
@@ -243,7 +245,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ### Complete Event
-A function to be called when the request finishes.
+A function to be called when the request finishes (Success or error).
 
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
@@ -280,12 +282,16 @@ Vue.ajax('http://example.com', {
 });
 ```
 
+
 ### <a name="file-uploading"></a> File Uploading
 File uploading setting should be `DOM object`. We recommend using the `post` method when uploading files. The important thing here is that you should not forget the `name` attribute.
+
+HTML:
 ```html
 <input type="file" name="my-input" id="my-input">
 ```
 
+Javascript:
 ```javascript
 Vue.ajax.post('http://example.com', [data], {
     fileInputs: [
@@ -317,6 +323,8 @@ Vue.ajax.get('http://example.com', [data], {
 
 **Adding version for history**  
 Layouts can be forced to do a hard reload when assets or html changes. First set the initial layout version in your header with a custom `meta` tag.
+
+HTML:
 ```html
 <meta http-equiv="x-history-version" content="ABCDEFGH">
 ```
@@ -341,7 +349,6 @@ Vue.ajax({
 
 Instead, you might prefer to use the following shorthand:
 ```javascript
-Vue.ajax.get('http://example.com', [data]);
 Vue.ajax.post('http://example.com', [data]);
 ```
 
@@ -411,7 +418,7 @@ Vue.ajax.get('http://example.com', [data] {
 ```
 
 ## Response Handling
-The response returns the `object` on the frontend. 
+The response returns the Object on the frontend. 
 
 _Success and error together in `then()` method:_
 ```
@@ -435,15 +442,15 @@ Vue.ajax.get('http://example.com', [data])
     });
 ```
 
-| Property        | Value Type      |
-| --------------- | --------------- |
-| `data`          | `object|null`   |
-| `status`        | `string`        |
-| `statusText`    | `string`        |
-| `headers`       | `string`        |
-| `config`        | `object`        |
-| `xhrStatus`     | `string`        |
-| `request`       | `object`        |
+| Response Property | Value Type      |
+| ----------------- | --------------- |
+| data              | Object          |
+| status            | String          |
+| statusText        | String          |
+| headers           | String          |
+| config            | Object          |
+| xhrStatus         | String          |
+| request           | Object          |
 
 #### Response Format
 
@@ -457,7 +464,7 @@ echo json_encode($array);
 
 Laravel:
 ```php
-Route::get('respone', function () {
+Route::get('http://example.com', function () {
     return response(json_encode($array), 200)
         ->header('Content-Type', 'application/json; charset=utf-8');
 });

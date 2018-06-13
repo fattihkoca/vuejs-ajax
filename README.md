@@ -197,7 +197,7 @@ var vm = new Vue({
 | complete              | Function         | -       | -                                          |
 | csrf                  | Boolean          | true    | true, false                                |
 | data                  | Object           | -       | -                                          |
-| fileInputs            | Element Object   | true    | true, false                                |
+| fileInputs            | Element Object   | -       | Input file upload objects                   |
 | history               | Boolean          | false   | true, false                                |
 | headers               | Object           | -       | -                                          |
 | headers               | Object           | -       | -                                          |

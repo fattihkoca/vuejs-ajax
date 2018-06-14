@@ -5,14 +5,13 @@
  */
 
 var Vue = require("vue");
-var ajax = require("vuejs-ajax");
+var ajax = require("../src/vuejs-ajax");
 
-window.Vue = Vue;
 Vue.use(ajax);
 
-var vm = new Vue({
+new Vue({
     el: '#app',
     components: {
-        vueAjaxExample: require('vueAjaxExample.vue').default
+        vueAjaxExample: require('./component.vue').default
     }
 });

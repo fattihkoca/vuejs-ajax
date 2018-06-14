@@ -2,5 +2,7 @@
 node_modules
 npm-debug.log
 .coveralls.yml
+package-lock.json
+.jshintrc
 .idea
 TODO

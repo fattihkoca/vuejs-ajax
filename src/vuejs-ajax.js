@@ -6,11 +6,11 @@
  */
 
 // ES6
-// import ajax from 'vuejs-ajax'
+// import ajax from 'vue-ajax-plugin'
 // Vue.use(ajax)
 //
 // ES5
-// var ajax = require('vuejs-ajax')
+// var ajax = require('vue-ajax-plugin')
 // Vue.use(ajax)
 
 var VueAjax = {

@@ -14,7 +14,7 @@ var ajax = require("../src/vuejs-ajax");
 
 Vue.use(ajax);
 
-describe('Vue.http', function () {
+describe('Vue.ajax', function () {
     it('Vue.ajax.get()', () => {
         XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 

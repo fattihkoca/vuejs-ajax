@@ -449,7 +449,7 @@ Vue.ajax.get('http://example.com', [data])
 
 | Response Property | Value Type      |
 | ----------------- | --------------- |
-| data              | Object          |
+| data              | Object\|String  |
 | status            | String          |
 | statusText        | String          |
 | headers           | String          |

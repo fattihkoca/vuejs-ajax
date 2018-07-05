@@ -107,7 +107,7 @@ var VueAjax = {
 
             // Location redirect
             locationRedirect = function (url, hardReloadOnError) {
-                if(hardReloadOnError != undefined && !hardReloadOnError) {
+                if(hardReloadOnError) {
                     return;
                 }
 
@@ -428,7 +428,8 @@ var VueAjax = {
                                         history: history,
                                         method: method,
                                         scrollTop: scrollTop,
-                                        url: config.url
+                                        url: config.url,
+                                        hardReloadOnError: hardReloadOnError
                                     }, title, config.url);
                                 }
                             }
@@ -569,13 +570,14 @@ var VueAjax = {
             // If browser doesn't has state in history
             if (!e.state) {
                 // History fallback
-                return locationRedirect();
+                return locationRedirect(null, true);
             }
 
             // Pjax configurations
             var state = e.state,
                 assets = state.assets,
                 callName = state.callName || false,
+                hardReloadOnError = state.hardReloadOnError,
                 history = state.history || false,
                 method = state.method || 'GET',
                 scrollTop = state.scrollTop,
@@ -585,7 +587,7 @@ var VueAjax = {
             // If url does not exists or window reloaded
             if (!url || !callName || typeof window[callName] != 'function') {
                 // History fallback
-                return locationRedirect();
+                return locationRedirect(null, true);
             }
 
             // Send ajax request and run previous callback
@@ -595,13 +597,14 @@ var VueAjax = {
                 method: method,
                 scrollTop: scrollTop,
                 title: title,
-                url: url
+                url: url,
+                hardReloadOnError: hardReloadOnError
             }).then(function (response) {
                 // Run previous callback
                 window[callName](response);
             }, function () {
                 // History fallback
-                return locationRedirect(url);
+                return locationRedirect(url, hardReloadOnError);
             });
         });
 

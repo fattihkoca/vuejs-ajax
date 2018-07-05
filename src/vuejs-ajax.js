@@ -450,7 +450,7 @@ var VueAjax = {
 
                             if (history) {
                                 // History fallback
-                                locationRedirect(url);
+                                locationRedirect(url, hardReloadOnError);
                             }
                         }
                     }

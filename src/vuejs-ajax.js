@@ -106,7 +106,11 @@ var VueAjax = {
             },
 
             // Location redirect
-            locationRedirect = function (url) {
+            locationRedirect = function (url, hardReloadOnError) {
+                if(hardReloadOnError != undefined && !hardReloadOnError) {
+                    return;
+                }
+
                 window.history.replaceState(null, "", url);
 
                 if (!url) {
@@ -232,7 +236,8 @@ var VueAjax = {
                     scrollTop = config.scrollTop || false,
                     stateCallName = randomString(8) + timestamp(),
                     timeout = typeof config.timeout == 'number' || (!isNaN(parseFloat(config.timeout)) && isFinite(config.timeout)) ? config.timeout : 60000,
-                    withCredentials = config.withCredentials || false;
+                    withCredentials = config.withCredentials || false,
+                    hardReloadOnError = config.hardReloadOnError || false;
 
                 method = method.toUpperCase();
 
@@ -412,7 +417,7 @@ var VueAjax = {
 
                                 // If version mismatching
                                 if (currentHistoryVersion && latestHistoryVersion && currentHistoryVersion !== latestHistoryVersion) {
-                                    return locationRedirect(config.url);
+                                    return locationRedirect(config.url, hardReloadOnError);
                                 }
 
                                 if (availableHistory(config.url)) {

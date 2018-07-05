@@ -201,7 +201,8 @@ var vm = new Vue({
 | complete              | Function         | -       | -                                          |
 | csrf                  | Boolean          | true    | true, false                                |
 | data                  | Object           | -       | -                                          |
-| fileInputs            | Element Object   | -       | Input file upload objects                   |
+| fileInputs            | Element Object   | -       | Input file upload objects                  |
+| hardReloadOnError     | Boolean          | false   | true, false                                |
 | history               | Boolean          | false   | true, false                                |
 | headers               | Object           | -       | -                                          |
 | headers               | Object           | -       | -                                          |
@@ -312,6 +313,15 @@ You can only add the `accept` attribute to send images.
 You can add the `multiple` attribute to send multiple files with an input element:
 ```html
 <input type="file" name="my-input-3" id="my-input-3" multiple>
+```
+
+### <a name="hardReloadOnError"></a> History
+Option to hard reloading when page can not be loaded.
+
+```javascript
+Vue.ajax.get('http://example.com', [data], {
+    hardReloadOnError: true
+});
 ```
 
 ### <a name="history"></a> History

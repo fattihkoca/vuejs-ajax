@@ -315,7 +315,7 @@ You can add the `multiple` attribute to send multiple files with an input elemen
 <input type="file" name="my-input-3" id="my-input-3" multiple>
 ```
 
-### <a name="hardReloadOnError"></a> History
+### <a name="hardReloadOnError"></a> Hard Reload On Error
 Option to hard reloading when page can not be loaded.
 
 ```javascript

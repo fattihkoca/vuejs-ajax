@@ -107,7 +107,7 @@ var VueAjax = {
 
             // Location redirect
             locationRedirect = function (url, hardReloadOnError) {
-                if(hardReloadOnError) {
+                if(hardReloadOnError != undefined && !hardReloadOnError) {
                     return;
                 }
 

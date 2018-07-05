@@ -570,7 +570,7 @@ var VueAjax = {
             // If browser doesn't has state in history
             if (!e.state) {
                 // History fallback
-                return locationRedirect(null, true);
+                return locationRedirect();
             }
 
             // Pjax configurations
@@ -587,7 +587,7 @@ var VueAjax = {
             // If url does not exists or window reloaded
             if (!url || !callName || typeof window[callName] != 'function') {
                 // History fallback
-                return locationRedirect(null, true);
+                return locationRedirect();
             }
 
             // Send ajax request and run previous callback
@@ -604,7 +604,7 @@ var VueAjax = {
                 window[callName](response);
             }, function () {
                 // History fallback
-                return locationRedirect(url, hardReloadOnError);
+                return locationRedirect(url);
             });
         });
 

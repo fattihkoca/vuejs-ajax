@@ -14,7 +14,7 @@
 // Vue.use(ajax)
 
 var VueAjax = {
-    install: function(Vue, options) {
+    install: function (Vue, options) {
         var
             // XHR response status types
             xhrStatuses = ['Uninitialized', 'Opened', 'Headers Received', 'Loading', 'Complete'],
@@ -32,11 +32,11 @@ var VueAjax = {
 
             // Getting current history version
             historyVersion = function () {
-                var 
-                name = names.version.toLowerCase(),
-                meta = document.head.querySelector('meta[http-equiv=' + name + '][content]');
+                var
+                    name = names.version.toLowerCase(),
+                    meta = document.head.querySelector('meta[http-equiv=' + name + '][content]');
 
-                if(!meta) {
+                if (!meta) {
                     meta = document.createElement("meta");
                     meta.setAttribute('http-equiv', name);
                     meta.content = randomString(40);
@@ -49,7 +49,7 @@ var VueAjax = {
             getComponentState = function () {
                 return document.head.querySelector('meta[http-equiv=' + names.componentState + ']');
             },
-            
+
             componentState = function (status) {
                 var meta = getComponentState();
 
@@ -107,7 +107,7 @@ var VueAjax = {
 
             // Location redirect
             locationRedirect = function (url, hardReloadOnError) {
-                if(hardReloadOnError != undefined && !hardReloadOnError) {
+                if (hardReloadOnError != undefined && !hardReloadOnError) {
                     return;
                 }
 
@@ -139,7 +139,7 @@ var VueAjax = {
 
                 var extension = getFileExtension(asset),
                     newElement = null,
-                    findElement = function(selector) {
+                    findElement = function (selector) {
                         return document.head.querySelector(selector);
                     };
 
@@ -207,8 +207,8 @@ var VueAjax = {
                     window.scrollTo(0, 0);
                 }
             },
-            
-            isUrlEncodedMethod = function(method) {
+
+            isUrlEncodedMethod = function (method) {
                 return urlEncodedMethods.indexOf(method) != -1;
             },
 
@@ -243,6 +243,11 @@ var VueAjax = {
 
                 // Preventing dublicate requests
                 if (preventDublicate && config.method != 'JSONP' && requestAttemps.hasOwnProperty(key)) {
+                    customeEventDispatcher('vueajaxabort', {
+                        config: config,
+                        timeStamp: timestamp(),
+                        xhrStatus: 'Abort'
+                    });
                     requestAttemps[key].abort();
                 }
 
@@ -275,7 +280,7 @@ var VueAjax = {
                 } else if (typeof config.data == 'object' && Object.keys(config.data).length) {
                     data = serialize(config.data);
 
-                    if(isUrlEncodedMethod(method)) {
+                    if (isUrlEncodedMethod(method)) {
                         postData = data;
                         data = null;
                     } else {
@@ -384,6 +389,7 @@ var VueAjax = {
                         request: this,
                         status: this.status,
                         statusText: this.statusText,
+                        timeStamp: timestamp(),
                         xhrStatus: xhrStatuses.hasOwnProperty(this.readyState) ?
                             xhrStatuses[this.readyState] : 'Unknown'
                     };
@@ -391,6 +397,8 @@ var VueAjax = {
                     // If connection is done
                     if (this.readyState == 4) {
                         delete requestAttemps[key];
+
+                        customeEventDispatcher('vueajaxcomplete', response);
 
                         // Complete callback
                         if (typeof config.complete == 'function') {
@@ -400,6 +408,8 @@ var VueAjax = {
                         // Success callback
                         if (this.status == 200) {
                             if (typeof config.success == 'function') {
+                                customeEventDispatcher('vueajaxsuccess', response);
+
                                 window[stateCallName] = function () {
                                     return config.success(response);
                                 };
@@ -445,6 +455,8 @@ var VueAjax = {
                         }
                         // Error callback
                         else if (preventDublicate && this.status != 0) {
+                            customeEventDispatcher('vueajaxerror', response);
+
                             if (typeof config.error == 'function') {
                                 config.error(response);
                             }
@@ -456,6 +468,12 @@ var VueAjax = {
                         }
                     }
                 };
+
+                customeEventDispatcher('vueajaxstart', {
+                    config: config,
+                    timeStamp: timestamp(),
+                    xhrStatus: 'Uninitialized'
+                });
 
                 // Sending XHR
                 xhr.send(postData);
@@ -508,10 +526,13 @@ var VueAjax = {
                     };
 
                     window[name] = function (data) {
+                        response.data = data;
+                        response.status = 1;
+                        response.statusText = 'OK';
+
+                        customeEventDispatcher('vueajaxsuccess', response);
+
                         if (typeof config.success == 'function') {
-                            response.data = data;
-                            response.status = 1;
-                            response.statusText = 'OK';
                             config.success(response);
                         }
 
@@ -526,19 +547,25 @@ var VueAjax = {
                     document.head.appendChild(script);
 
                     script.onload = function (e) {
+                        response.request = e;
+                        response.status = 1;
+                        response.statusText = 'OK';
+
+                        customeEventDispatcher('vueajaxcomplete', response);
+
                         if (typeof config.complete == 'function') {
-                            response.request = e;
-                            response.status = 1;
-                            response.statusText = 'OK';
                             config.complete(response);
                         }
                     };
 
                     script.onerror = function (e) {
+                        response.status = 0;
+                        response.statusText = 'Error';
+                        response.request = e;
+
+                        customeEventDispatcher('vueajaxerror', response);
+
                         if (typeof config.error == 'function') {
-                            response.status = 0;
-                            response.statusText = 'Error';
-                            response.request = e;
                             config.error(response);
                         }
 
@@ -547,20 +574,29 @@ var VueAjax = {
                         }
                     };
                 } catch (error) {
+                    customeEventDispatcher('vueajaxerror', error);
+
                     if (typeof config.error == 'function') {
                         config.error(error);
                     }
                 }
 
                 return script;
-            };
+            },
 
-        var
             // Request attemps for previnting dublicate requests
             requestAttemps = {},
 
             // Jsonp attemp size for naming jsonp callbaks
-            jsonpAttempSize = 0;
+            jsonpAttempSize = 0,
+
+            customeEventDispatcher = function(type, state) {
+                var evt = new CustomEvent(type, {
+                    detail: state,
+                });
+        
+                window.dispatchEvent(evt);
+            };
 
         // Pjax history (Benefits of HTML5 histroy api)
         window.addEventListener('popstate', function (e) {
@@ -590,6 +626,11 @@ var VueAjax = {
                 return locationRedirect();
             }
 
+            customeEventDispatcher('vueajaxhistorystart', {
+                timeStamp: timestamp(),
+                xhrStatus: 'Uninitialized'
+            });
+
             // Send ajax request and run previous callback
             Vue.ajax({
                 assets: assets,
@@ -598,11 +639,18 @@ var VueAjax = {
                 scrollTop: scrollTop,
                 title: title,
                 url: url,
-                hardReloadOnError: hardReloadOnError
+                hardReloadOnError: hardReloadOnError,
+                complete: function(response) {
+                    customeEventDispatcher('vueajaxhistorycomplete', response);
+                }
             }).then(function (response) {
+                customeEventDispatcher('vueajaxhistorysuccess', response);
+
                 // Run previous callback
                 window[callName](response);
-            }, function () {
+            }, function (response) {
+                customeEventDispatcher('vueajaxhistoryerror', response);
+
                 // History fallback
                 return locationRedirect(url);
             });
@@ -616,13 +664,22 @@ var VueAjax = {
                  * @param {Function} success On success callback
                  * @param {Function} error On error callback
                  */
-                componentShifter: function(config, success, error) {
+                componentShifter: function (config, success, error) {
                     config.method = config.method || 'GET';
+                    config.complete = function(response) {
+                        customeEventDispatcher('componentshiftercomplete', response);
+                    };
+
                     var componentName = config.is || names.component,
                         self = this;
 
                     // Set component state to false
                     componentState(false);
+
+                    customeEventDispatcher('componentshifterstart', {
+                        timeStamp: timestamp(),
+                        xhrStatus: 'Uninitialized'
+                    });
 
                     // Load template by xhr
                     Vue.ajax(config).then(function (response) {
@@ -636,6 +693,8 @@ var VueAjax = {
                                     template: template
                                 });
                             });
+
+                            customeEventDispatcher('componentshiftersuccess', response);
 
                             // Run callback after success
                             if (typeof success == 'function') {
@@ -651,7 +710,9 @@ var VueAjax = {
 
                         // If on popstate set component from history
                         self.componentShifter(config, success);
-                    }, function(response) {
+                    }, function (response) {
+                        customeEventDispatcher('componentshiftererror', response);
+
                         // If has error callback
                         if (typeof error == 'function') {
                             error(response);
@@ -659,11 +720,11 @@ var VueAjax = {
                     });
                 }
             },
-            created: function() {
+            created: function () {
                 historyVersion();
                 componentState(false);
             },
-            mounted: function() {
+            mounted: function () {
                 if (typeof options == 'object' && typeof options.mounted == 'function') {
                     return options.mounted();
                 }

@@ -7,11 +7,12 @@
 A light XHR plugin for Vue 2.x and and above versions. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `$http()`. In addition to these, it also has its own important features: 
 * [`Assets`](#assets)
 * [`Component shifter`](#component-shifter)
+* [`Event Handlers`](#event-handlers)
 * [`File uploading`](#file-uploading)
 * [`History`](#history)
 * [`Title`](#title)
 * [`Serialized query string`](#urldata)
-* [`Preventing dublicate requests`](#preventing-dublicate)
+* [`Preventing dublicate requests`](#preventDublicate)
 
 ## Setup
 
@@ -195,25 +196,24 @@ var vm = new Vue({
 
 | Configuration         | Type             | Default | Available                                  |
 | --------------------- | ---------------- | ------- | ------------------------------------------ |
-| assets                | String \| Object | -       | -                                          |
-| async                 | Boolean          | true    | true, false                                |
-| cache                 | Boolean          | false   | true, false                                |
-| complete              | Function         | -       | -                                          |
-| csrf                  | Boolean          | true    | true, false                                |
-| data                  | Object           | -       | -                                          |
-| fileInputs            | Element Object   | -       | Input file upload objects                  |
-| hardReloadOnError     | Boolean          | false   | true, false                                |
-| history               | Boolean          | false   | true, false                                |
-| headers               | Object           | -       | -                                          |
-| headers               | Object           | -       | -                                          |
-| method                | String           | get     | delete, get, head, jsonp, patch, post, put |
-| preventDublicate      | Boolean          | true    | true, false                                |
-| scrollTop             | Boolean          | false   | true, false                                |
-| timeout               | Integer          | 60000   | Time in milliseconds                       |
-| title                 | String           | -       | -                                          |
-| url                   | String           | -       | -                                          |
-| urlData               | Object           | -       | -                                          |
-| withCredentials       | Boolean          | false   | true, false                                |
+| [`assets`](#assets)   | String \| Object | -       | -                                          |
+| [`async`](#async)     | Boolean          | true    | true, false                                |
+| [`cache`](#cache)     | Boolean          | false   | true, false                                |
+| [`complete`](#complete) | Function         | -       | -                                        |
+| [`csrf`](#csrf)       | Boolean          | true    | true, false                                |
+| [`data`](#data)       | Object           | -       | -                                          |
+| [`fileInputs`](#fileInputs) | Element Object   | -       | Input file upload objects            |
+| [`hardReloadOnError`](#hardReloadOnError) | Boolean          | false   | true, false            |
+| [`history`](#history) | Boolean          | false   | true, false                                |
+| [`headers`](#headers) | Object           | -       | -                                          |
+| [`method`](#method)   | String           | get     | delete, get, head, jsonp, patch, post, put |
+| [`preventDublicate`](#preventDublicate) | Boolean          | true    | true, false              |
+| [`scrollTop`](#scrollTop) | Boolean          | false   | true, false                            |
+| [`timeout`](#timeout) | Integer          | 60000   | Time in milliseconds                       |
+| [`title`](#title)     | String           | -       | -                                          |
+| [`url`](#url)         | String           | -       | -                                          |
+| [`urlData`](#urlData) | Object           | -       | -                                          |
+| [`withCredentials`](#withCredentials) | Boolean          | false   | true, false                |
 
 ## <a name="examples"></a> Vue Ajax Configuration Examples
 
@@ -234,7 +234,7 @@ Vue.ajax.get('http://example.com', [data], {
 });
 ```
 
-### Asynchronous
+### <a name="async"></a> Asynchronous
 By default, all requests are sent asynchronously (i.e. this is set to true by default). If you need synchronous requests, set this option to `false`.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
@@ -242,14 +242,14 @@ Vue.ajax.get('http://example.com', [data], {
 });
 ```
 
-### Cache
+### <a name="cache"></a> Cache
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     cache: false
 });
 ```
 
-### Complete Event
+### <a name="complete"></a> Complete Event
 A function to be called when the request finishes (Success or error).
 
 ```javascript
@@ -260,7 +260,7 @@ Vue.ajax.get('http://example.com', [data], {
 });
 ```
 
-### CSRF
+### <a name="csrf"></a> CSRF
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     csrf: true
@@ -273,7 +273,7 @@ In the html head tag it must be `csrf-token meta`. Like this:
 <meta name="csrf-token" content="ABCDEFGHIJKLMN">
 ```
 
-### Data
+### <a name="data"></a> Data
 Data to be sent to the server.
 
 ```javascript
@@ -343,7 +343,7 @@ HTML:
 <meta http-equiv="x-history-version" content="ABCDEFGH">
 ```
 
-### HTTP Headers
+### <a name="headers"></a> HTTP Headers
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     headers: {
@@ -353,7 +353,7 @@ Vue.ajax.get('http://example.com', [data], {
 });
 ```
 
-### Method
+### <a name="method"></a> Method
 ```javascript
 Vue.ajax({
     url: 'http://example.com',
@@ -366,7 +366,7 @@ Instead, you might prefer to use the following shorthand:
 Vue.ajax.post('http://example.com', [data]);
 ```
 
-### <a name="preventing-dublicate"></a> Preventing Dublicate
+### <a name="preventDublicate"></a> Preventing Dublicate
 This setting prevents sending dublicate requests to the same address or given key data. 
 The following example prevents sending requests over the same URL:
 ```javascript
@@ -383,7 +383,7 @@ Vue.ajax.get('http://example.com', [data], {
 });
 ```
 
-### Scroll Top
+### <a name="scrollTop"></a> Scroll Top
 scrollTop setting is used to scroll to top of the document when loading the request.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
@@ -391,7 +391,7 @@ Vue.ajax.get('http://example.com', [data], {
 });
 ```
 
-### Timeout
+### <a name="timeout"></a> Timeout
 Set a timeout (in milliseconds) for the request.
 
 ```javascript
@@ -409,7 +409,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 
-### <a name="urldata"></a>URL Data
+### <a name="urldata"></a> URL Data
 With this setting, you can add serialized query string to the URL you are sending.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
@@ -423,7 +423,7 @@ Vue.ajax.get('http://example.com', [data], {
 The URL will be like this when sending the request:  
 `http://example.com?page=15&category=Accessories`
 
-### With Credentials
+### <a name="withCredentials"></a> With Credentials
 There is a detailed explanation [here](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials).
 ```javascript
 Vue.ajax.get('http://example.com', [data] {
@@ -512,6 +512,113 @@ Vue.ajax.get('http://example.com/not-existing-path', [data])
     }).catch(function(response) {
         console.log('Error: ', response.statusText);
     }); // "Error: Not Found"
+```
+
+## <a name="event-handlers"></a> Event Handlers
+
+### vueajaxabort
+Register a handler to be called when `Vue.ajax` requests abort.
+```javascript
+window.addEventListener('vueajaxabort', function(e) {
+    console.log(e);
+});
+```
+
+### vueajaxcomplete
+Register a handler to be called when `Vue.ajax` requests complete.
+```javascript
+window.addEventListener('vueajaxsuccess', function(e) {
+    console.log(e);
+});
+```
+
+### vueajaxerror
+Register a handler to be called when `Vue.ajax` requests complete with an error.
+```javascript
+window.addEventListener('vueajaxerror', function(e) {
+    console.log(e);
+});
+```
+
+### vueajaxstart
+Register a handler to be called when `Vue.ajax` requests begins.
+```javascript
+window.addEventListener('vueajaxstart', function(e) {
+    console.log(e);
+});
+```
+
+### vueajaxsuccess
+Attach a function to be executed whenever an `Vue.ajax` request completes successfully.
+```javascript
+window.addEventListener('vueajaxsuccess', function(e) {
+    console.log(e);
+});
+```
+
+### vueajaxhistorycomplete
+Register a handler to be called when `Vue.ajax history` requests complete.
+```javascript
+window.addEventListener('vueajaxhistorycomplete', function(e) {
+    console.log(e);
+});
+```
+
+### vueajaxhistoryerror
+Register a handler to be called when `Vue.ajax history` requests complete with an error.
+```javascript
+window.addEventListener('vueajaxhistoryerror', function(e) {
+    console.log(e);
+});
+```
+
+### vueajaxhistorystart
+Register a handler to be called when `Vue.ajax history` requests begins.
+```javascript
+window.addEventListener('vueajaxhistorystart', function(e) {
+    console.log(e);
+});
+```
+
+### vueajaxhistorysuccess
+Attach a function to be executed whenever an `Vue.ajax history` request completes successfully.
+```javascript
+window.addEventListener('vueajaxhistorysuccess', function(e) {
+    console.log(e);
+});
+```
+
+
+### componentshiftercomplete
+Register a handler to be called when `Component Shifter` requests complete.
+```javascript
+window.addEventListener('vueajaxhistorycomplete', function(e) {
+    console.log(e);
+});
+```
+
+### componentshiftererror
+Register a handler to be called when `Component Shifter` requests complete with an error.
+```javascript
+window.addEventListener('componentshiftererror', function(e) {
+    console.log(e);
+});
+```
+
+### componentshifterstart
+Register a handler to be called when `Component Shifter` requests begins.
+```javascript
+window.addEventListener('componentshifterstart', function(e) {
+    console.log(e);
+});
+```
+
+### componentshiftersuccess
+Attach a function to be executed whenever an `Component Shifter` request completes successfully.
+```javascript
+window.addEventListener('componentshiftersuccess', function(e) {
+    console.log(e);
+});
 ```
 
 # License

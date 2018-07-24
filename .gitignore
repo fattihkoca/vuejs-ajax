@@ -3,6 +3,9 @@ npm-debug.log
 .coveralls.yml
 package-lock.json
 webpack.config.js
+webpack.common.js
+webpack.dev.js
+webpack.prod.js
 .DS_Store
 .vscode
 .jshintrc

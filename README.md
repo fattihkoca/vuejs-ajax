@@ -14,7 +14,7 @@ A light XHR plugin for Vue 2.x and and above versions. It has many similar featu
 * [`Serialized query string`](#urldata)
 * [`Preventing dublicate requests`](#preventDublicate)
 
-## Setup
+# Setup
 
 ```
 npm install vuejs-ajax --save
@@ -38,7 +38,7 @@ var ajax = require('vuejs-ajax')
 Vue.use(ajax)
 ```
 
-## Example
+# Example
 ```javascript
 Vue.ajax.get('http://example.com').then(function(response) {
     console.log('Success', response.data)
@@ -60,21 +60,21 @@ Vue.ajax.get('http://example.com', {
 })
 ```
 
-## Methods & Requests
+# Methods & Requests
 
-#### Get Method
+### Get Method
 ```javascript
 Vue.ajax.get(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
-##### Post Method
+#### Post Method
 ```javascript
 Vue.ajax.post(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
-### Arguments
+## Arguments
 
 | Property         | Type             | Description                                                   |
 | ---------------- | ---------------- | ------------------------------------------------------------- |
@@ -84,31 +84,31 @@ Vue.ajax.post(string url[, object data] [,object configurations])
 
 **Other methods and requests are the same:**
 
-##### Delete Method
+#### Delete Method
 ```javascript
 Vue.ajax.delete(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
-##### Head Method
+#### Head Method
 ```javascript
 Vue.ajax.head(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
-##### Jsonp Request
+#### Jsonp Request
 ```javascript
 Vue.ajax.jsonp(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
-##### Patch Method
+#### Patch Method
 ```javascript
 Vue.ajax.patch(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
-##### Put Method
+#### Put Method
 ```javascript
 Vue.ajax.put(string url[, object data] [,object configurations])
     .then(function success[, function error])
@@ -127,7 +127,7 @@ Vue.ajax({
 })
 ```
 
-## <a name="component-shifter"></a> Component Shifter
+# <a name="component-shifter"></a> Component Shifter
 With componentShifter() you can load (with `Vue.ajax`) and render your `Vue template` (html) in your application by dynamic & async `Vue.component()`. You can also add components and run them nested.
 
 It also supports `Vue.ajax`'s `history` feature. And the component is automatically update when navigating to the previous - next page.
@@ -136,7 +136,7 @@ It also supports `Vue.ajax`'s `history` feature. And the component is automatica
 vm.componentShifter(object configurations[, function success] [,function error])
 ```
 
-### Settings:
+## Settings:
 | Property         | Required | Value     | Description                        |
 | ---------------- | -------- | --------- | ---------------------------------- |
 | is               | Yes      | String    | Unique dynamic component name      |
@@ -192,49 +192,49 @@ var vm = new Vue({
 });
 ```
 
-## <a name="configurations"></a> Vue Ajax Configurations
+# <a name="configurations"></a> Vue Ajax Configurations
 
-| Configuration         | Type             | Default | Available                                  |
-| --------------------- | ---------------- | ------- | ------------------------------------------ |
-| [`assets`](#assets)   | String \| Object | -       | -                                          |
-| [`async`](#async)     | Boolean          | true    | true, false                                |
-| [`cache`](#cache)     | Boolean          | false   | true, false                                |
-| [`complete`](#complete) | Function         | -       | -                                        |
-| [`csrf`](#csrf)       | Boolean          | true    | true, false                                |
-| [`data`](#data)       | Object           | -       | -                                          |
-| [`fileInputs`](#file-uploading) | Element Object   | -       | Input file upload objects        |
-| [`hardReloadOnError`](#hardReloadOnError) | Boolean          | false   | true, false            |
-| [`history`](#history) | Boolean          | false   | true, false                                |
-| [`headers`](#headers) | Object           | -       | -                                          |
-| [`method`](#method)   | String           | get     | delete, get, head, jsonp, patch, post, put |
-| [`preventDublicate`](#preventDublicate) | Boolean          | true    | true, false              |
-| [`scrollTop`](#scrollTop) | Boolean          | false   | true, false                            |
-| [`timeout`](#timeout) | Integer          | 60000   | Time in milliseconds                       |
-| [`title`](#title)     | String           | -       | -                                          |
-| [`url`](#url)         | String           | -       | -                                          |
-| [`urlData`](#urlData) | Object           | -       | -                                          |
-| [`withCredentials`](#withCredentials) | Boolean          | false   | true, false                |
+| Configuration                             | Type             | Default | Available                                  |
+| ----------------------------------------- | ---------------- | ------- | ------------------------------------------ |
+| [`assets`](#assets)                       | String \| Object | -       | -                                          |
+| [`async`](#async)                         | Boolean          | true    | true, false                                |
+| [`cache`](#cache)                         | Boolean          | false   | true, false                                |
+| [`complete`](#complete)                   | Function         | -       | -                                          |
+| [`csrf`](#csrf)                           | Boolean          | true    | true, false                                |
+| [`data`](#data)                           | Object           | -       | -                                          |
+| [`fileInputs`](#file-uploading)           | Element Object   | -       | Input file upload objects                  |
+| [`hardReloadOnError`](#hardReloadOnError) | Boolean          | false   | true, false                                |
+| [`history`](#history)                     | Boolean          | false   | true, false                                |
+| [`headers`](#headers)                     | Object           | -       | -                                          |
+| [`method`](#method)                       | String           | get     | delete, get, head, jsonp, patch, post, put |
+| [`preventDublicate`](#preventDublicate)   | Boolean          | true    | true, false                                |
+| [`scrollTop`](#scrollTop)                 | Boolean          | false   | true, false                                |
+| [`timeout`](#timeout)                     | Integer          | 60000   | Time in milliseconds                       |
+| [`title`](#title)                         | String           | -       | -                                          |
+| [`url`](#url)                             | String           | -       | -                                          |
+| [`urlData`](#urlData)                     | Object           | -       | -                                          |
+| [`withCredentials`](#withCredentials)     | Boolean          | false   | true, false                                |
 
-## <a name="examples"></a> Vue Ajax Configuration Examples
+# <a name="examples"></a> Vue Ajax Configuration Examples
 
-### <a name="assets"></a> Assets
+## <a name="assets"></a> Assets
 Assets setting is used to push new asset files (CSS or JS) in the document.
 
-#### Pushing single asset file
+### Pushing single asset file
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     assets: 'path/css/style.css'
 });
 ```
 
-#### Pushing multiple asset files
+### Pushing multiple asset files
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     assets: ['assets/css/style.css', 'assets/js/script.js']
 });
 ```
 
-### <a name="async"></a> Asynchronous
+## <a name="async"></a> Asynchronous
 By default, all requests are sent asynchronously (i.e. this is set to true by default). If you need synchronous requests, set this option to `false`.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
@@ -242,14 +242,14 @@ Vue.ajax.get('http://example.com', [data], {
 });
 ```
 
-### <a name="cache"></a> Cache
+## <a name="cache"></a> Cache
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     cache: false
 });
 ```
 
-### <a name="complete"></a> Complete Event
+## <a name="complete"></a> Complete Event
 A function to be called when the request finishes (Success or error).
 
 ```javascript
@@ -260,7 +260,7 @@ Vue.ajax.get('http://example.com', [data], {
 });
 ```
 
-### <a name="csrf"></a> CSRF
+## <a name="csrf"></a> CSRF
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     csrf: true
@@ -273,7 +273,7 @@ In the html head tag it must be `csrf-token meta`. Like this:
 <meta name="csrf-token" content="ABCDEFGHIJKLMN">
 ```
 
-### <a name="data"></a> Data
+## <a name="data"></a> Data
 Data to be sent to the server.
 
 ```javascript
@@ -288,7 +288,7 @@ Vue.ajax('http://example.com', {
 ```
 
 
-### <a name="file-uploading"></a> File Uploading
+## <a name="file-uploading"></a> File Uploading
 File uploading setting should be `DOM object`. We recommend using the `post` method when uploading files. The important thing here is that you should not forget the `name` attribute.
 
 HTML:
@@ -315,7 +315,7 @@ You can add the `multiple` attribute to send multiple files with an input elemen
 <input type="file" name="my-input-3" id="my-input-3" multiple>
 ```
 
-### <a name="hardReloadOnError"></a> Hard Reload On Error
+## <a name="hardReloadOnError"></a> Hard Reload On Error
 Option to hard reloading when page can not be loaded.
 
 ```javascript
@@ -324,7 +324,7 @@ Vue.ajax.get('http://example.com', [data], {
 });
 ```
 
-### <a name="history"></a> History
+## <a name="history"></a> History
 History setting is usage of PushState (HTML history API).
 
 PushState (changing the URL of the page without refreshing the page) to create a faster browsing experience.  This means less elements to load and therefore faster browsing.
@@ -343,7 +343,7 @@ HTML:
 <meta http-equiv="x-history-version" content="ABCDEFGH">
 ```
 
-### <a name="headers"></a> HTTP Headers
+## <a name="headers"></a> HTTP Headers
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     headers: {
@@ -353,7 +353,7 @@ Vue.ajax.get('http://example.com', [data], {
 });
 ```
 
-### <a name="method"></a> Method
+## <a name="method"></a> Method
 ```javascript
 Vue.ajax({
     url: 'http://example.com',
@@ -366,7 +366,7 @@ Instead, you might prefer to use the following shorthand:
 Vue.ajax.post('http://example.com', [data]);
 ```
 
-### <a name="preventDublicate"></a> Preventing Dublicate
+## <a name="preventDublicate"></a> Preventing Dublicate
 This setting prevents sending dublicate requests to the same address or given key data. 
 The following example prevents sending requests over the same URL:
 ```javascript
@@ -391,7 +391,7 @@ Vue.ajax.get('http://example.com', [data], {
 });
 ```
 
-### <a name="timeout"></a> Timeout
+## <a name="timeout"></a> Timeout
 Set a timeout (in milliseconds) for the request.
 
 ```javascript
@@ -400,7 +400,7 @@ Vue.ajax.get('http://example.com', [data], {
 });
 ```
 
-### <a name="title"></a> Title
+## <a name="title"></a> Title
 Title setting is used to change the document title value.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
@@ -409,7 +409,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 
-### <a name="urldata"></a> URL Data
+## <a name="urldata"></a> URL Data
 With this setting, you can add serialized query string to the URL you are sending.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
@@ -423,7 +423,7 @@ Vue.ajax.get('http://example.com', [data], {
 The URL will be like this when sending the request:  
 `http://example.com?page=15&category=Accessories`
 
-### <a name="withCredentials"></a> With Credentials
+## <a name="withCredentials"></a> With Credentials
 There is a detailed explanation [here](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials).
 ```javascript
 Vue.ajax.get('http://example.com', [data] {
@@ -431,7 +431,7 @@ Vue.ajax.get('http://example.com', [data] {
 });
 ```
 
-## Response Handling
+# Response Handling
 The response returns the Object on the frontend. 
 
 _Success and error together in `then()` method:_
@@ -466,7 +466,7 @@ Vue.ajax.get('http://example.com', [data])
 | xhrStatus         | String          |
 | request           | Object          |
 
-#### Response Format
+## Response Format
 
 If the content type on the server is "`application/json`", the `response.data` is automatically converted to a `JSON object`. If the content type is anything else, the result is returned as `plain text`.
 
@@ -492,7 +492,7 @@ Vue.ajax.get('http://example.com', [data])
     });
 ```
 
-#### Error Handling
+## Error Handling
 
 In `then()` method
 ```javascript
@@ -514,7 +514,9 @@ Vue.ajax.get('http://example.com/not-existing-path', [data])
     }); // "Error: Not Found"
 ```
 
-## <a name="event-handlers"></a> Event Handlers
+# <a name="event-handlers"></a> Event Handlers
+
+## Common Events
 
 ### vueajaxabort
 Register a handler to be called when `Vue.ajax` requests abort.
@@ -556,6 +558,8 @@ window.addEventListener('vueajaxsuccess', function(e) {
 });
 ```
 
+## History Events
+
 ### vueajaxhistorycomplete
 Register a handler to be called when `Vue.ajax history` requests complete.
 ```javascript
@@ -587,7 +591,7 @@ window.addEventListener('vueajaxhistorysuccess', function(e) {
     console.log(e);
 });
 ```
-
+## Component Shifter Events
 
 ### componentshiftercomplete
 Register a handler to be called when `Component Shifter` requests complete.

@@ -12,6 +12,8 @@ global.document = window.document;
 var Vue = require("vue");
 var ajax = require("../src/vuejs-ajax");
 
+global.CustomEvent = require("custom-event");
+
 Vue.use(ajax);
 
 describe('Vue.ajax', function () {

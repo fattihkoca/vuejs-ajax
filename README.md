@@ -137,12 +137,13 @@ vm.componentShifter(object configurations[, function success] [,function error])
 ```
 
 ## Settings:
-| Property | Required | Value    | Description                     |
-| -------- | -------- | -------- | ------------------------------- |
-| is       | Yes      | String   | Unique dynamic component name   |
-| url      | Yes      | String   | Component resources url         |
-| success  | No       | Function | Your custom callback on success |
-| error    | No       | Function | Your custom callback on error   |
+
+| Property | Required | Value    | Description                      |
+| -------- | -------- | -------- | -------------------------------- |
+| is       | Yes      | String   | Unique dynamic component name.   |
+| url      | Yes      | String   | Component resources url.         |
+| success  | No       | Function | Your custom callback on success. |
+| error    | No       | Function | Your custom callback on error.   |
 
 
 **Example**

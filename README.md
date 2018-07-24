@@ -136,7 +136,7 @@ It also supports `Vue.ajax`'s `history` feature. And the component is automatica
 vm.componentShifter(object configurations[, function success] [,function error])
 ```
 
-## Settings:
+## Settings
 
 | Property | Required | Value    | Description                      |
 | -------- | -------- | -------- | -------------------------------- |
@@ -144,7 +144,6 @@ vm.componentShifter(object configurations[, function success] [,function error])
 | url      | Yes      | String   | Component resources url.         |
 | success  | No       | Function | Your custom callback on success. |
 | error    | No       | Function | Your custom callback on error.   |
-
 
 **Example**
 

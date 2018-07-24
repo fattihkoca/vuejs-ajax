@@ -211,7 +211,7 @@ var vm = new Vue({
 | [`scrollTop`](#scrollTop)                 | Boolean          | false   | true, false                                |
 | [`timeout`](#timeout)                     | Integer          | 60000   | Time in milliseconds                       |
 | [`title`](#title)                         | String           | -       | -                                          |
-| [`url`](#url)                             | String           | -       | -                                          |
+| [`url`](#method)                          | String           | -       | -                                          |
 | [`urlData`](#urlData)                     | Object           | -       | -                                          |
 | [`withCredentials`](#withCredentials)     | Boolean          | false   | true, false                                |
 

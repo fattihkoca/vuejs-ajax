@@ -202,7 +202,7 @@ var vm = new Vue({
 | [`complete`](#complete) | Function         | -       | -                                        |
 | [`csrf`](#csrf)       | Boolean          | true    | true, false                                |
 | [`data`](#data)       | Object           | -       | -                                          |
-| [`fileInputs`](#fileInputs) | Element Object   | -       | Input file upload objects            |
+| [`fileInputs`](#file-uploading) | Element Object   | -       | Input file upload objects        |
 | [`hardReloadOnError`](#hardReloadOnError) | Boolean          | false   | true, false            |
 | [`history`](#history) | Boolean          | false   | true, false                                |
 | [`headers`](#headers) | Object           | -       | -                                          |

@@ -666,8 +666,13 @@ var VueAjax = {
                  */
                 componentShifter: function (config, success, error) {
                     config.method = config.method || 'GET';
+                    var completeCallback = config.complete;
                     config.complete = function(response) {
                         customeEventDispatcher('componentshiftercomplete', response);
+
+                        if(typeof completeCallback == 'function') {
+                            completeCallback();
+                        }
                     };
 
                     var componentName = config.is || names.component,

@@ -12,7 +12,7 @@ A light XHR plugin for Vue 2.x and and above versions. It has many similar featu
 * [`History`](#history)
 * [`Title`](#title)
 * [`Serialized query string`](#urlData)
-* [`Preventing duplicate requests`](#preventDuplicate)
+* [`Prevent duplicate requests`](#preventDuplicate)
 
 # Setup
 
@@ -26,14 +26,14 @@ You have two ways to setup `vuejs-ajax`:
 
 - ES6
 
-```js
+```
 import ajax from 'vuejs-ajax'
 Vue.use(ajax)
 ```
 
 - ES5
 
-```js
+```
 var ajax = require('vuejs-ajax')
 Vue.use(ajax)
 ```
@@ -63,13 +63,13 @@ Vue.ajax.get('http://example.com', {
 # Methods & Requests
 
 ### Get Method
-```javascript
+```
 Vue.ajax.get(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 #### Post Method
-```javascript
+```
 Vue.ajax.post(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
@@ -85,31 +85,31 @@ Vue.ajax.post(string url[, object data] [,object configurations])
 **Other methods and requests are the same:**
 
 #### Delete Method
-```javascript
+```
 Vue.ajax.delete(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 #### Head Method
-```javascript
+```
 Vue.ajax.head(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 #### Jsonp Request
-```javascript
+```
 Vue.ajax.jsonp(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 #### Patch Method
-```javascript
+```
 Vue.ajax.patch(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 #### Put Method
-```javascript
+```
 Vue.ajax.put(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
@@ -291,7 +291,7 @@ Vue.ajax('http://example.com', {
 
 
 ## <a name="file-uploading"></a> File Uploading
-File uploading setting should be `DOM object`. We recommend using the `post` method when uploading files. The important thing here is that you should not forget the `name` attribute.
+`fileInputs` setting should be `DOM object`. We recommend using the `post` method when uploading files. The important thing here is that you should not forget the `name` attribute.
 
 HTML:
 ```html
@@ -338,7 +338,8 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 **Adding version for history**  
-Layouts can be forced to do a hard reload when assets or html changes. First set the initial layout version in your header with a custom `meta` tag.
+Layouts can be forced to do a hard reload when assets or html changes. 
+First set the initial layout version in your header with a custom `meta` tag.
 
 HTML:
 ```html
@@ -369,7 +370,7 @@ Instead, you might prefer to use the following shorthand:
 Vue.ajax.post('http://example.com', [data]);
 ```
 
-## <a name="preventDuplicate"></a> Preventing Duplicate
+## <a name="preventDuplicate"></a> Prevent Duplicate Requests
 This setting prevents sending duplicate requests to the same address or given key data. Default value is `true`.  
 The following example prevents sending requests over the same URL:
 ```javascript
@@ -387,7 +388,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ### <a name="scrollTop"></a> Scroll Top
-`scrollTop setting is used to scroll to top of the document when loading the request. Default value is `true`.
+This setting is used to scroll to top of the document when loading the request. Default value is `true`.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     scrollTop: true
@@ -428,8 +429,8 @@ The URL will be like this when sending the request:
 
 ## <a name="withCredentials"></a> With Credentials
 There is a detailed explanation [here](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials). Default value is `false`.
-```javascript
-Vue.ajax.get('http://example.com', [data] {
+```
+Vue.ajax.get('http://example.com', data {
     withCredentials: false
 });
 ```

@@ -1,13 +1,7 @@
 node_modules
-npm-debug.log
+dist
 .coveralls.yml
 package-lock.json
-webpack.config.js
-webpack.common.js
-webpack.dev.js
-webpack.prod.js
 .DS_Store
-.vscode
-.jshintrc
-.idea
 TODO
+.idea

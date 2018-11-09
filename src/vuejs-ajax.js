@@ -1,113 +1,165 @@
 /*!
  * VueAjax
- * Copyright 2018, Fatih Koca
+ * (c) 2018, Fatih Koca
  * Released under the MIT License
  * https://github.com/fattihkoca/vue.ajax
  */
+const VueAjax = {
+    install: (Vue, options) => {
+        let // Request attempt for preventing duplicated requests
+            requestAttempt = {},
 
-// ES6
-// import ajax from 'vue-ajax-plugin'
-// Vue.use(ajax)
-//
-// ES5
-// var ajax = require('vue-ajax-plugin')
-// Vue.use(ajax)
+            // Jsonp attempt size for naming jsonp callback
+            jsonpAttemptSize = 0;
 
-var VueAjax = {
-    install: function (Vue, options) {
-        var
+        const utils = {
             // XHR response status types
-            xhrStatuses = ['Uninitialized', 'Opened', 'Headers Received', 'Loading', 'Complete'],
+            xhrStatuses: ["Uninitialized", "Opened", "Headers Received", "Loading", "Complete"],
 
             // Static names
-            names = {
-                version: 'X-History-Version',
-                component: 'x-component-item',
-                componentState: 'x-history-state',
+            names: {
+                version: "X-History-Version",
+                component: "x-component-item",
+                componentState: "x-history-state",
+                csrfMeta: "csrf-token",
+                csrfToken: "X-CSRF-TOKEN",
+                ajaxRequestKey: "X-Requested-With",
+                ajaxRequestValue: "XMLHttpRequest",
+                contentUrlEncoded: "application/x-www-form-urlencoded",
             },
 
-            urlEncodedMethods = ['POST', 'PUT', 'PATCH', 'DELETE'],
+            event: {
+                abort: "vueajaxabort",
+                ajaxcomplete: "vueajaxcomplete",
+                ajaxsuccess: "vueajaxsuccess",
+                ajaxerror: "vueajaxerror",
+                ajaxstart: "vueajaxstart",
+                historystart: "vueajaxhistorystart",
+                historycomplete: "vueajaxhistorycomplete",
+                historysuccess: "vueajaxhistorysuccess",
+                historyerror: "vueajaxhistoryerror",
+                shiftercomplete: "componentshiftercomplete",
+                shifterstart: "componentshifterstart",
+                shiftersuccess: "componentshiftersuccess",
+                shiftererror: "componentshiftererror",
+            },
 
-            defaultMethod = 'GET',
+            urlEncodedMethods: ["POST", "PUT", "PATCH", "DELETE"],
+            defaultMethod: "GET",
 
-            // Getting current history version
-            historyVersion = function () {
-                var
-                    name = names.version.toLowerCase(),
-                    meta = document.head.querySelector('meta[http-equiv=' + name + '][content]');
+            /**
+             * Timestamp method
+             * @returns {string}
+             */
+            timestamp() {
+                return String((new Date().getTime()));
+            },
+
+            /**
+             * Random string creator
+             * @param charSize
+             * @returns {string}
+             */
+            randomString(charSize) {
+                let m = charSize || 9,
+                    s = "",
+                    r = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+                for (let i = 0; i < m; i++) {
+                    s += r.charAt(Math.floor(Math.random() * r.length));
+                }
+
+                return s;
+            },
+
+            /**
+             * Getting current history version
+             */
+            historyVersion() {
+                let name = utils.names.version.toLowerCase(),
+                    meta = document.head.querySelector("meta[http-equiv=" + name + "][content]");
 
                 if (!meta) {
                     meta = document.createElement("meta");
-                    meta.setAttribute('http-equiv', name);
-                    meta.content = randomString(40);
+                    meta.setAttribute("http-equiv", name);
+                    meta.content = utils.randomString(40);
                     document.head.appendChild(meta);
                 }
 
-                return meta ? meta.getAttribute('content') : false;
+                return meta ? meta.getAttribute("content") : false;
             },
 
-            getComponentState = function () {
-                return document.head.querySelector('meta[http-equiv=' + names.componentState + ']');
+            /**
+             * Get component style
+             * @returns {Element}
+             */
+            getComponentState() {
+                return document.head.querySelector("meta[http-equiv=" + utils.names.componentState + "]");
             },
 
-            componentState = function (status) {
-                var meta = getComponentState();
+            /**
+             *
+             * @param status
+             */
+            componentState(status) {
+                let meta = utils.getComponentState();
 
                 if (!meta) {
                     meta = document.createElement("meta");
-                    meta.setAttribute('http-equiv', names.componentState);
+                    meta.setAttribute("http-equiv", utils.names.componentState);
                     document.head.appendChild(meta);
                 }
 
                 meta.content = status;
             },
 
-            // Timestamp method
-            timestamp = function () {
-                return String((new Date().getTime()));
+            /**
+             * Random query string for preventing cache
+             * @returns {string}
+             */
+            nonCacheQs() {
+                return utils.randomString(5) + utils.timestamp() + "=" + utils.timestamp();
             },
 
-            // Random string creator
-            randomString = function (charSize) {
-                var m = charSize || 9;
-                var s = '',
-                    r = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-                for (var i = 0; i < m; i++) {
-                    s += r.charAt(Math.floor(Math.random() * r.length));
-                }
-                return s;
-            },
-
-            // Random query string for preventing cache
-            nonCacheQs = function () {
-                return randomString(5) + timestamp() + '=' + timestamp();
-            },
-
-            // Serialize objects
-            serialize = function (obj, prefix) {
-                var str = [],
+            /**
+             * Serialize objects
+             * @param obj
+             * @param prefix
+             * @returns {string}
+             */
+            serialize(obj, prefix = false) {
+                let str = [],
                     p;
                 for (p in obj) {
                     if (obj.hasOwnProperty(p)) {
-                        var k = prefix ? prefix + "[" + p + "]" : p,
+                        let k = prefix ? prefix + "[" + p + "]" : p,
                             v = obj[p];
                         str.push((v !== null && typeof v === "object") ?
-                            serialize(v, k) :
+                            utils.serialize(v, k) :
                             encodeURIComponent(k) + "=" + encodeURIComponent(v));
                     }
                 }
                 return str.join("&");
             },
 
-            // Adding query string to url
-            addQueryString = function (url, qs) {
-                var prefix = url.indexOf('?') !== -1 ? '&' : '?';
+            /**
+             * Adding query string to url
+             * @param url
+             * @param qs
+             * @returns {string}
+             */
+            addQueryString(url, qs) {
+                let prefix = url.indexOf("?") !== -1 ? "&" : "?";
                 return url + prefix + qs;
             },
 
-            // Location redirect
-            locationRedirect = function (url, hardReloadOnError) {
-                if (hardReloadOnError != undefined && !hardReloadOnError) {
+            /**
+             * Location redirect
+             * @param url
+             * @param hardReloadOnError
+             */
+            locationRedirect(url, hardReloadOnError) {
+                if (hardReloadOnError !== undefined && !hardReloadOnError) {
                     return;
                 }
 
@@ -121,47 +173,54 @@ var VueAjax = {
                 window.location.replace(url);
             },
 
-            // Getting file extension
-            getFileExtension = function (filename) {
-                return filename.split('.').pop();
+            /**
+             * Getting file extension
+             * @param filename
+             * @return string
+             */
+            getFileExtension(filename) {
+                return filename.split(".").pop();
             },
 
-            // Adding assets 
-            pushAssets = function (asset) {
-                if (typeof asset == 'object') {
-                    for (var i in asset) {
-                        pushAssets(asset[i]);
+            /**
+             * Adding assets
+             * @param asset
+             */
+            pushAssets(asset) {
+                if (typeof asset === "object") {
+                    for (let i in asset) {
+                        utils.pushAssets(asset[i]);
                     }
                     return;
-                } else if (!asset ||  typeof asset != 'string') {
+                } else if (!asset || typeof asset !== "string") {
                     return;
                 }
 
-                var extension = getFileExtension(asset),
+                let extension = utils.getFileExtension(asset),
                     newElement = null,
-                    findElement = function (selector) {
+                    findElement = selector => {
                         return document.head.querySelector(selector);
                     };
 
                 switch (extension) {
-                    case 'css':
+                    case "css":
                         if (findElement('link[href="' + asset + '"]')) {
                             return;
                         }
 
                         newElement = document.createElement("link");
-                        newElement.rel = 'stylesheet';
-                        newElement.type = 'text/css';
+                        newElement.rel = "stylesheet";
+                        newElement.type = "text/css";
                         newElement.href = asset;
                         break;
 
-                    case 'js':
+                    case "js":
                         if (findElement('script[src="' + asset + '"]')) {
                             return;
                         }
 
                         newElement = document.createElement("script");
-                        newElement.type = 'text/javascript';
+                        newElement.type = "text/javascript";
                         newElement.src = asset;
                         break;
                 }
@@ -171,22 +230,32 @@ var VueAjax = {
                 }
             },
 
-            // Checking to history feature
-            availableHistory = function (url) {
-                var state = window.history.state || {},
+            /**
+             * Checking to history feature
+             * @param url
+             * @returns boolean
+             */
+            availableHistory(url) {
+                let state = window.history.state || {},
                     pushState = window.history.pushState || {};
-                return pushState && (!state || !state.url || state.url != url);
+                return pushState && (!state || !state.url || state.url !== url);
             },
 
-            // Parsing received configures
-            parseConfigures = function (method, url, data, config) {
-                var parsed = {};
+            /**
+             * Parsing received configures
+             * @param method
+             * @param url
+             * @param data
+             * @param config
+             */
+            parseConfigures(method, url, data, config) {
+                let parsed = {};
 
-                if (typeof config == 'object') {
+                if (typeof config === "object") {
                     parsed = config;
                 }
 
-                if (typeof data == 'object') {
+                if (typeof data === "object") {
                     parsed.data = data;
                 }
 
@@ -196,130 +265,357 @@ var VueAjax = {
                 return parsed;
             },
 
-            updateTitle = function (title) {
+            /**
+             * Update document title element
+             * @param title
+             */
+            updateTitle(title) {
                 if (title) {
                     document.title = title;
                 }
             },
 
-            scrollToTop = function (scroll) {
+            /**
+             * Window scroll top
+             * @param scroll
+             */
+            scrollToTop(scroll) {
                 if (scroll) {
                     window.scrollTo(0, 0);
                 }
             },
 
-            isUrlEncodedMethod = function (method) {
-                return urlEncodedMethods.indexOf(method) != -1;
+            /**
+             *
+             * @param method
+             * @returns {boolean}
+             */
+            isUrlEncodedMethod(method) {
+                return utils.urlEncodedMethods.indexOf(method) !== -1;
             },
 
-            // XHR send method
-            xhrSend = function (config) {
+            /**
+             *
+             * @param type
+             * @param state
+             */
+            customEventDispatcher(type, state) {
+                const evt = new CustomEvent(type, {
+                    detail: state,
+                });
+
+                window.dispatchEvent(evt);
+            },
+
+            /**
+             * JSONP request
+             * @param config
+             * @returns {HTMLElement}
+             */
+            jsonpRequest: function (config) {
+                let async = config.async || true,
+                    callbackParam = config.jsonpCallbackParam || "callback",
+                    key = config.key,
+                    name = utils.randomString(10) + "_" + (jsonpAttemptSize++),
+                    url = config.url;
+
+                // Adding callback query string
+                url = utils.addQueryString(url, callbackParam + "=" + name);
+
+                if (config.preventDuplicate && requestAttempt.hasOwnProperty(key)) {
+                    if (requestAttempt[key].hasOwnProperty("src")) {
+                        let src = requestAttempt[key].src,
+                            prevScript = document.head.querySelector('script[src="' + src + '"]"');
+
+                        prevScript.src = "";
+                        prevScript.remove();
+                    }
+                }
+
+                // Create script
+                let script = document.createElement("script");
+
+                script.type = "text/javascript";
+                script.src = url;
+
+                // For prevent dublicate requests
+                requestAttempt[key] = script;
+
+                // Asynchronous request
+                if (async) {
+                    script.async = true;
+                }
+
+                try {
+                    let response = {
+                        config: config,
+                        data: null,
+                        headers: null,
+                        request: this,
+                        status: null,
+                        statusText: null,
+                        xhrStatus: "JSONP"
+                    };
+
+                    window[name] = data => {
+                        response.data = data;
+                        response.status = 1;
+                        response.statusText = "OK";
+
+                        utils.customEventDispatcher(utils.event.ajaxsuccess, response);
+
+                        if (typeof config.success === "function") {
+                            config.success(response);
+                        }
+
+                        if (script) {
+                            script.remove();
+                        }
+
+                        delete window[name];
+                        delete requestAttempt[key];
+                    };
+
+                    document.head.appendChild(script);
+
+                    script.onload = e => {
+                        response.request = e;
+                        response.status = 1;
+                        response.statusText = "OK";
+
+                        utils.customEventDispatcher(utils.event.ajaxcomplete, response);
+
+                        if (typeof config.complete === "function") {
+                            config.complete(response);
+                        }
+                    };
+
+                    script.onerror = e => {
+                        response.status = 0;
+                        response.statusText = "Error";
+                        response.request = e;
+
+                        utils.customEventDispatcher(utils.event.ajaxerror, response);
+
+                        if (typeof config.error === "function") {
+                            config.error(response);
+                        }
+
+                        if (script) {
+                            script.remove();
+                        }
+                    };
+                } catch (error) {
+                    utils.customEventDispatcher(utils.event.ajaxerror, error);
+
+                    if (typeof config.error === "function") {
+                        config.error(error);
+                    }
+                }
+
+                return script;
+            },
+
+            prepareJsonpRequest(config, data, preventDuplicate, key) {
+                config.url = utils.addQueryString(url, data);
+                config.key = key;
+                config.preventDuplicate = preventDuplicate;
+                config.data = data;
+                return utils.jsonpRequest(config);
+            },
+
+            /**
+             * Push window history state
+             * @param data
+             * @returns {*|void}
+             */
+            pushState(data) {
+                if (data.history) {
+                    return;
+                }
+
+                let latestHistoryVersion = data.xhr.getResponseHeader(utils.names.version);
+
+                // If version mismatching
+                if (data.currentHistoryVersion && latestHistoryVersion && data.currentHistoryVersion !== latestHistoryVersion) {
+                    return utils.locationRedirect(data.url, data.hardReloadOnError);
+                }
+
+                if (utils.availableHistory(data.url)) {
+                    window.history.pushState({
+                        assets: data.assets,
+                        callName: data.stateCallName,
+                        title: data.title,
+                        history: data.history,
+                        method: data.method,
+                        scrollTop: data.scrollTop,
+                        url: data.url,
+                        hardReloadOnError: data.hardReloadOnError
+                    }, data.title, data.url);
+                }
+            },
+
+            /**
+             * Prevent cache for url
+             * @param url
+             * @param cache
+             * @returns {*}
+             */
+            preventCacheForUrl(url, cache) {
+                if (cache) {
+                    return config.url;
+                }
+
+                return utils.addQueryString(url, utils.nonCacheQs());
+            },
+
+            /**
+             * Push data to url (GET requests)
+             * @param url
+             * @param data
+             * @returns {*}
+             */
+            pushDataToUrl(url, data) {
+                if (typeof data !== "object") {
+                    return url;
+                }
+
+                return utils.addQueryString(url, utils.serialize(data));
+            },
+
+            /**
+             * @param xhr
+             * @param key
+             */
+            pushKeyToRequest(xhr, key) {
+                if (key) {
+                    requestAttempt[key] = xhr;
+                }
+            },
+
+            /**
+             *
+             * @param config
+             * @param preventDuplicate
+             * @param key
+             */
+            preventDuplicateRequests(config, preventDuplicate, key) {
+                if (preventDuplicate && config.method !== "JSONP" && requestAttempt.hasOwnProperty(key)) {
+                    utils.customEventDispatcher(utils.event.abort, {
+                        config: config,
+                        timeStamp: utils.timestamp(),
+                        xhrStatus: "Abort"
+                    });
+
+                    requestAttempt[key].abort();
+                }
+            },
+
+            /**
+             * Execute callback
+             * @param callback
+             * @param response
+             */
+            execCallback(callback, response = true) {
+                if (typeof callback === "function") {
+                    callback(response);
+                }
+            },
+
+            /**
+             * XHR send method
+             * @param config
+             * @returns {*}
+             */
+            xhrSend: function (config) {
                 if (!config.url) {
                     return false;
                 }
 
                 // Receiving configures
-                var assets = config.assets || null,
+                let assets = config.assets || null,
                     async = config.async !== undefined ? config.async : true,
-                    cache = config.cache || false,
                     csrf = config.csrf !== undefined ? config.csrf : true,
-                    currentHistoryVersion = historyVersion(),
+                    cache = config.cache || false,
+                    currentHistoryVersion = utils.historyVersion(),
                     data = null,
                     postData = null,
                     fileInputs = config.fileInputs,
                     history = config.history || false,
                     key = config.key || config.url,
-                    method = config.method || defaultMethod,
+                    method = config.method.toUpperCase() || utils.defaultMethod.toUpperCase(),
                     title = config.title || false,
                     url = config.url,
-                    preventDublicate = config.preventDublicate !== undefined ? config.preventDublicate : true,
+                    rawUrl = config.url,
+                    preventDuplicate = config.preventDuplicate !== undefined ? config.preventDuplicate : true,
                     scrollTop = config.scrollTop || false,
-                    stateCallName = randomString(8) + timestamp(),
-                    timeout = typeof config.timeout == 'number' || (!isNaN(parseFloat(config.timeout)) && isFinite(config.timeout)) ? config.timeout : 60000,
+                    stateCallName = utils.randomString(8) + utils.timestamp(),
+                    timeout = typeof config.timeout === "number" || (!isNaN(parseFloat(config.timeout)) && isFinite(config.timeout)) ? config.timeout : 60000,
                     withCredentials = config.withCredentials || false,
                     hardReloadOnError = config.hardReloadOnError || false;
 
-                method = method.toUpperCase();
-
-                // Preventing dublicate requests
-                if (preventDublicate && config.method != 'JSONP' && requestAttemps.hasOwnProperty(key)) {
-                    customeEventDispatcher('vueajaxabort', {
-                        config: config,
-                        timeStamp: timestamp(),
-                        xhrStatus: 'Abort'
-                    });
-                    requestAttemps[key].abort();
-                }
+                // Preventing duplicate requests
+                utils.preventDuplicateRequests(config, preventDuplicate, key);
 
                 // File uploading
-                if (typeof fileInputs == 'object' && fileInputs.length) {
+                if (typeof fileInputs === "object" && fileInputs.length) {
                     postData = new FormData();
 
-                    for (var i in fileInputs) {
-                        if (fileInputs[i].files) {
-                            var files = fileInputs[i].files,
-                                fileName = fileInputs[i].hasAttribute('name') ?
-                                fileInputs[i].getAttribute('name') : 'file_' + i;
+                    for (let i in fileInputs) {
+                        if (fileInputs.hasOwnProperty(i) && fileInputs[i].files) {
+                            let files = fileInputs[i].files,
+                                fileName = fileInputs[i].hasAttribute("name") ?
+                                    fileInputs[i].getAttribute("name") : "file_" + i;
 
                             if (files.length > 1) {
-                                fileName += '[]';
+                                fileName += "[]";
                             }
 
-                            for (var f in files) {
-                                var file = files[f];
-                                postData.append(fileName, file);
+                            for (let f in files) {
+                                if (files.hasOwnProperty(f)) {
+                                    postData.append(fileName, files[f]);
+                                }
                             }
                         }
                     }
 
-                    if (typeof config.data == 'object') {
-                        for (var o in config.data) {
-                            postData.append(o, config.data[o]);
+                    if (typeof config.data === "object") {
+                        for (let o in config.data) {
+                            if (config.data.hasOwnProperty(o)) {
+                                postData.append(o, config.data[o]);
+                            }
                         }
                     }
-                } else if (typeof config.data == 'object' && Object.keys(config.data).length) {
-                    data = serialize(config.data);
+                } else if (typeof config.data === "object" && Object.keys(config.data).length) {
+                    data = utils.serialize(config.data);
 
-                    if (isUrlEncodedMethod(method)) {
+                    if (utils.isUrlEncodedMethod(method)) {
                         postData = data;
                         data = null;
                     } else {
-                        url = addQueryString(url, data);
+                        url = utils.addQueryString(url, data);
                     }
                 }
 
-                // Noncaching
-                if (!cache) {
-                    url = addQueryString(url, nonCacheQs());
-                }
+                // Prevent cache
+                url = utils.preventCacheForUrl(url, cache);
+
+                // Push data to url
+                url = utils.pushDataToUrl(url, config.urlData);
 
                 // Before callback
-                if (typeof config.before == 'function') {
-                    config.before();
-                }
-
-                // urlData
-                if (typeof config.urlData == 'object') {
-                    var urlSerializeData = serialize(config.urlData);
-                    url = addQueryString(url, urlSerializeData);
-                }
+                utils.execCallback(config.before);
 
                 // Jsonp
-                if (config.method == 'JSONP') {
-                    config.url = addQueryString(url, data);
-                    config.key = key;
-                    config.preventDublicate = preventDublicate;
-                    config.data = data;
-                    return jsonpRequest(config);
+                if (config.method === "JSONP") {
+                    return utils.prepareJsonpRequest(config, data, preventDuplicate, key);
                 }
 
                 // Starting XHR
-                var xhr = new XMLHttpRequest();
+                let xhr = new XMLHttpRequest();
 
                 // Pushing request key
-                if (key) {
-                    requestAttemps[key] = xhr;
-                }
+                utils.pushKeyToRequest(xhr, key);
 
                 // Timeout
                 xhr.timeout = timeout;
@@ -329,37 +625,39 @@ var VueAjax = {
 
                 // Adding CSRF Token
                 if (csrf) {
-                    var meta = document.head.querySelector('meta[name=csrf-token]');
-                    csrf = meta && meta.hasAttribute('content') ? meta.content : false;
+                    let meta = document.head.querySelector("meta[name=" + utils.names.csrfMeta + "]");
+                    csrf = meta && meta.hasAttribute("content") ? meta.content : false;
 
                     if (csrf) {
-                        if (typeof config.headers == 'object') {
-                            config.headers['X-CSRF-TOKEN'] = csrf;
+                        if (typeof config.headers === "object") {
+                            config.headers[utils.names.csrfToken] = csrf;
                         } else {
                             config.headers = {
-                                'X-CSRF-TOKEN': csrf
+                                [utils.names.csrfToken]: csrf
                             };
                         }
                     }
                 }
 
                 // Adding http headers
-                if (typeof config.headers == 'object') {
-                    for (var h in config.headers) {
-                        xhr.setRequestHeader(h, config.headers[h]);
+                if (typeof config.headers === "object") {
+                    for (let h in config.headers) {
+                        if (config.headers.hasOwnProperty(h)) {
+                            xhr.setRequestHeader(h, config.headers[h]);
+                        }
                     }
                 }
 
                 // Ajax request header
-                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                xhr.setRequestHeader(utils.names.ajaxRequestKey, utils.names.ajaxRequestValue);
 
-                if (isUrlEncodedMethod(method) && typeof fileInputs != 'object') {
-                    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                if (utils.isUrlEncodedMethod(method) && typeof fileInputs !== "object") {
+                    xhr.setRequestHeader("Content-type", utils.names.contentUrlEncoded);
                 }
 
                 // Adding http headers for history
                 if (history && currentHistoryVersion) {
-                    xhr.setRequestHeader(names.version, currentHistoryVersion);
+                    xhr.setRequestHeader(utils.names.version, currentHistoryVersion);
                 }
 
                 // WithCredentials option for Cross-Site
@@ -367,268 +665,140 @@ var VueAjax = {
                     xhr.withCredentials = true;
                 }
 
-                // XHR responsing
+                // XHR response
                 xhr.onreadystatechange = function () {
-                    var responseData = this.response,
+                    let responseData = this.response,
                         contentType = xhr.getResponseHeader("content-type");
 
                     // Parsing json responses
-                    if (this.readyState == 4 && responseData &&
-                        contentType && contentType.indexOf('json') !== -1) {
-                        var responseJson = JSON.parse(this.responseText);
-                        if (typeof responseJson == "object") {
+                    if (this.readyState === 4 && responseData &&
+                        contentType && contentType.indexOf("json") !== -1) {
+                        let responseJson = JSON.parse(this.responseText);
+                        if (typeof responseJson === "object") {
                             responseData = responseJson;
                         }
                     }
 
                     // Preparing response object
-                    var response = {
+                    let response = {
                         config: config,
                         data: responseData,
                         headers: xhr.getAllResponseHeaders(),
                         request: this,
                         status: this.status,
                         statusText: this.statusText,
-                        timeStamp: timestamp(),
-                        xhrStatus: xhrStatuses.hasOwnProperty(this.readyState) ?
-                            xhrStatuses[this.readyState] : 'Unknown'
+                        timeStamp: utils.timestamp(),
+                        xhrStatus: utils.xhrStatuses.hasOwnProperty(this.readyState) ?
+                            utils.xhrStatuses[this.readyState] : "Unknown"
                     };
 
                     // If connection is done
-                    if (this.readyState == 4) {
-                        delete requestAttemps[key];
+                    if (this.readyState === 4) {
+                        delete requestAttempt[key];
 
-                        customeEventDispatcher('vueajaxcomplete', response);
+                        utils.customEventDispatcher(utils.event.ajaxcomplete, response);
 
                         // Complete callback
-                        if (typeof config.complete == 'function') {
-                            config.complete(response);
-                        }
+                        utils.execCallback(config.complete);
 
                         // Success callback
-                        if (this.status == 200) {
-                            if (typeof config.success == 'function') {
-                                customeEventDispatcher('vueajaxsuccess', response);
+                        if (this.status === 200) {
+                            if (typeof config.success === "function") {
+                                utils.customEventDispatcher(utils.event.ajaxsuccess, response);
 
-                                window[stateCallName] = function () {
+                                window[stateCallName] = () => {
                                     return config.success(response);
                                 };
 
                                 window[stateCallName]();
                             } else {
-                                window[stateCallName] = function () {
+                                window[stateCallName] = () => {
                                     return response;
                                 };
                             }
 
-                            // Pjax commits
-                            if (history) {
-                                var latestHistoryVersion = xhr.getResponseHeader(names.version);
-
-                                // If version mismatching
-                                if (currentHistoryVersion && latestHistoryVersion && currentHistoryVersion !== latestHistoryVersion) {
-                                    return locationRedirect(config.url, hardReloadOnError);
-                                }
-
-                                if (availableHistory(config.url)) {
-                                    window.history.pushState({
-                                        assets: assets,
-                                        callName: stateCallName,
-                                        title: title,
-                                        history: history,
-                                        method: method,
-                                        scrollTop: scrollTop,
-                                        url: config.url,
-                                        hardReloadOnError: hardReloadOnError
-                                    }, title, config.url);
-                                }
-                            }
+                            // Push history state
+                            utils.pushState({
+                                history: history,
+                                currentHistoryVersion: currentHistoryVersion,
+                                hardReloadOnError: hardReloadOnError,
+                                method: method,
+                                title: title,
+                                scrollTop: scrollTop,
+                                assets: assets,
+                                stateCallName: stateCallName,
+                                url: rawUrl,
+                                xhr: xhr,
+                            });
 
                             // Update document title
-                            updateTitle(title);
+                            utils.updateTitle(title);
 
                             // Has scroll feature
-                            scrollToTop(scrollTop);
+                            utils.scrollToTop(scrollTop);
 
                             // Push assets
-                            pushAssets(assets);
+                            utils.pushAssets(assets);
                         }
                         // Error callback
-                        else if (preventDublicate && this.status != 0) {
-                            customeEventDispatcher('vueajaxerror', response);
+                        else if (preventDuplicate && this.status !== 0) {
+                            utils.customEventDispatcher(utils.event.ajaxerror, response);
 
-                            if (typeof config.error == 'function') {
-                                config.error(response);
-                            }
+                            // Error callback
+                            utils.execCallback(config.error, response);
 
                             if (history) {
                                 // History fallback
-                                locationRedirect(url, hardReloadOnError);
+                                utils.locationRedirect(url, hardReloadOnError);
                             }
                         }
                     }
                 };
 
-                customeEventDispatcher('vueajaxstart', {
+                utils.customEventDispatcher(utils.event.ajaxstart, {
                     config: config,
-                    timeStamp: timestamp(),
-                    xhrStatus: 'Uninitialized'
+                    timeStamp: utils.timestamp(),
+                    xhrStatus: "Uninitialized"
                 });
 
                 // Sending XHR
                 xhr.send(postData);
 
                 return xhr;
-            },
+            }
+        };
 
-            // JSONP request
-            jsonpRequest = function (config) {
-                var async = config.async || true,
-                    callbackParam = config.jsonpCallbackParam || 'callback',
-                    key = config.key,
-                    name = randomString(10) + '_' + jsonpAttempSize++,
-                    url = config.url;
-
-                // Adding callback query string
-                url = addQueryString(url, callbackParam + '=' + name);
-
-                if (config.preventDublicate && requestAttemps.hasOwnProperty(key)) {
-                    if (requestAttemps[key].hasOwnProperty('src')) {
-                        var src = requestAttemps[key].src,
-                            prevScript = document.head.querySelector('script[src="' + src + '"]');
-                        prevScript.src = '';
-                        prevScript.remove();
-                    }
-                }
-
-                // Create script
-                var script = document.createElement('script');
-                script.type = 'text/javascript';
-                script.src = url;
-
-                // For prevent dublicate requests
-                requestAttemps[key] = script;
-
-                // Asynchronous request
-                if (async) {
-                    script.async = true;
-                }
-
-                try {
-                    var response = {
-                        config: config,
-                        data: null,
-                        headers: null,
-                        request: this,
-                        status: null,
-                        statusText: null,
-                        xhrStatus: 'JSONP'
-                    };
-
-                    window[name] = function (data) {
-                        response.data = data;
-                        response.status = 1;
-                        response.statusText = 'OK';
-
-                        customeEventDispatcher('vueajaxsuccess', response);
-
-                        if (typeof config.success == 'function') {
-                            config.success(response);
-                        }
-
-                        if (script) {
-                            script.remove();
-                        }
-
-                        delete window[name];
-                        delete requestAttemps[key];
-                    };
-
-                    document.head.appendChild(script);
-
-                    script.onload = function (e) {
-                        response.request = e;
-                        response.status = 1;
-                        response.statusText = 'OK';
-
-                        customeEventDispatcher('vueajaxcomplete', response);
-
-                        if (typeof config.complete == 'function') {
-                            config.complete(response);
-                        }
-                    };
-
-                    script.onerror = function (e) {
-                        response.status = 0;
-                        response.statusText = 'Error';
-                        response.request = e;
-
-                        customeEventDispatcher('vueajaxerror', response);
-
-                        if (typeof config.error == 'function') {
-                            config.error(response);
-                        }
-
-                        if (script) {
-                            script.remove();
-                        }
-                    };
-                } catch (error) {
-                    customeEventDispatcher('vueajaxerror', error);
-
-                    if (typeof config.error == 'function') {
-                        config.error(error);
-                    }
-                }
-
-                return script;
-            },
-
-            // Request attemps for previnting dublicate requests
-            requestAttemps = {},
-
-            // Jsonp attemp size for naming jsonp callbaks
-            jsonpAttempSize = 0,
-
-            customeEventDispatcher = function(type, state) {
-                var evt = new CustomEvent(type, {
-                    detail: state,
-                });
-        
-                window.dispatchEvent(evt);
-            };
-
-        // Pjax history (Benefits of HTML5 histroy api)
-        window.addEventListener('popstate', function (e) {
+        // Pjax history (Benefits of HTML5 history api)
+        window.addEventListener("popstate", e => {
             // Set true to meta for component updating
-            componentState(true);
+            utils.componentState(true);
 
             // If browser doesn't has state in history
             if (!e.state) {
                 // History fallback
-                return locationRedirect();
+                return utils.locationRedirect();
             }
 
             // Pjax configurations
-            var state = e.state,
+            let state = e.state,
                 assets = state.assets,
                 callName = state.callName || false,
                 hardReloadOnError = state.hardReloadOnError,
                 history = state.history || false,
-                method = state.method || 'GET',
+                method = state.method || "GET",
                 scrollTop = state.scrollTop,
                 title = state.title || null,
                 url = state.url || null;
 
             // If url does not exists or window reloaded
-            if (!url || !callName || typeof window[callName] != 'function') {
+            if (!url || !callName || typeof window[callName] !== "function") {
                 // History fallback
-                return locationRedirect();
+                return utils.locationRedirect();
             }
 
-            customeEventDispatcher('vueajaxhistorystart', {
-                timeStamp: timestamp(),
-                xhrStatus: 'Uninitialized'
+            utils.customEventDispatcher(utils.event.historystart, {
+                timeStamp: utils.timestamp(),
+                xhrStatus: "Uninitialized"
             });
 
             // Send ajax request and run previous callback
@@ -640,19 +810,19 @@ var VueAjax = {
                 title: title,
                 url: url,
                 hardReloadOnError: hardReloadOnError,
-                complete: function(response) {
-                    customeEventDispatcher('vueajaxhistorycomplete', response);
+                complete: response => {
+                    utils.customEventDispatcher(utils.event.historycomplete, response);
                 }
-            }).then(function (response) {
-                customeEventDispatcher('vueajaxhistorysuccess', response);
+            }).then(response => {
+                utils.customEventDispatcher(utils.event.historysuccess, response);
 
                 // Run previous callback
                 window[callName](response);
-            }, function (response) {
-                customeEventDispatcher('vueajaxhistoryerror', response);
+            }, response => {
+                utils.customEventDispatcher(utils.event.historyerror, response);
 
                 // History fallback
-                return locationRedirect(url);
+                return utils.locationRedirect(url);
             });
         });
 
@@ -665,72 +835,64 @@ var VueAjax = {
                  * @param {Function} error On error callback
                  */
                 componentShifter: function (config, success, error) {
-                    config.method = config.method || 'GET';
-                    var completeCallback = config.complete;
-                    config.complete = function(response) {
-                        customeEventDispatcher('componentshiftercomplete', response);
+                    config.method = config.method || "GET";
+                    let completeCallback = config.complete;
 
-                        if(typeof completeCallback == 'function') {
-                            completeCallback();
-                        }
+                    config.complete = response => {
+                        utils.customEventDispatcher(utils.event.shiftercomplete, response);
+                        utils.execCallback(completeCallback);
                     };
 
-                    var componentName = config.is || names.component,
-                        self = this;
+                    let componentName = config.is || utils.names.component;
 
                     // Set component state to false
-                    componentState(false);
+                    utils.componentState(false);
 
-                    customeEventDispatcher('componentshifterstart', {
-                        timeStamp: timestamp(),
-                        xhrStatus: 'Uninitialized'
+                    utils.customEventDispatcher(utils.event.shifterstart, {
+                        timeStamp: utils.timestamp(),
+                        xhrStatus: "Uninitialized"
                     });
 
                     // Load template by xhr
-                    Vue.ajax(config).then(function (response) {
-                        if (getComponentState().content == 'false') {
-                            var template = response.data;
-
-                            // Run Vue.component
-                            Vue.component(componentName, function (resolve) {
-                                // Resolve response data
-                                resolve({
-                                    template: template
-                                });
-                            });
-
-                            customeEventDispatcher('componentshiftersuccess', response);
-
-                            // Run callback after success
-                            if (typeof success == 'function') {
-                                success(response);
-                            }
-
-                            // Update component name
-                            self[componentName] = null;
-                            self[componentName] = componentName;
-
+                    Vue.ajax(config).then(response => {
+                        if (utils.getComponentState().content !== "false") {
+                            // If on popstate set component from history
+                            this.componentShifter(config, success, error);
                             return;
                         }
 
-                        // If on popstate set component from history
-                        self.componentShifter(config, success);
-                    }, function (response) {
-                        customeEventDispatcher('componentshiftererror', response);
+                        let template = response.data;
 
-                        // If has error callback
-                        if (typeof error == 'function') {
-                            error(response);
-                        }
+                        // Run Vue.component
+                        Vue.component(componentName, resolve => {
+                            // Resolve response data
+                            resolve({
+                                template: template
+                            });
+                        });
+
+                        utils.customEventDispatcher(utils.event.shiftersuccess, response);
+
+                        // Run callback after success
+                        utils.execCallback(success, response);
+
+                        // Update component name
+                        this[componentName] = null;
+                        this[componentName] = componentName;
+                    }, response => {
+                        utils.customEventDispatcher(utils.event.shiftererror, response);
+
+                        // If has the error callback
+                        utils.execCallback(error, response);
                     });
                 }
             },
-            created: function () {
-                historyVersion();
-                componentState(false);
+            created: () => {
+                utils.historyVersion();
+                utils.componentState(false);
             },
-            mounted: function () {
-                if (typeof options == 'object' && typeof options.mounted == 'function') {
+            mounted: () => {
+                if (typeof options === "object" && typeof options.mounted === "function") {
                     return options.mounted();
                 }
             }
@@ -742,7 +904,7 @@ var VueAjax = {
          */
         Vue.ajax = function (config) {
             Vue.ajax.config = config;
-            xhrSend(Vue.ajax.config);
+            utils.xhrSend(Vue.ajax.config);
             return Vue.ajax;
         };
 
@@ -751,85 +913,85 @@ var VueAjax = {
 
         /**
          * Vue.ajax.get()
-         * @param {String} url 
+         * @param {String} url
          * @param {Object} data
-         * @param {Object} config 
+         * @param {Object} config
          */
         Vue.ajax.get = function (url, data, config) {
-            this.config = parseConfigures('GET', url, data, config);
-            xhrSend(this.config);
+            this.config = utils.parseConfigures("GET", url, data, config);
+            utils.xhrSend(this.config);
             return this;
         };
 
         /**
          * Vue.ajax.post()
-         * @param {String} url 
+         * @param {String} url
          * @param {Object} data
          * @param {Object} config
          */
         Vue.ajax.post = function (url, data, config) {
-            this.config = parseConfigures('POST', url, data, config);
-            xhrSend(this.config);
+            this.config = utils.parseConfigures("POST", url, data, config);
+            utils.xhrSend(this.config);
             return this;
         };
 
         /**
          * Vue.ajax.head()
-         * @param {String} url 
+         * @param {String} url
          * @param {Object} data
          * @param {Object} config
          */
         Vue.ajax.head = function (url, data, config) {
-            this.config = parseConfigures('HEAD', url, data, config);
-            xhrSend(this.config);
+            this.config = utils.parseConfigures("HEAD", url, data, config);
+            utils.xhrSend(this.config);
             return this;
         };
 
         /**
          * Vue.ajax.put()
-         * @param {String} url 
+         * @param {String} url
          * @param {Object} data
          * @param {Object} config
          */
         Vue.ajax.put = function (url, data, config) {
-            this.config = parseConfigures('PUT', url, data, config);
-            xhrSend(this.config);
+            this.config = utils.parseConfigures("PUT", url, data, config);
+            utils.xhrSend(this.config);
             return this;
         };
 
         /**
          * Vue.ajax.patch()
-         * @param {String} url 
+         * @param {String} url
          * @param {Object} data
          * @param {Object} config
          */
         Vue.ajax.patch = function (url, data, config) {
-            this.config = parseConfigures('PATCH', url, data, config);
-            xhrSend(this.config);
+            this.config = utils.parseConfigures("PATCH", url, data, config);
+            utils.xhrSend(this.config);
             return this;
         };
 
         /**
          * Vue.ajax.delete()
-         * @param {String} url 
+         * @param {String} url
          * @param {Object} data
          * @param {Object} config
          */
         Vue.ajax.delete = function (url, data, config) {
-            this.config = parseConfigures('DELETE', url, data, config);
-            xhrSend(this.config);
+            this.config = utils.parseConfigures("DELETE", url, data, config);
+            utils.xhrSend(this.config);
             return this;
         };
 
         /**
          * Vue.ajax.jsonp()
-         * @param {String} url 
-         * @param {Object} config|data
+         * @param {String} url
+         * @param {Object} data
          * @param {Object} config
          */
         Vue.ajax.jsonp = function (url, data, config) {
-            this.config = parseConfigures('JSONP', url, data, config);
-            xhrSend(this.config);
+            this.config = utils.parseConfigures("JSONP", url, data, config);
+            utils.xhrSend(this.config);
             return this;
         };
 

@@ -11,8 +11,8 @@ A light XHR plugin for Vue 2.x and and above versions. It has many similar featu
 * [`File uploading`](#file-uploading)
 * [`History`](#history)
 * [`Title`](#title)
-* [`Serialized query string`](#urldata)
-* [`Preventing dublicate requests`](#preventDublicate)
+* [`Serialized query string`](#urlData)
+* [`Preventing duplicate requests`](#preventDuplicate)
 
 # Setup
 
@@ -207,7 +207,7 @@ var vm = new Vue({
 | [`history`](#history)                     | Boolean          | false   | true, false                                |
 | [`headers`](#headers)                     | Object           | -       | -                                          |
 | [`method`](#method)                       | String           | get     | delete, get, head, jsonp, patch, post, put |
-| [`preventDublicate`](#preventDublicate)   | Boolean          | true    | true, false                                |
+| [`preventDuplicate`](#preventDuplicate)   | Boolean          | true    | true, false                                |
 | [`scrollTop`](#scrollTop)                 | Boolean          | false   | true, false                                |
 | [`timeout`](#timeout)                     | Integer          | 60000   | Time in milliseconds                       |
 | [`title`](#title)                         | String           | -       | -                                          |
@@ -235,7 +235,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ## <a name="async"></a> Asynchronous
-By default, all requests are sent asynchronously (i.e. this is set to true by default). If you need synchronous requests, set this option to `false`.
+By default, all requests are sent asynchronously (i.e. this is set to true by default). If you need synchronous requests, set this option to `false`. Default value is `true`.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     async: true
@@ -243,6 +243,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ## <a name="cache"></a> Cache
+Default value is `false`.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     cache: false
@@ -261,6 +262,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ## <a name="csrf"></a> CSRF
+Default value is `true`.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     csrf: true
@@ -316,7 +318,7 @@ You can add the `multiple` attribute to send multiple files with an input elemen
 ```
 
 ## <a name="hardReloadOnError"></a> Hard Reload On Error
-Option to hard reloading when page can not be loaded.
+Option to hard reloading when page can not be loaded. Default value is `false`.
 
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
@@ -325,7 +327,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ## <a name="history"></a> History
-History setting is usage of PushState (HTML history API).
+History setting is usage of PushState (HTML history API). Default value is `false`.
 
 PushState (changing the URL of the page without refreshing the page) to create a faster browsing experience.  This means less elements to load and therefore faster browsing.
 
@@ -354,6 +356,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ## <a name="method"></a> Method
+Default value is `get`.
 ```javascript
 Vue.ajax({
     url: 'http://example.com',
@@ -366,25 +369,25 @@ Instead, you might prefer to use the following shorthand:
 Vue.ajax.post('http://example.com', [data]);
 ```
 
-## <a name="preventDublicate"></a> Preventing Dublicate
-This setting prevents sending dublicate requests to the same address or given key data. 
+## <a name="preventDuplicate"></a> Preventing Duplicate
+This setting prevents sending duplicate requests to the same address or given key data. Default value is `true`.  
 The following example prevents sending requests over the same URL:
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
-    preventDublicate: true
+    preventDuplicate: true
 });
 ```
 
 The following example prevents sending requests over the same given key data:
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
-    preventDublicate: true,
+    preventDuplicate: true,
     key: 'ABCDEFGH'
 });
 ```
 
 ### <a name="scrollTop"></a> Scroll Top
-scrollTop setting is used to scroll to top of the document when loading the request.
+`scrollTop setting is used to scroll to top of the document when loading the request. Default value is `true`.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
     scrollTop: true
@@ -392,7 +395,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ## <a name="timeout"></a> Timeout
-Set a timeout (in milliseconds) for the request.
+Set a timeout (in milliseconds) for the request. Default value is `60000`.
 
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
@@ -409,7 +412,7 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 
-## <a name="urldata"></a> URL Data
+## <a name="urlData"></a> URL Data
 With this setting, you can add serialized query string to the URL you are sending.
 ```javascript
 Vue.ajax.get('http://example.com', [data], {
@@ -424,7 +427,7 @@ The URL will be like this when sending the request:
 `http://example.com?page=15&category=Accessories`
 
 ## <a name="withCredentials"></a> With Credentials
-There is a detailed explanation [here](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials).
+There is a detailed explanation [here](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials). Default value is `false`.
 ```javascript
 Vue.ajax.get('http://example.com', [data] {
     withCredentials: false

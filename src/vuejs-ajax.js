@@ -231,14 +231,44 @@ const VueAjax = {
             },
 
             /**
-             * Checking to history feature
+             * Checking to window history support
              * @param url
              * @returns boolean
              */
-            availableHistory(url) {
+            isSupportPushState(url) {
                 let state = window.history.state || {},
                     pushState = window.history.pushState || {};
                 return pushState && (!state || !state.url || state.url !== url);
+            },
+
+            /**
+             * Push window history state
+             * @param data
+             */
+            pushState(data) {
+                if (!data.history) {
+                    return;
+                }
+
+                let latestHistoryVersion = data.xhr.getResponseHeader(utils.names.version);
+
+                // If version mismatching
+                if (data.currentHistoryVersion && latestHistoryVersion && data.currentHistoryVersion !== latestHistoryVersion) {
+                    return utils.locationRedirect(data.url, data.hardReloadOnError);
+                }
+
+                if (utils.isSupportPushState(data.url)) {
+                    window.history.pushState({
+                        assets: data.assets,
+                        callName: data.stateCallName,
+                        title: data.title,
+                        history: data.history,
+                        method: data.method,
+                        scrollTop: data.scrollTop,
+                        url: data.url,
+                        hardReloadOnError: data.hardReloadOnError
+                    }, data.title, data.url);
+                }
             },
 
             /**
@@ -425,37 +455,6 @@ const VueAjax = {
             },
 
             /**
-             * Push window history state
-             * @param data
-             * @returns {*|void}
-             */
-            pushState(data) {
-                if (data.history) {
-                    return;
-                }
-
-                let latestHistoryVersion = data.xhr.getResponseHeader(utils.names.version);
-
-                // If version mismatching
-                if (data.currentHistoryVersion && latestHistoryVersion && data.currentHistoryVersion !== latestHistoryVersion) {
-                    return utils.locationRedirect(data.url, data.hardReloadOnError);
-                }
-
-                if (utils.availableHistory(data.url)) {
-                    window.history.pushState({
-                        assets: data.assets,
-                        callName: data.stateCallName,
-                        title: data.title,
-                        history: data.history,
-                        method: data.method,
-                        scrollTop: data.scrollTop,
-                        url: data.url,
-                        hardReloadOnError: data.hardReloadOnError
-                    }, data.title, data.url);
-                }
-            },
-
-            /**
              * Prevent cache for url
              * @param url
              * @param cache
@@ -543,7 +542,7 @@ const VueAjax = {
                     fileInputs = config.fileInputs,
                     history = config.history || false,
                     key = config.key || config.url,
-                    method = config.method.toUpperCase() || utils.defaultMethod.toUpperCase(),
+                    method = config.method || utils.defaultMethod,
                     title = config.title || false,
                     url = config.url,
                     rawUrl = config.url,
@@ -553,6 +552,8 @@ const VueAjax = {
                     timeout = typeof config.timeout === "number" || (!isNaN(parseFloat(config.timeout)) && isFinite(config.timeout)) ? config.timeout : 60000,
                     withCredentials = config.withCredentials || false,
                     hardReloadOnError = config.hardReloadOnError || false;
+
+                method = method.toUpperCase();
 
                 // Preventing duplicate requests
                 utils.preventDuplicateRequests(config, preventDuplicate, key);

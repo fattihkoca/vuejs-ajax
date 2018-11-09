@@ -8,11 +8,10 @@ var jsdom = require("jsdom");
 
 global.window = new jsdom.JSDOM().window;
 global.document = window.document;
+global.CustomEvent = require("custom-event");
 
 var Vue = require("vue");
 var ajax = require("../src/vuejs-ajax");
-
-global.CustomEvent = require("custom-event");
 
 Vue.use(ajax);
 

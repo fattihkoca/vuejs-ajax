@@ -253,7 +253,8 @@ const VueAjax = {
                 let latestHistoryVersion = data.xhr.getResponseHeader(utils.names.version);
 
                 // If version mismatching
-                if (data.currentHistoryVersion && latestHistoryVersion && data.currentHistoryVersion !== latestHistoryVersion) {
+                if (data.currentHistoryVersion && latestHistoryVersion
+                    && data.currentHistoryVersion !== latestHistoryVersion) {
                     return utils.locationRedirect(data.url, data.hardReloadOnError);
                 }
 
@@ -549,7 +550,8 @@ const VueAjax = {
                     preventDuplicate = config.preventDuplicate !== undefined ? config.preventDuplicate : true,
                     scrollTop = config.scrollTop || false,
                     stateCallName = utils.randomString(8) + utils.timestamp(),
-                    timeout = typeof config.timeout === "number" || (!isNaN(parseFloat(config.timeout)) && isFinite(config.timeout)) ? config.timeout : 60000,
+                    timeout = typeof config.timeout === "number" || (!isNaN(parseFloat(config.timeout))
+                        && isFinite(config.timeout)) ? config.timeout : 60000,
                     withCredentials = config.withCredentials || false,
                     hardReloadOnError = config.hardReloadOnError || false;
 

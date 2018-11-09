@@ -1,4 +1,5 @@
 node_modules
+build
 dist
 .coveralls.yml
 package-lock.json

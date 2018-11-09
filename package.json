@@ -1,6 +1,6 @@
 {
   "name": "vuejs-ajax",
-  "version": "1.3.72",
+  "version": "1.3.73",
   "description": "A light XHR plugin for Vue 2.x and and above versions. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `http()`. In addition to these, it also has its own practical features. For example, `assets`, `component shifter`, `file upload`, `history`, `title`, and `preventing dublicate request` features.",
   "keywords": [
     "vue",

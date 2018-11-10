@@ -220,14 +220,14 @@ var vm = new Vue({
 ## <a name="assets"></a> Assets
 Assets setting is used to push new asset files (CSS or JS) in the document.
 
-### Pushing single asset file
+##### Pushing single asset file
 ```javascript
 Vue.ajax.get([url], [data], {
     assets: "path/css/style.css"
 });
 ```
 
-### Pushing multiple asset files
+##### Pushing multiple asset files
 ```javascript
 Vue.ajax.get("http://example.com", [data], {
     assets: ["assets/css/style.css", "assets/js/script.js"]
@@ -243,7 +243,7 @@ Vue.ajax.get("http://example.com", [data], {
 ```
 
 ## <a name="cache"></a> Cache
-Default value is `false`.
+If set to false, it will force requested pages not to be cached by the browser. Default value is `false`.
 ```javascript
 Vue.ajax.get("http://example.com", [data], {
     cache: false
@@ -251,7 +251,7 @@ Vue.ajax.get("http://example.com", [data], {
 ```
 
 ## <a name="complete"></a> Complete
-A function to be called when the request finishes (Success or error).
+A function to be called when the request finishes (`Success` or `error` callbacks are executed).
 
 ```javascript
 Vue.ajax.get("http://example.com", [data], {
@@ -291,7 +291,8 @@ Vue.ajax("http://example.com", {
 
 
 ## <a name="file-uploading"></a> File Uploading
-`fileInputs` setting should be `DOM object` *`<input type="file">`*. We recommend using the `post` method when uploading files. The important thing here is that you should not forget the `name` attribute.
+`fileInputs` setting should be `DOM object` *`<input type="file">`*. We recommend using the `post` method when uploading files. 
+The important thing here is that you should not forget the `name` attribute.
 
 HTML:
 ```html
@@ -347,6 +348,8 @@ HTML:
 ```
 
 ## <a name="headers"></a> HTTP Headers
+An object of additional header key/value pairs to send along with requests using the XMLHttpRequest transport.
+
 ```javascript
 Vue.ajax.get("http://example.com", [data], {
     headers: {
@@ -357,7 +360,7 @@ Vue.ajax.get("http://example.com", [data], {
 ```
 
 ## <a name="method"></a> Method
-Default value is `get`.
+The HTTP method to use for the request (e.g. "get", "post", "put"). Default value is `get`.
 ```javascript
 Vue.ajax({
     url: "http://example.com",

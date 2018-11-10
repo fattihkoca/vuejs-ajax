@@ -24,21 +24,21 @@ You have two ways to setup `vuejs-ajax`:
 
 #### CommonJS (Webpack/Browserify)
 
-- ES6
+1 - ES6
 
 ```javascript
 import ajax from "vuejs-ajax"
 Vue.use(ajax)
 ```
 
-- ES5
+2 - ES5
 
 ```javascript
 var ajax = require("vuejs-ajax")
 Vue.use(ajax)
 ```
 
-# Example
+# Examples
 ```javascript
 Vue.ajax.get("http://example.com").then(function(response) {
     console.log("Success", response.data)
@@ -82,7 +82,7 @@ Vue.ajax.post(string url[, object data] [,object configurations])
 | data             | Object           | A plain object that is sent to the server with the request.   |
 | configurations   | Object           | A set of key/value pairs that configure the Vue.ajax request. |
 
-**Other methods and requests are the same:**
+**Other methods and requests are used in the same way:**
 
 #### Delete Method
 ```javascript
@@ -132,7 +132,7 @@ With componentShifter() you can load (with `Vue.ajax`) and render your `Vue temp
 
 It also supports `Vue.ajax`"s `history` feature. And the component is automatically update when navigating to the previous - next page.
 
-```vuejs
+```javascript
 vm.componentShifter(object configurations[, function success] [,function error])
 ```
 
@@ -158,7 +158,7 @@ _index.html_
 ```
 
 _app.js_
-```vuejs
+```javascript
 var vm = new Vue({
     el: "#classest",
     data() {
@@ -212,7 +212,7 @@ var vm = new Vue({
 | [`timeout`](#timeout)                        | Integer          | 60000   | Time in milliseconds                       |
 | [`title`](#title)                            | String           | -       | -                                          |
 | [`url`](#method)                             | String           | -       | -                                          |
-| [`url-data`](#urlData)                       | Object           | -       | -                                          |
+| [`urlData`](#url-data)                       | Object           | -       | -                                          |
 | [`withCredentials`](#with-credentials)       | Boolean          | false   | true, false                                |
 
 # <a name="examples"></a> Vue Ajax Configuration Examples

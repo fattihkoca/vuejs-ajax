@@ -27,36 +27,36 @@ You have two ways to setup `vuejs-ajax`:
 - ES6
 
 ```
-import ajax from 'vuejs-ajax'
+import ajax from "vuejs-ajax"
 Vue.use(ajax)
 ```
 
 - ES5
 
 ```
-var ajax = require('vuejs-ajax')
+var ajax = require("vuejs-ajax")
 Vue.use(ajax)
 ```
 
 # Example
 ```javascript
-Vue.ajax.get('http://example.com').then(function(response) {
-    console.log('Success', response.data)
+Vue.ajax.get("http://example.com").then(function(response) {
+    console.log("Success", response.data)
 }, function(response) {
-    console.log('Error', response.statusText)
-})
+    console.log("Error", response.statusText)
+});
 ```
 
 If you want to send data to the backend:
 
 ```javascript
-Vue.ajax.get('http://example.com', {
-    param1: 'First parameter',
-    param2: 'Second parameter'
+Vue.ajax.get("http://example.com", {
+    param1: "First parameter",
+    param2: "Second parameter"
 }).then(function(response) {
-    console.log('Success', response.data)
-}, function() {
-    console.log('Error', response.statusText)
+    console.log("Success", response.data)
+}, function(response) {
+    console.log("Error", response.statusText)
 })
 ```
 
@@ -118,19 +118,19 @@ All of the above methods are a shorthand method of the `Vue.ajax()`:
 
 ```javascript
 Vue.ajax({
-    url: 'http://example.com',
-    method: 'get' // post, put, patch, delete, head, jsonp
+    url: "http://example.com",
+    method: "get" // post, put, patch, delete, head, jsonp
 }).then(function(response) {
-    console.log('Success', response.data)
-}, function() {
-    console.log('Error', response.statusText)
+    console.log("Success", response.data)
+}, function(response) {
+    console.log("Error", response.statusText)
 })
 ```
 
 # <a name="component-shifter"></a> Component Shifter
 With componentShifter() you can load (with `Vue.ajax`) and render your `Vue template` (html) in your application by dynamic & async `Vue.component()`. You can also add components and run them nested.
 
-It also supports `Vue.ajax`'s `history` feature. And the component is automatically update when navigating to the previous - next page.
+It also supports `Vue.ajax`"s `history` feature. And the component is automatically update when navigating to the previous - next page.
 
 ```
 vm.componentShifter(object configurations[, function success] [,function error])
@@ -159,8 +159,8 @@ _index.html_
 
 _app.js_
 ```javascript
-var vm = new Vue({
-    el: '#classest',
+let vm = new Vue({
+    el: "#classest",
     data() {
         return {
             myPage: null, // Component name
@@ -171,22 +171,22 @@ var vm = new Vue({
         openPage(url, title) {
             // Calling componentShifter
             this.componentShifter({
-                is: 'myPage', // [String] Component name
+                is: "myPage", // [String] Component name
                 url: url,
                 title: title,
                 history: true,
-            }, function (response) {
+            }, response => {
                 console.log("Component changed!");
-                pageLoaded = true;
-            }, function (response) {
+                this.pageLoaded = true;
+            }, response => {
                 console.log("Component could not be changed!", response);
-                pageLoaded = false;
+                this.pageLoaded = false;
             });
         }
     },
     created() {
         if(!pageLoaded) {
-            this.openPage('/page', 'New page')
+            this.openPage("/page", "New page")
         }
     }
 });
@@ -222,22 +222,22 @@ Assets setting is used to push new asset files (CSS or JS) in the document.
 
 ### Pushing single asset file
 ```javascript
-Vue.ajax.get('http://example.com', [data], {
-    assets: 'path/css/style.css'
+Vue.ajax.get([url], [data], {
+    assets: "path/css/style.css"
 });
 ```
 
 ### Pushing multiple asset files
 ```javascript
-Vue.ajax.get('http://example.com', [data], {
-    assets: ['assets/css/style.css', 'assets/js/script.js']
+Vue.ajax.get("http://example.com", [data], {
+    assets: ["assets/css/style.css", "assets/js/script.js"]
 });
 ```
 
 ## <a name="async"></a> Asynchronous
 By default, all requests are sent asynchronously (i.e. this is set to true by default). If you need synchronous requests, set this option to `false`. Default value is `true`.
 ```javascript
-Vue.ajax.get('http://example.com', [data], {
+Vue.ajax.get("http://example.com", [data], {
     async: true
 });
 ```
@@ -245,16 +245,16 @@ Vue.ajax.get('http://example.com', [data], {
 ## <a name="cache"></a> Cache
 Default value is `false`.
 ```javascript
-Vue.ajax.get('http://example.com', [data], {
+Vue.ajax.get("http://example.com", [data], {
     cache: false
 });
 ```
 
-## <a name="complete"></a> Complete Event
+## <a name="complete"></a> Complete
 A function to be called when the request finishes (Success or error).
 
 ```javascript
-Vue.ajax.get('http://example.com', [data], {
+Vue.ajax.get("http://example.com", [data], {
     complete: function(response) {
         console.log(response.status)
     }
@@ -262,9 +262,9 @@ Vue.ajax.get('http://example.com', [data], {
 ```
 
 ## <a name="csrf"></a> CSRF
-Default value is `true`.
+This setting provides protection against CSRF attacks. There is a detailed explanation [`here`](https://en.wikipedia.org/wiki/Cross-site_request_forgery). Default value is `true`.
 ```javascript
-Vue.ajax.get('http://example.com', [data], {
+Vue.ajax.get("http://example.com", [data], {
     csrf: true
 });
 ```
@@ -279,19 +279,19 @@ In the html head tag it must be `csrf-token meta`. Like this:
 Data to be sent to the server.
 
 ```javascript
-Vue.ajax('http://example.com', {
-    url: 'http://example.com',
-    method: 'get',
+Vue.ajax("http://example.com", {
+    url: "http://example.com",
+    method: "get",
     data: {
-        param1: 'First parameter',
-        param2: 'Second parameter'
+        param1: "First parameter",
+        param2: "Second parameter"
     }
 });
 ```
 
 
 ## <a name="file-uploading"></a> File Uploading
-`fileInputs` setting should be `DOM object`. We recommend using the `post` method when uploading files. The important thing here is that you should not forget the `name` attribute.
+`fileInputs` setting should be `DOM object` *`<input type="file">`*. We recommend using the `post` method when uploading files. The important thing here is that you should not forget the `name` attribute.
 
 HTML:
 ```html
@@ -300,9 +300,9 @@ HTML:
 
 Javascript:
 ```javascript
-Vue.ajax.post('http://example.com', [data], {
+Vue.ajax.post("http://example.com", [data], {
     fileInputs: [
-        document.getElementById('my-input')
+        document.getElementById("my-input")
     ]
 });
 ```
@@ -317,11 +317,11 @@ You can add the `multiple` attribute to send multiple files with an input elemen
 <input type="file" name="my-input-3" id="my-input-3" multiple>
 ```
 
-## <a name="hardReloadOnError"></a> Hard Reload On Error
+## <a name="hardReloadOnError"></a> Hard Reload
 Option to hard reloading when page can not be loaded. Default value is `false`.
 
 ```javascript
-Vue.ajax.get('http://example.com', [data], {
+Vue.ajax.get("http://example.com", [data], {
     hardReloadOnError: true
 });
 ```
@@ -332,7 +332,7 @@ History setting is usage of PushState (HTML history API). Default value is `fals
 PushState (changing the URL of the page without refreshing the page) to create a faster browsing experience.  This means less elements to load and therefore faster browsing.
 
 ```javascript
-Vue.ajax.get('http://example.com', [data], {
+Vue.ajax.get("http://example.com", [data], {
     history: true
 });
 ```
@@ -348,10 +348,10 @@ HTML:
 
 ## <a name="headers"></a> HTTP Headers
 ```javascript
-Vue.ajax.get('http://example.com', [data], {
+Vue.ajax.get("http://example.com", [data], {
     headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json, text/plain, */*'
+        "Content-Type": "application/json",
+        "Accept": "application/json, text/plain, */*"
     }
 });
 ```
@@ -360,37 +360,37 @@ Vue.ajax.get('http://example.com', [data], {
 Default value is `get`.
 ```javascript
 Vue.ajax({
-    url: 'http://example.com',
-    method: 'post'
+    url: "http://example.com",
+    method: "post"
 });
 ```
 
-Instead, you might prefer to use the following shorthand:
+_Instead, you might prefer to use the following shorthand:_
 ```javascript
-Vue.ajax.post('http://example.com', [data]);
+Vue.ajax.post("http://example.com", [data]);
 ```
 
 ## <a name="preventDuplicate"></a> Prevent Duplicate Requests
 This setting prevents sending duplicate requests to the same address or given key data. Default value is `true`.  
 The following example prevents sending requests over the same URL:
 ```javascript
-Vue.ajax.get('http://example.com', [data], {
+Vue.ajax.get("http://example.com", [data], {
     preventDuplicate: true
 });
 ```
 
 The following example prevents sending requests over the same given key data:
 ```javascript
-Vue.ajax.get('http://example.com', [data], {
+Vue.ajax.get("http://example.com", [data], {
     preventDuplicate: true,
-    key: 'ABCDEFGH'
+    key: "ABCDEFGH"
 });
 ```
 
 ### <a name="scrollTop"></a> Scroll Top
-This setting is used to scroll to top of the document when loading the request. Default value is `true`.
+This setting is used to scroll to top of the document when after loading the request. Default value is `true`.
 ```javascript
-Vue.ajax.get('http://example.com', [data], {
+Vue.ajax.get("http://example.com", [data], {
     scrollTop: true
 });
 ```
@@ -399,7 +399,7 @@ Vue.ajax.get('http://example.com', [data], {
 Set a timeout (in milliseconds) for the request. Default value is `60000`.
 
 ```javascript
-Vue.ajax.get('http://example.com', [data], {
+Vue.ajax.get("http://example.com", [data], {
     timeout: 60000
 });
 ```
@@ -407,8 +407,8 @@ Vue.ajax.get('http://example.com', [data], {
 ## <a name="title"></a> Title
 Title setting is used to change the document title value.
 ```javascript
-Vue.ajax.get('http://example.com', [data], {
-    title: 'New title'
+Vue.ajax.get("http://example.com", [data], {
+    title: "New title"
 });
 ```
 
@@ -416,36 +416,36 @@ Vue.ajax.get('http://example.com', [data], {
 ## <a name="urlData"></a> URL Data
 With this setting, you can add serialized query string to the URL you are sending.
 ```javascript
-Vue.ajax.get('http://example.com', [data], {
+Vue.ajax.get("http://example.com", [data], {
     urlData: [
-        {page: 15},
-        {category: 'Accessories'}
+        {category: "Accessories"},
+        {page: 15}
     ]
 });
 ```
 
 The URL will be like this when sending the request:  
-`http://example.com?page=15&category=Accessories`
+`http://example.com?category=Accessories&page=15`
 
 ## <a name="withCredentials"></a> With Credentials
 There is a detailed explanation [here](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials). Default value is `false`.
-```
-Vue.ajax.get('http://example.com', data {
+```javascript
+Vue.ajax.get("http://example.com", data {
     withCredentials: false
 });
 ```
 
-# Response Handling
+# <a name="response-handling"></a> Response Handling
 The response returns the Object on the frontend. 
 
 _Success and error together in `then()` method:_
-```
+```javascript
 Vue.ajax(object configurations)
     .then(function success[, function error])
 ```
 
 _Success and error together in in separate methods:_
-```
+```javascript
 Vue.ajax(object configurations)
     .then(function success)
     .catch(function error)
@@ -454,7 +454,7 @@ Vue.ajax(object configurations)
 The object in general is the following structure:
 
 ```javascript
-Vue.ajax.get('http://example.com', [data])
+Vue.ajax.get("http://example.com", [data])
     .then(function(response) {
         console.log(response.data)
     });
@@ -470,51 +470,52 @@ Vue.ajax.get('http://example.com', [data])
 | xhrStatus         | String          |
 | request           | Object          |
 
-## Response Format
+## <a name="response-format"></a> Response Format
 
 If the content type on the server is "`application/json`", the `response.data` is automatically converted to a `JSON object`. If the content type is anything else, the result is returned as `plain text`.
 
 PHP:
 ```php
-header('Content-type: application/json; charset=utf-8');
+header("Content-type: application/json; charset=utf-8");
 echo json_encode($array);
 ```
 
 Laravel:
 ```php
-Route::get('http://example.com', function () {
+Route::get("http://example.com", function () {
     return response(json_encode($array), 200)
-        ->header('Content-Type', 'application/json; charset=utf-8');
+        ->header("Content-Type", "application/json; charset=utf-8");
 });
 ```
 
 VueJS
 ```javascript
-Vue.ajax.get('http://example.com', [data])
+Vue.ajax.get("http://example.com", [data])
     .then(function(response) {
         console.log(response.data)
     });
 ```
 
-## Error Handling
+## <a name="error-handling"></a> Error Handling
+There are two ways to use:
 
-In `then()` method
+##### 1 - In `then()` method
 ```javascript
-Vue.ajax.get('http://example.com/not-existing-path', [data])
+Vue.ajax.get("http://example.com/not-existing-path", [data])
     .then(function(response) {
         console.log(response.data)
     }, function(response) {
-        console.log('Error: ', response.statusText);
+        console.log("Error: ", response.statusText);
     }); // "Error: Not Found"
 ```
 
-In `catch()` method
+##### 2 - In `catch()` method
 ```javascript
-Vue.ajax.get('http://example.com/not-existing-path', [data])
+Vue.ajax.get("http://example.com/not-existing-path", [data])
     .then(function(response) {
         console.log(response.data)
     }).catch(function(response) {
-        console.log('Error: ', response.statusText);
+        console.log("Error: ", response.statusText);
     }); // "Error: Not Found"
 ```
 
@@ -525,7 +526,7 @@ Vue.ajax.get('http://example.com/not-existing-path', [data])
 ### vueajaxabort
 Register a handler to be called when `Vue.ajax` requests abort.
 ```javascript
-window.addEventListener('vueajaxabort', function(e) {
+window.addEventListener("vueajaxabort", function(e) {
     console.log(e);
 });
 ```
@@ -533,7 +534,7 @@ window.addEventListener('vueajaxabort', function(e) {
 ### vueajaxcomplete
 Register a handler to be called when `Vue.ajax` requests complete.
 ```javascript
-window.addEventListener('vueajaxsuccess', function(e) {
+window.addEventListener("vueajaxsuccess", function(e) {
     console.log(e);
 });
 ```
@@ -541,7 +542,7 @@ window.addEventListener('vueajaxsuccess', function(e) {
 ### vueajaxerror
 Register a handler to be called when `Vue.ajax` requests complete with an error.
 ```javascript
-window.addEventListener('vueajaxerror', function(e) {
+window.addEventListener("vueajaxerror", function(e) {
     console.log(e);
 });
 ```
@@ -549,7 +550,7 @@ window.addEventListener('vueajaxerror', function(e) {
 ### vueajaxstart
 Register a handler to be called when `Vue.ajax` requests begins.
 ```javascript
-window.addEventListener('vueajaxstart', function(e) {
+window.addEventListener("vueajaxstart", function(e) {
     console.log(e);
 });
 ```
@@ -557,7 +558,7 @@ window.addEventListener('vueajaxstart', function(e) {
 ### vueajaxsuccess
 Attach a function to be executed whenever an `Vue.ajax` request completes successfully.
 ```javascript
-window.addEventListener('vueajaxsuccess', function(e) {
+window.addEventListener("vueajaxsuccess", function(e) {
     console.log(e);
 });
 ```
@@ -567,7 +568,7 @@ window.addEventListener('vueajaxsuccess', function(e) {
 ### vueajaxhistorycomplete
 Register a handler to be called when `Vue.ajax history` requests complete.
 ```javascript
-window.addEventListener('vueajaxhistorycomplete', function(e) {
+window.addEventListener("vueajaxhistorycomplete", function(e) {
     console.log(e);
 });
 ```
@@ -575,7 +576,7 @@ window.addEventListener('vueajaxhistorycomplete', function(e) {
 ### vueajaxhistoryerror
 Register a handler to be called when `Vue.ajax history` requests complete with an error.
 ```javascript
-window.addEventListener('vueajaxhistoryerror', function(e) {
+window.addEventListener("vueajaxhistoryerror", function(e) {
     console.log(e);
 });
 ```
@@ -583,7 +584,7 @@ window.addEventListener('vueajaxhistoryerror', function(e) {
 ### vueajaxhistorystart
 Register a handler to be called when `Vue.ajax history` requests begins.
 ```javascript
-window.addEventListener('vueajaxhistorystart', function(e) {
+window.addEventListener("vueajaxhistorystart", function(e) {
     console.log(e);
 });
 ```
@@ -591,7 +592,7 @@ window.addEventListener('vueajaxhistorystart', function(e) {
 ### vueajaxhistorysuccess
 Attach a function to be executed whenever an `Vue.ajax history` request completes successfully.
 ```javascript
-window.addEventListener('vueajaxhistorysuccess', function(e) {
+window.addEventListener("vueajaxhistorysuccess", function(e) {
     console.log(e);
 });
 ```
@@ -600,7 +601,7 @@ window.addEventListener('vueajaxhistorysuccess', function(e) {
 ### componentshiftercomplete
 Register a handler to be called when `Component Shifter` requests complete.
 ```javascript
-window.addEventListener('vueajaxhistorycomplete', function(e) {
+window.addEventListener("vueajaxhistorycomplete", function(e) {
     console.log(e);
 });
 ```
@@ -608,7 +609,7 @@ window.addEventListener('vueajaxhistorycomplete', function(e) {
 ### componentshiftererror
 Register a handler to be called when `Component Shifter` requests complete with an error.
 ```javascript
-window.addEventListener('componentshiftererror', function(e) {
+window.addEventListener("componentshiftererror", function(e) {
     console.log(e);
 });
 ```
@@ -616,7 +617,7 @@ window.addEventListener('componentshiftererror', function(e) {
 ### componentshifterstart
 Register a handler to be called when `Component Shifter` requests begins.
 ```javascript
-window.addEventListener('componentshifterstart', function(e) {
+window.addEventListener("componentshifterstart", function(e) {
     console.log(e);
 });
 ```
@@ -624,7 +625,7 @@ window.addEventListener('componentshifterstart', function(e) {
 ### componentshiftersuccess
 Attach a function to be executed whenever an `Component Shifter` request completes successfully.
 ```javascript
-window.addEventListener('componentshiftersuccess', function(e) {
+window.addEventListener("componentshiftersuccess", function(e) {
     console.log(e);
 });
 ```

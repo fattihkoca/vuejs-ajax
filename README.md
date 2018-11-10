@@ -7,16 +7,16 @@
 A light XHR plugin for Vue 2.x and and above versions. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `$http()`. In addition to these, it also has its own important features: 
 * [`Assets`](#assets)
 * [`Component shifter`](#component-shifter)
-* [`Event Handlers`](#event-handlers)
+* [`Event handlers`](#event-handlers)
 * [`File uploading`](#file-uploading)
 * [`History`](#history)
 * [`Title`](#title)
-* [`Serialized query string`](#urlData)
-* [`Prevent duplicate requests`](#preventDuplicate)
+* [`Serialized query string`](#url-data)
+* [`Prevent duplicate requests`](#prevent-duplicate)
 
 # Setup
 
-```
+```npm
 npm install vuejs-ajax --save
 ```
 
@@ -26,14 +26,14 @@ You have two ways to setup `vuejs-ajax`:
 
 - ES6
 
-```
+```javascript
 import ajax from "vuejs-ajax"
 Vue.use(ajax)
 ```
 
 - ES5
 
-```
+```javascript
 var ajax = require("vuejs-ajax")
 Vue.use(ajax)
 ```
@@ -63,13 +63,13 @@ Vue.ajax.get("http://example.com", {
 # Methods & Requests
 
 ### Get Method
-```
+```javascript
 Vue.ajax.get(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 #### Post Method
-```
+```javascript
 Vue.ajax.post(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
@@ -85,31 +85,31 @@ Vue.ajax.post(string url[, object data] [,object configurations])
 **Other methods and requests are the same:**
 
 #### Delete Method
-```
+```javascript
 Vue.ajax.delete(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 #### Head Method
-```
+```javascript
 Vue.ajax.head(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 #### Jsonp Request
-```
+```javascript
 Vue.ajax.jsonp(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 #### Patch Method
-```
+```javascript
 Vue.ajax.patch(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 #### Put Method
-```
+```javascript
 Vue.ajax.put(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
@@ -132,7 +132,7 @@ With componentShifter() you can load (with `Vue.ajax`) and render your `Vue temp
 
 It also supports `Vue.ajax`"s `history` feature. And the component is automatically update when navigating to the previous - next page.
 
-```
+```vuejs
 vm.componentShifter(object configurations[, function success] [,function error])
 ```
 
@@ -158,8 +158,8 @@ _index.html_
 ```
 
 _app.js_
-```javascript
-let vm = new Vue({
+```vuejs
+var vm = new Vue({
     el: "#classest",
     data() {
         return {
@@ -194,26 +194,26 @@ let vm = new Vue({
 
 # <a name="configurations"></a> Vue Ajax Configurations
 
-| Configuration                             | Type             | Default | Available                                  |
-| ----------------------------------------- | ---------------- | ------- | ------------------------------------------ |
-| [`assets`](#assets)                       | String \| Object | -       | -                                          |
-| [`async`](#async)                         | Boolean          | true    | true, false                                |
-| [`cache`](#cache)                         | Boolean          | false   | true, false                                |
-| [`complete`](#complete)                   | Function         | -       | -                                          |
-| [`csrf`](#csrf)                           | Boolean          | true    | true, false                                |
-| [`data`](#data)                           | Object           | -       | -                                          |
-| [`fileInputs`](#file-uploading)           | Element Object   | -       | Input file upload objects                  |
-| [`hardReloadOnError`](#hardReloadOnError) | Boolean          | false   | true, false                                |
-| [`history`](#history)                     | Boolean          | false   | true, false                                |
-| [`headers`](#headers)                     | Object           | -       | -                                          |
-| [`method`](#method)                       | String           | get     | delete, get, head, jsonp, patch, post, put |
-| [`preventDuplicate`](#preventDuplicate)   | Boolean          | true    | true, false                                |
-| [`scrollTop`](#scrollTop)                 | Boolean          | false   | true, false                                |
-| [`timeout`](#timeout)                     | Integer          | 60000   | Time in milliseconds                       |
-| [`title`](#title)                         | String           | -       | -                                          |
-| [`url`](#method)                          | String           | -       | -                                          |
-| [`urlData`](#urlData)                     | Object           | -       | -                                          |
-| [`withCredentials`](#withCredentials)     | Boolean          | false   | true, false                                |
+| Configuration                                | Type             | Default | Available                                  |
+| -------------------------------------------- | ---------------- | ------- | ------------------------------------------ |
+| [`assets`](#assets)                          | String \| Object | -       | -                                          |
+| [`async`](#async)                            | Boolean          | true    | true, false                                |
+| [`cache`](#cache)                            | Boolean          | false   | true, false                                |
+| [`complete`](#complete)                      | Function         | -       | -                                          |
+| [`csrf`](#csrf)                              | Boolean          | true    | true, false                                |
+| [`data`](#data)                              | Object           | -       | -                                          |
+| [`fileInputs`](#file-uploading)              | Element Object   | -       | Input file upload objects                  |
+| [`hardReloadOnError`](#hard-reload-on-error) | Boolean          | false   | true, false                                |
+| [`history`](#history)                        | Boolean          | false   | true, false                                |
+| [`headers`](#headers)                        | Object           | -       | -                                          |
+| [`method`](#method)                          | String           | get     | delete, get, head, jsonp, patch, post, put |
+| [`preventDuplicate`](#prevent-duplicate)     | Boolean          | true    | true, false                                |
+| [`scrollTop`](#scroll-top)                   | Boolean          | false   | true, false                                |
+| [`timeout`](#timeout)                        | Integer          | 60000   | Time in milliseconds                       |
+| [`title`](#title)                            | String           | -       | -                                          |
+| [`url`](#method)                             | String           | -       | -                                          |
+| [`url-data`](#urlData)                       | Object           | -       | -                                          |
+| [`withCredentials`](#with-credentials)       | Boolean          | false   | true, false                                |
 
 # <a name="examples"></a> Vue Ajax Configuration Examples
 
@@ -269,10 +269,10 @@ Vue.ajax.get("http://example.com", [data], {
 });
 ```
 
-In the html head tag it must be `csrf-token meta`. Like this:
+In the html head tag it must be `csrf-token` `meta`. Like this:
 
 ```html
-<meta name="csrf-token" content="ABCDEFGHIJKLMN">
+<meta name="csrf-token" content="[TOKEN]">
 ```
 
 ## <a name="data"></a> Data
@@ -317,7 +317,7 @@ You can add the `multiple` attribute to send multiple files with an input elemen
 <input type="file" name="my-input-3" id="my-input-3" multiple>
 ```
 
-## <a name="hardReloadOnError"></a> Hard Reload
+## <a name="hard-reload-on-error"></a> Hard Reload
 Option to hard reloading when page can not be loaded. Default value is `false`.
 
 ```javascript
@@ -370,7 +370,7 @@ _Instead, you might prefer to use the following shorthand:_
 Vue.ajax.post("http://example.com", [data]);
 ```
 
-## <a name="preventDuplicate"></a> Prevent Duplicate Requests
+## <a name="prevent-duplicate"></a> Prevent Duplicate Requests
 This setting prevents sending duplicate requests to the same address or given key data. Default value is `true`.  
 The following example prevents sending requests over the same URL:
 ```javascript
@@ -387,7 +387,7 @@ Vue.ajax.get("http://example.com", [data], {
 });
 ```
 
-### <a name="scrollTop"></a> Scroll Top
+## <a name="scroll-top"></a> Scroll Top
 This setting is used to scroll to top of the document when after loading the request. Default value is `true`.
 ```javascript
 Vue.ajax.get("http://example.com", [data], {
@@ -413,7 +413,7 @@ Vue.ajax.get("http://example.com", [data], {
 ```
 
 
-## <a name="urlData"></a> URL Data
+## <a name="url-data"></a> URL Data
 With this setting, you can add serialized query string to the URL you are sending.
 ```javascript
 Vue.ajax.get("http://example.com", [data], {
@@ -425,9 +425,11 @@ Vue.ajax.get("http://example.com", [data], {
 ```
 
 The URL will be like this when sending the request:  
-`http://example.com?category=Accessories&page=15`
+```http request
+http://example.com?category=Accessories&page=15
+```
 
-## <a name="withCredentials"></a> With Credentials
+## <a name="with-credentials"></a> With Credentials
 There is a detailed explanation [here](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials). Default value is `false`.
 ```javascript
 Vue.ajax.get("http://example.com", data {
@@ -483,8 +485,7 @@ echo json_encode($array);
 Laravel:
 ```php
 Route::get("http://example.com", function () {
-    return response(json_encode($array), 200)
-        ->header("Content-Type", "application/json; charset=utf-8");
+    return json_encode($array);
 });
 ```
 

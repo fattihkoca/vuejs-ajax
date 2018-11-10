@@ -24,14 +24,14 @@ You have two ways to setup `vuejs-ajax`:
 
 #### CommonJS (Webpack/Browserify)
 
-1 - ES6
+##### 1 - ES6
 
 ```javascript
 import ajax from "vuejs-ajax"
 Vue.use(ajax)
 ```
 
-2 - ES5
+##### 2 - ES5
 
 ```javascript
 var ajax = require("vuejs-ajax")
@@ -82,33 +82,33 @@ Vue.ajax.post(string url[, object data] [,object configurations])
 | data             | Object           | A plain object that is sent to the server with the request.   |
 | configurations   | Object           | A set of key/value pairs that configure the Vue.ajax request. |
 
-**Other methods and requests are used in the same way:**
+#### _Other methods and requests are used in the same way:_
 
-#### Delete Method
+##### Delete Method
 ```javascript
 Vue.ajax.delete(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
-#### Head Method
+##### Head Method
 ```javascript
 Vue.ajax.head(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
-#### Jsonp Request
+##### Jsonp Request
 ```javascript
 Vue.ajax.jsonp(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
-#### Patch Method
+##### Patch Method
 ```javascript
 Vue.ajax.patch(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
-#### Put Method
+##### Put Method
 ```javascript
 Vue.ajax.put(string url[, object data] [,object configurations])
     .then(function success[, function error])

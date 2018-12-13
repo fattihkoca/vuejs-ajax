@@ -26,6 +26,7 @@ const VueAjax = {
                 ajaxRequestKey: "X-Requested-With",
                 ajaxRequestValue: "XMLHttpRequest",
                 contentUrlEncoded: "application/x-www-form-urlencoded",
+                componentCacheResponse: {fromCache: true},
             },
 
             event: {
@@ -463,7 +464,7 @@ const VueAjax = {
              */
             preventCacheForUrl(url, cache) {
                 if (cache) {
-                    return config.url;
+                    return url;
                 }
 
                 return utils.addQueryString(url, utils.nonCacheQs());
@@ -682,18 +683,30 @@ const VueAjax = {
                         }
                     }
 
-                    // Preparing response object
-                    let response = {
-                        config: config,
-                        data: responseData,
-                        headers: xhr.getAllResponseHeaders(),
-                        request: this,
-                        status: this.status,
-                        statusText: this.statusText,
-                        timeStamp: utils.timestamp(),
-                        xhrStatus: utils.xhrStatuses.hasOwnProperty(this.readyState) ?
-                            utils.xhrStatuses[this.readyState] : "Unknown"
-                    };
+                    let pushStateOpt = {
+                            history: history,
+                            currentHistoryVersion: currentHistoryVersion,
+                            hardReloadOnError: hardReloadOnError,
+                            method: method,
+                            title: title,
+                            scrollTop: scrollTop,
+                            assets: assets,
+                            stateCallName: stateCallName,
+                            url: rawUrl,
+                            xhr: xhr,
+                        },
+                        response = { // Preparing response object
+                            config: config,
+                            data: responseData,
+                            headers: xhr.getAllResponseHeaders(),
+                            request: this,
+                            status: this.status,
+                            statusText: this.statusText,
+                            timeStamp: utils.timestamp(),
+                            xhrStatus: utils.xhrStatuses.hasOwnProperty(this.readyState) ?
+                                utils.xhrStatuses[this.readyState] : "Unknown",
+                            pushState: pushStateOpt,
+                        };
 
                     // If connection is done
                     if (this.readyState === 4) {
@@ -721,18 +734,7 @@ const VueAjax = {
                             }
 
                             // Push history state
-                            utils.pushState({
-                                history: history,
-                                currentHistoryVersion: currentHistoryVersion,
-                                hardReloadOnError: hardReloadOnError,
-                                method: method,
-                                title: title,
-                                scrollTop: scrollTop,
-                                assets: assets,
-                                stateCallName: stateCallName,
-                                url: rawUrl,
-                                xhr: xhr,
-                            });
+                            utils.pushState(pushStateOpt);
 
                             // Update document title
                             utils.updateTitle(title);
@@ -846,7 +848,43 @@ const VueAjax = {
                         utils.execCallback(completeCallback);
                     };
 
-                    let componentName = config.is || utils.names.component;
+                    let is = utils.names.component,
+                        name = is,
+                        library = config.library || false;
+
+                    if (typeof config.is === "object") {
+                        let isKeys = Object.keys(config.is);
+
+                        if (isKeys.hasOwnProperty(0)) {
+                            is = isKeys[0];
+                            name = config.is[is];
+                        }
+                    } else {
+                        is = name = config.is;
+                    }
+
+                    // Component resolve
+                    let componentResolve = (template, response) => {
+                        let resolveData = {template: template};
+
+                        if (typeof library === 'object') {
+                            Object.assign(resolveData, library);
+                        }
+
+                        // Resolve async component template
+                        Vue.component(name, resolve => {
+                            resolve(resolveData);
+                        });
+
+                        utils.customEventDispatcher(utils.event.shiftersuccess, response);
+
+                        // Run callback after success
+                        utils.execCallback(success, response);
+
+                        // Update component name
+                        this[is] = null;
+                        this[is] = name;
+                    };
 
                     // Set component state to false
                     utils.componentState(false);
@@ -855,6 +893,32 @@ const VueAjax = {
                         timeStamp: utils.timestamp(),
                         xhrStatus: "Uninitialized"
                     });
+
+                    if (config.keepAlive) {
+                        if (this.shifterCache === undefined) {
+                            this.shifterCache = {};
+                        }
+
+                        if (!this.shifterCache.hasOwnProperty(is)) {
+                            this.shifterCache[is] = {};
+                        }
+
+                        if (this.shifterCache[is].hasOwnProperty(name)) {
+                            let componentInstance = this.shifterCache[is][name];
+                            componentResolve(componentInstance.template, utils.names.componentCacheResponse);
+
+                            // Push history state
+                            utils.pushState(componentInstance.pushState);
+
+                            // Update document title
+                            utils.updateTitle(componentInstance.config.title || false);
+
+                            // Has scroll feature
+                            utils.scrollToTop(componentInstance.config.scrollTop || false);
+
+                            return;
+                        }
+                    }
 
                     // Load template by xhr
                     Vue.ajax(config).then(response => {
@@ -866,22 +930,15 @@ const VueAjax = {
 
                         let template = response.data;
 
-                        // Run Vue.component
-                        Vue.component(componentName, resolve => {
-                            // Resolve response data
-                            resolve({
-                                template: template
-                            });
-                        });
+                        if (config.keepAlive) {
+                            this.shifterCache[is][name] = {
+                                template: template,
+                                config: response.config,
+                                pushState: response.pushState,
+                            };
+                        }
 
-                        utils.customEventDispatcher(utils.event.shiftersuccess, response);
-
-                        // Run callback after success
-                        utils.execCallback(success, response);
-
-                        // Update component name
-                        this[componentName] = null;
-                        this[componentName] = componentName;
+                        componentResolve(template, response);
                     }, response => {
                         utils.customEventDispatcher(utils.event.shiftererror, response);
 

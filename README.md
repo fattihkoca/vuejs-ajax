@@ -82,7 +82,7 @@ Vue.ajax.post(string url[, object data] [,object configurations])
 | data             | Object           | A plain object that is sent to the server with the request.   |
 | configurations   | Object           | A set of key/value pairs that configure the Vue.ajax request. |
 
-#### _Other methods and requests are used in the same way:_
+##### _Other methods and requests are used in the same way:_
 
 ##### Delete Method
 ```javascript
@@ -130,51 +130,79 @@ Vue.ajax({
 # <a name="component-shifter"></a> Component Shifter
 With componentShifter() you can load (with `Vue.ajax`) and render your `Vue template` (html) in your application by dynamic & async `Vue.component()`. You can also add components and run them nested.
 
-It also supports `Vue.ajax`"s `history` feature. And the component is automatically update when navigating to the previous - next page.
-
+Important benefits:
+* You can organize the `async and dynamic components` by typing less. Check out the [events](#component-shifter-events) for listeners.
+* You can prepare common `callbacks` and `listeners` for dynamic components.
+* With the `keepAlive` option caches the active components. Thus, when inactive components are called, they are loaded quickly without consuming data.
+* With the `library` option you can create dynamic options for dynamic component instances (`data`, `props`, `computed`, ..., etc).
+* And supports `Vue.ajax`'s all features (`history`, `data`, `title`, ..., etc).
+x
 ```javascript
 vm.componentShifter(object configurations[, function success] [,function error])
 ```
 
-## Settings
+## Options
 
-| Property | Required | Value    | Description                      |
-| -------- | -------- | -------- | -------------------------------- |
-| is       | Yes      | String   | Unique dynamic component name.   |
-| url      | Yes      | String   | Component resources url.         |
-| success  | No       | Function | Your custom callback on success. |
-| error    | No       | Function | Your custom callback on error.   |
+| Property | Required | Value    | Description                                                      |
+| -------- | -------- | -------- | ---------------------------------------------------------------- |
+| is       | Yes      | Object   | Component holder (key) and unique component name (value).        |
+| url      | Yes      | String   | Component resources url.                                         |
+| keepAlive| No       | Boolean  | Caches the inactive components. `Default: false`                 |
+| library  | No       | Object   | Options of the new component instance (`data`, `props`, ..., etc)|
+| success  | No       | Function | Your custom callback on success.                                 |
+| error    | No       | Function | Your custom callback on error.                                   |
 
-**Example**
+##### Basic Example 
+```javascript
+this.componentShifter({
+    is: {pageComponent: componentName},
+    url: url,
+}, response => {
+    console.log("Component changed!");
+});
+```
+
+##### Detailed example
 
 _index.html_
 ```html
 <div id="app">
-    <a href="/page" @click.prevent="openPage('/page', 'New page')">Link</a>
+    <a href="/page-1" @click.prevent="openPage('page1', '/page-1', 'Page 1')">Page 1</a>
+    <a href="/page-2" @click.prevent="openPage('page2', '/page-2', 'Page 2')">Page 2</a>
 
     <!-- Your container component -->
-    <component :is="myPage"></component>
+    <component :is="pageComponent"></component>
 </div>
 ```
 
 _app.js_
 ```javascript
-var vm = new Vue({
+new Vue({
     el: "#classest",
     data() {
         return {
-            myPage: null, // Component name
+            pageComponent: null, // Component holder
             pageLoaded: false
         }
     },
     methods: {
-        openPage(url, title) {
+        openPage(componentName, url, title) {
+            
             // Calling componentShifter
             this.componentShifter({
-                is: "myPage", // [String] Component name
+                is: {pageComponent: componentName},
                 url: url,
                 title: title,
                 history: true,
+                keepAlive: true,
+                library: {
+                    data() {
+                        return {
+                            ...
+                        } 
+                    },
+                    props: [...],
+                }
             }, response => {
                 console.log("Component changed!");
                 this.pageLoaded = true;
@@ -182,11 +210,12 @@ var vm = new Vue({
                 console.log("Component could not be changed!", response);
                 this.pageLoaded = false;
             });
+            
         }
     },
-    created() {
+    mounted() {
         if(!pageLoaded) {
-            this.openPage("/page", "New page")
+            this.openPage("page1", "/page-1", "Page 1")
         }
     }
 });
@@ -600,7 +629,7 @@ window.addEventListener("vueajaxhistorysuccess", function(e) {
     console.log(e);
 });
 ```
-## Component Shifter Events
+## <a name="component-shifter-events"></a> Component Shifter Events
 
 ### componentshiftercomplete
 Register a handler to be called when `Component Shifter` requests complete.

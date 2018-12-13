@@ -5,14 +5,14 @@
 [![Downloads](https://img.shields.io/npm/dm/vuejs-ajax.svg)](https://www.npmjs.com/package/vuejs-ajax)
 
 It is a XHR plugin that works in specific features for Vue.js 2.x and and above versions. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `$http()`. In addition to these, it also has its own important features: 
-* [`Assets`](#assets)
-* [`Component shifter`](#component-shifter)
-* [`Event handlers`](#event-handlers)
-* [`File uploading`](#file-uploading)
-* [`History`](#history)
-* [`Title`](#title)
-* [`Serialized query string`](#url-data)
-* [`Prevent duplicate requests`](#prevent-duplicate)
+* [`Assets`](/#assets)
+* [`Component shifter`](/#component-shifter)
+* [`Event handlers`](/#event-handlers)
+* [`File uploading`](/#file-uploading)
+* [`History`](/#history)
+* [`Title`](/#title)
+* [`Serialized query string`](/#url-data)
+* [`Prevent duplicate requests`](/#prevent-duplicate)
 
 # Setup
 
@@ -40,26 +40,26 @@ Vue.use(ajax)
 
 ***
 
-# <a name="component-shifter"></a> Component Shifter
+# <a name="component-shifter"></a> componentShifter()
 With componentShifter() you can load (with `Vue.ajax`) and render your `Vue template` (html) in your application by dynamic & async `Vue.component()`. You can also add components and run them nested.
 
 Important benefits:
-* You can organize the `async and dynamic components` by typing less. Check out the [events](#component-shifter-events) for listeners.
-* You can prepare common `callbacks` and `listeners` for dynamic components.
-* With the `keepAlive` option caches the active components. Thus, when inactive components are called, they are loaded quickly without consuming data.
-* With the `library` option you can create dynamic options for dynamic component instances (`data`, `props`, `computed`, ..., etc).
-* And supports `Vue.ajax`'s all features (`history`, `data`, `title`, ..., etc).
+1. You can organize the `async and dynamic components` by typing less. Check out the [events](/#component-shifter-events) for listeners.
+2. You can easily prepare common `callbacks` and `listeners` for dynamic components.
+3. With the `keepAlive` option caches the active components. Thus, when inactive components are called, they are loaded quickly without consuming data.
+4. With the `library` option you can create dynamic options for dynamic component instances (`data`, `props`, `computed`, ..., etc).
+5. And supports `Vue.ajax`'s all features (`history`, `data`, `title`, ..., etc).
 
 ```
-app.componentShifter(object configurations[, function success] [,function error])
+this.componentShifter(object configurations[, function success] [,function error])
 ```
 
 ##### Basic Example 
 ```javascript
-app.componentShifter({
+this.componentShifter({
     is: {componentHolder: componentName},
     url: url,
-}, response => {
+}, function() {
     console.log("Component changed!");
 });
 ```
@@ -75,7 +75,7 @@ app.componentShifter({
 | success  | No       | Function | Your custom callback on success.                                 |
 | error    | No       | Function | Your custom callback on error.                                   |
 
-#### `keepAlive`
+### `keepAlive` options
 
 | Property | Required | Value                               | Description                                               |
 | -------- | -------- | ----------------------------------- | --------------------------------------------------------- |
@@ -85,7 +85,7 @@ app.componentShifter({
 
 ##### Detailed example
 
-_index.html_
+_HTML_
 ```html
 <div id="app">
     <a href="/page-1" @click.prevent="openPage('page1', '/page-1', 'Page 1')">Page 1</a>
@@ -97,10 +97,10 @@ _index.html_
 </div>
 ```
 
-_app.js_
+_Vue.js_
 ```javascript
-var app = new Vue({
-    el: "#classest",
+new Vue({
+    el: "#app",
     data() {
         return {
             pageComponent: null, // Component holder
@@ -129,10 +129,10 @@ var app = new Vue({
                     },
                     props: ["custom"]
                 }
-            }, response => {
+            }, function() {
                 console.log("Component changed!");
                 this.pageLoaded = true;
-            }, response => {
+            }, function(response) {
                 console.log("Component could not be changed!", response);
                 this.pageLoaded = false;
             });
@@ -149,7 +149,7 @@ var app = new Vue({
 
 ## <a name="component-shifter-events"></a> Component Shifter Events
 
-#### componentshiftercomplete
+#### `componentshiftercomplete`
 Register a handler to be called when `componentShifter()` requests complete.
 ```javascript
 window.addEventListener("vueajaxhistorycomplete", function(e) {
@@ -157,7 +157,7 @@ window.addEventListener("vueajaxhistorycomplete", function(e) {
 });
 ```
 
-#### componentshiftererror
+#### `componentshiftererror`
 Register a handler to be called when `componentShifter()` requests complete with an error.
 ```javascript
 window.addEventListener("componentshiftererror", function(e) {
@@ -165,7 +165,7 @@ window.addEventListener("componentshiftererror", function(e) {
 });
 ```
 
-#### componentshifterstart
+#### `componentshifterstart`
 Register a handler to be called when `componentShifter()` requests begins.
 ```javascript
 window.addEventListener("componentshifterstart", function(e) {
@@ -173,7 +173,7 @@ window.addEventListener("componentshifterstart", function(e) {
 });
 ```
 
-#### componentshiftersuccess
+#### `componentshiftersuccess`
 Attach a function to be executed whenever an `componentShifter()` request completes successfully.
 ```javascript
 window.addEventListener("componentshiftersuccess", function(e) {
@@ -183,7 +183,7 @@ window.addEventListener("componentshiftersuccess", function(e) {
 
 ***
 
-# Ajax Methods & Requests
+# Vue.ajax()
 
 ### Examples
 ```javascript
@@ -271,26 +271,26 @@ Vue.ajax({
 
 | Configuration                                | Type             | Default | Available                                  |
 | -------------------------------------------- | ---------------- | ------- | ------------------------------------------ |
-| [`assets`](#assets)                          | String Or Object | -       | -                                          |
-| [`async`](#async)                            | Boolean          | true    | true, false                                |
-| [`cache`](#cache)                            | Boolean          | false   | true, false                                |
-| [`complete`](#complete)                      | Function         | -       | -                                          |
-| [`csrf`](#csrf)                              | Boolean          | true    | true, false                                |
-| [`data`](#data)                              | Object           | -       | -                                          |
-| [`fileInputs`](#file-uploading)              | Element Object   | -       | Input file upload objects                  |
-| [`hardReloadOnError`](#hard-reload-on-error) | Boolean          | false   | true, false                                |
-| [`history`](#history)                        | Boolean          | false   | true, false                                |
-| [`headers`](#headers)                        | Object           | -       | -                                          |
-| [`method`](#method)                          | String           | get     | delete, get, head, jsonp, patch, post, put |
-| [`preventDuplicate`](#prevent-duplicate)     | Boolean          | true    | true, false                                |
-| [`scrollTop`](#scroll-top)                   | Boolean          | false   | true, false                                |
-| [`timeout`](#timeout)                        | Integer          | 60000   | Time in milliseconds                       |
-| [`title`](#title)                            | String           | -       | -                                          |
-| [`url`](#method)                             | String           | -       | -                                          |
-| [`urlData`](#url-data)                       | Object           | -       | -                                          |
-| [`withCredentials`](#with-credentials)       | Boolean          | false   | true, false                                |
+| [`assets`](/#assets)                          | String Or Object | -       | -                                          |
+| [`async`](/#async)                            | Boolean          | true    | true, false                                |
+| [`cache`](/#cache)                            | Boolean          | false   | true, false                                |
+| [`complete`](/#complete)                      | Function         | -       | -                                          |
+| [`csrf`](/#csrf)                              | Boolean          | true    | true, false                                |
+| [`data`](/#data)                              | Object           | -       | -                                          |
+| [`fileInputs`](/#file-uploading)              | Element Object   | -       | Input file upload objects                  |
+| [`hardReloadOnError`](/#hard-reload-on-error) | Boolean          | false   | true, false                                |
+| [`history`](/#history)                        | Boolean          | false   | true, false                                |
+| [`headers`](/#headers)                        | Object           | -       | -                                          |
+| [`method`](/#method)                          | String           | get     | delete, get, head, jsonp, patch, post, put |
+| [`preventDuplicate`](/#prevent-duplicate)     | Boolean          | true    | true, false                                |
+| [`scrollTop`](/#scroll-top)                   | Boolean          | false   | true, false                                |
+| [`timeout`](/#timeout)                        | Integer          | 60000   | Time in milliseconds                       |
+| [`title`](/#title)                            | String           | -       | -                                          |
+| [`url`](/#method)                             | String           | -       | -                                          |
+| [`urlData`](/#url-data)                       | Object           | -       | -                                          |
+| [`withCredentials`](/#with-credentials)       | Boolean          | false   | true, false                                |
 
-# <a name="examples"></a> Vue Ajax Configuration Examples
+# <a name="examples"></a> Ajax Configuration Examples
 
 ## <a name="assets"></a> Assets
 Assets setting is used to push new asset files (CSS or JS) in the document.
@@ -374,7 +374,7 @@ HTML:
 <input type="file" name="my-input" id="my-input">
 ```
 
-Javascript:
+Vue.js:
 ```javascript
 Vue.ajax.post("http://example.com", {}, {
     fileInputs: [
@@ -413,12 +413,11 @@ Vue.ajax.get("http://example.com", {}, {
 });
 ```
 
-**Adding version for history**  
-Layouts can be forced to do a hard reload when assets or html changes. 
-First set the initial layout version in your header with a custom `meta` tag.
+#### Adding version for history  
+Layouts can be forced to do a hard reload when assets or html changes. First set the initial layout version in your header with a custom `meta` tag.
 
 HTML:
-```html
+```
 <meta http-equiv="x-history-version" content="ABCDEFGH">
 ```
 
@@ -507,7 +506,9 @@ http://example.com?category=Accessories&page=15
 ```
 
 ## <a name="with-credentials"></a> With Credentials
-There is a detailed explanation [here](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials). Default value is `false`.
+There is a detailed explanation 
+[here](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials). 
+Default value is `false`.
 ```javascript
 Vue.ajax.get("http://example.com", data, {
     withCredentials: false
@@ -567,14 +568,14 @@ header("Content-type: application/json; charset=utf-8");
 echo json_encode($array);
 ```
 
-Laravel:
+PHP (Laravel):
 ```php
 Route::get("http://example.com", function () {
     return json_encode($array);
 });
 ```
 
-VueJS
+Vue.js
 ```javascript
 Vue.ajax.get("http://example.com", {})
     .then(function(response) {
@@ -611,7 +612,7 @@ Vue.ajax.get("http://example.com/not-existing-path", [data])
 
 ## Common Events
 
-### vueajaxabort
+#### `vueajaxabort`
 Register a handler to be called when `Vue.ajax` requests abort.
 ```javascript
 window.addEventListener("vueajaxabort", function(e) {
@@ -619,7 +620,7 @@ window.addEventListener("vueajaxabort", function(e) {
 });
 ```
 
-### vueajaxcomplete
+#### `vueajaxcomplete`
 Register a handler to be called when `Vue.ajax` requests complete.
 ```javascript
 window.addEventListener("vueajaxsuccess", function(e) {
@@ -627,7 +628,7 @@ window.addEventListener("vueajaxsuccess", function(e) {
 });
 ```
 
-### vueajaxerror
+#### `vueajaxerror`
 Register a handler to be called when `Vue.ajax` requests complete with an error.
 ```javascript
 window.addEventListener("vueajaxerror", function(e) {
@@ -635,7 +636,7 @@ window.addEventListener("vueajaxerror", function(e) {
 });
 ```
 
-### vueajaxstart
+#### `vueajaxstart`
 Register a handler to be called when `Vue.ajax` requests begins.
 ```javascript
 window.addEventListener("vueajaxstart", function(e) {
@@ -643,7 +644,7 @@ window.addEventListener("vueajaxstart", function(e) {
 });
 ```
 
-### vueajaxsuccess
+#### `vueajaxsuccess`
 Attach a function to be executed whenever an `Vue.ajax` request completes successfully.
 ```javascript
 window.addEventListener("vueajaxsuccess", function(e) {
@@ -653,7 +654,7 @@ window.addEventListener("vueajaxsuccess", function(e) {
 
 ## History Events
 
-### vueajaxhistorycomplete
+#### `vueajaxhistorycomplete`
 Register a handler to be called when `Vue.ajax history` requests complete.
 ```javascript
 window.addEventListener("vueajaxhistorycomplete", function(e) {
@@ -661,7 +662,7 @@ window.addEventListener("vueajaxhistorycomplete", function(e) {
 });
 ```
 
-### vueajaxhistoryerror
+#### `vueajaxhistoryerror`
 Register a handler to be called when `Vue.ajax history` requests complete with an error.
 ```javascript
 window.addEventListener("vueajaxhistoryerror", function(e) {
@@ -669,7 +670,7 @@ window.addEventListener("vueajaxhistoryerror", function(e) {
 });
 ```
 
-### vueajaxhistorystart
+#### `vueajaxhistorystart`
 Register a handler to be called when `Vue.ajax history` requests begins.
 ```javascript
 window.addEventListener("vueajaxhistorystart", function(e) {
@@ -677,7 +678,7 @@ window.addEventListener("vueajaxhistorystart", function(e) {
 });
 ```
 
-### vueajaxhistorysuccess
+#### `vueajaxhistorysuccess`
 Attach a function to be executed whenever an `Vue.ajax history` request completes successfully.
 ```javascript
 window.addEventListener("vueajaxhistorysuccess", function(e) {

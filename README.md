@@ -136,9 +136,19 @@ Important benefits:
 * With the `keepAlive` option caches the active components. Thus, when inactive components are called, they are loaded quickly without consuming data.
 * With the `library` option you can create dynamic options for dynamic component instances (`data`, `props`, `computed`, ..., etc).
 * And supports `Vue.ajax`'s all features (`history`, `data`, `title`, ..., etc).
-x
+
 ```javascript
 vm.componentShifter(object configurations[, function success] [,function error])
+```
+
+##### Basic Example 
+```javascript
+this.componentShifter({
+    is: {componentHolder: componentName},
+    url: url,
+}, response => {
+    console.log("Component changed!");
+});
 ```
 
 ## Options
@@ -151,16 +161,6 @@ vm.componentShifter(object configurations[, function success] [,function error])
 | library  | No       | Object   | Options of the new component instance (`data`, `props`, ..., etc)|
 | success  | No       | Function | Your custom callback on success.                                 |
 | error    | No       | Function | Your custom callback on error.                                   |
-
-##### Basic Example 
-```javascript
-this.componentShifter({
-    is: {pageComponent: componentName},
-    url: url,
-}, response => {
-    console.log("Component changed!");
-});
-```
 
 ##### Detailed example
 

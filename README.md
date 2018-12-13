@@ -38,7 +38,154 @@ var ajax = require("vuejs-ajax")
 Vue.use(ajax)
 ```
 
-# Examples
+***
+
+# <a name="component-shifter"></a> Component Shifter
+With componentShifter() you can load (with `Vue.ajax`) and render your `Vue template` (html) in your application by dynamic & async `Vue.component()`. You can also add components and run them nested.
+
+Important benefits:
+* You can organize the `async and dynamic components` by typing less. Check out the [events](#component-shifter-events) for listeners.
+* You can prepare common `callbacks` and `listeners` for dynamic components.
+* With the `keepAlive` option caches the active components. Thus, when inactive components are called, they are loaded quickly without consuming data.
+* With the `library` option you can create dynamic options for dynamic component instances (`data`, `props`, `computed`, ..., etc).
+* And supports `Vue.ajax`'s all features (`history`, `data`, `title`, ..., etc).
+
+```
+app.componentShifter(object configurations[, function success] [,function error])
+```
+
+##### Basic Example 
+```javascript
+app.componentShifter({
+    is: {componentHolder: componentName},
+    url: url,
+}, response => {
+    console.log("Component changed!");
+});
+```
+
+## Options
+
+| Property | Required | Value    | Description                                                      |
+| -------- | -------- | -------- | ---------------------------------------------------------------- |
+| is       | Yes      | Object   | Component holder (key) and unique component name (value).        |
+| url      | Yes      | String   | Component resources url.                                         |
+| keepAlive| No       | Boolean or object  | Caches the inactive components. `Default: false`       |
+| library  | No       | Object   | Options of the new component instance (`data`, `props`, ..., etc)|
+| success  | No       | Function | Your custom callback on success.                                 |
+| error    | No       | Function | Your custom callback on error.                                   |
+
+#### `keepAlive`
+
+| Property | Required | Value                               | Description                                               |
+| -------- | -------- | ----------------------------------- | --------------------------------------------------------- |
+| include  | No       | Array or string _(comma-delimited)_ | Only components with matching names will be cached.       |
+| exclude  | No       | Array or string _(comma-delimited)_ | Any component with a matching name will not be cached.    |
+| max      | No       | Number                              | The maximum number of component instances to cache.       |
+
+##### Detailed example
+
+_index.html_
+```html
+<div id="app">
+    <a href="/page-1" @click.prevent="openPage('page1', '/page-1', 'Page 1')">Page 1</a>
+    <a href="/page-2" @click.prevent="openPage('page2', '/page-2', 'Page 2')">Page 2</a>
+    <a href="/page-3" @click.prevent="openPage('page3', '/page-3', 'Page 3')">Page 3</a>
+
+    <!-- Your container component -->
+    <component :is="pageComponent"></component>
+</div>
+```
+
+_app.js_
+```javascript
+var app = new Vue({
+    el: "#classest",
+    data() {
+        return {
+            pageComponent: null, // Component holder
+            pageLoaded: false
+        }
+    },
+    methods: {
+        openPage(componentName, url, title) {
+            
+            // Calling componentShifter
+            this.componentShifter({
+                is: {pageComponent: componentName},
+                url: url,
+                title: title,
+                history: true,
+                keepAlive: {
+                    max: 10,
+                    include: ["page1", "page2"], // Another usage: "page1,page2"
+                    exclude: ["page3", "page4"] // Another usage: "page3,page4"
+                },
+                library: {
+                    data() {
+                        return {
+                            hasFooter: true
+                        } 
+                    },
+                    props: ["custom"]
+                }
+            }, response => {
+                console.log("Component changed!");
+                this.pageLoaded = true;
+            }, response => {
+                console.log("Component could not be changed!", response);
+                this.pageLoaded = false;
+            });
+            
+        }
+    },
+    mounted() {
+        if(!pageLoaded) {
+            this.openPage("page1", "/page-1", "Page 1")
+        }
+    }
+});
+```
+
+## <a name="component-shifter-events"></a> Component Shifter Events
+
+#### componentshiftercomplete
+Register a handler to be called when `componentShifter()` requests complete.
+```javascript
+window.addEventListener("vueajaxhistorycomplete", function(e) {
+    console.log(e);
+});
+```
+
+#### componentshiftererror
+Register a handler to be called when `componentShifter()` requests complete with an error.
+```javascript
+window.addEventListener("componentshiftererror", function(e) {
+    console.log(e);
+});
+```
+
+#### componentshifterstart
+Register a handler to be called when `componentShifter()` requests begins.
+```javascript
+window.addEventListener("componentshifterstart", function(e) {
+    console.log(e);
+});
+```
+
+#### componentshiftersuccess
+Attach a function to be executed whenever an `componentShifter()` request completes successfully.
+```javascript
+window.addEventListener("componentshiftersuccess", function(e) {
+    console.log(e);
+});
+```
+
+***
+
+# Ajax Methods & Requests
+
+### Examples
 ```javascript
 Vue.ajax.get("http://example.com").then(function(response) {
     console.log("Success", response.data)
@@ -60,59 +207,50 @@ Vue.ajax.get("http://example.com", {
 })
 ```
 
-# Methods & Requests
+Or if you want to make some configurations:
+
+```javascript
+Vue.ajax.get("http://example.com", {
+    param: "Send parameter"
+}, {
+    history: true,
+    scrollTop: true,
+}).then(function(response) {
+    console.log("Success", response.data)
+}, function(response) {
+    console.log("Error", response.statusText)
+})
+```
 
 ### Get Method
-```javascript
+```
 Vue.ajax.get(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 #### Post Method
-```javascript
+```
 Vue.ajax.post(string url[, object data] [,object configurations])
     .then(function success[, function error])
 ```
 
 ## Arguments
 
-| Property         | Type             | Description                                                   |
-| ---------------- | ---------------- | ------------------------------------------------------------- |
-| url              | String           | A string containing the URL to which the request is sent.     |
-| data             | Object           | A plain object that is sent to the server with the request.   |
-| configurations   | Object           | A set of key/value pairs that configure the Vue.ajax request. |
+| Property         | Required | Type             | Description                                                   |
+| ---------------- | -------- | ---------------- | ------------------------------------------------------------- |
+| url              | Yes      | String           | A string containing the URL to which the request is sent.     |
+| data             | No       | Object           | A plain object that is sent to the server with the request.   |
+| configurations   | No       | Object           | A set of key/value pairs that configure the Vue.ajax request. |
 
-##### _Other methods and requests are used in the same way:_
+##### All ajax request methods and uses are the same:
 
-##### Delete Method
-```javascript
-Vue.ajax.delete(string url[, object data] [,object configurations])
-    .then(function success[, function error])
-```
-
-##### Head Method
-```javascript
-Vue.ajax.head(string url[, object data] [,object configurations])
-    .then(function success[, function error])
-```
-
-##### Jsonp Request
-```javascript
-Vue.ajax.jsonp(string url[, object data] [,object configurations])
-    .then(function success[, function error])
-```
-
-##### Patch Method
-```javascript
-Vue.ajax.patch(string url[, object data] [,object configurations])
-    .then(function success[, function error])
-```
-
-##### Put Method
-```javascript
-Vue.ajax.put(string url[, object data] [,object configurations])
-    .then(function success[, function error])
-```
+* Delete method: `Vue.ajax.delete(...);`
+* Get method: `Vue.ajax.get(...);`
+* Head method: `Vue.ajax.head(...);`
+* Jsonp method: `Vue.ajax.jsonp(...);`
+* Patch method: `Vue.ajax.patch(...);`
+* Post method: `Vue.ajax.post(...);`
+* Put method: `Vue.ajax.put(...);`
 
 All of the above methods are a shorthand method of the `Vue.ajax()`:
 
@@ -127,105 +265,13 @@ Vue.ajax({
 })
 ```
 
-# <a name="component-shifter"></a> Component Shifter
-With componentShifter() you can load (with `Vue.ajax`) and render your `Vue template` (html) in your application by dynamic & async `Vue.component()`. You can also add components and run them nested.
+***
 
-Important benefits:
-* You can organize the `async and dynamic components` by typing less. Check out the [events](#component-shifter-events) for listeners.
-* You can prepare common `callbacks` and `listeners` for dynamic components.
-* With the `keepAlive` option caches the active components. Thus, when inactive components are called, they are loaded quickly without consuming data.
-* With the `library` option you can create dynamic options for dynamic component instances (`data`, `props`, `computed`, ..., etc).
-* And supports `Vue.ajax`'s all features (`history`, `data`, `title`, ..., etc).
-
-```javascript
-vm.componentShifter(object configurations[, function success] [,function error])
-```
-
-##### Basic Example 
-```javascript
-this.componentShifter({
-    is: {componentHolder: componentName},
-    url: url,
-}, response => {
-    console.log("Component changed!");
-});
-```
-
-## Options
-
-| Property | Required | Value    | Description                                                      |
-| -------- | -------- | -------- | ---------------------------------------------------------------- |
-| is       | Yes      | Object   | Component holder (key) and unique component name (value).        |
-| url      | Yes      | String   | Component resources url.                                         |
-| keepAlive| No       | Boolean  | Caches the inactive components. `Default: false`                 |
-| library  | No       | Object   | Options of the new component instance (`data`, `props`, ..., etc)|
-| success  | No       | Function | Your custom callback on success.                                 |
-| error    | No       | Function | Your custom callback on error.                                   |
-
-##### Detailed example
-
-_index.html_
-```html
-<div id="app">
-    <a href="/page-1" @click.prevent="openPage('page1', '/page-1', 'Page 1')">Page 1</a>
-    <a href="/page-2" @click.prevent="openPage('page2', '/page-2', 'Page 2')">Page 2</a>
-
-    <!-- Your container component -->
-    <component :is="pageComponent"></component>
-</div>
-```
-
-_app.js_
-```javascript
-new Vue({
-    el: "#classest",
-    data() {
-        return {
-            pageComponent: null, // Component holder
-            pageLoaded: false
-        }
-    },
-    methods: {
-        openPage(componentName, url, title) {
-            
-            // Calling componentShifter
-            this.componentShifter({
-                is: {pageComponent: componentName},
-                url: url,
-                title: title,
-                history: true,
-                keepAlive: true,
-                library: {
-                    data() {
-                        return {
-                            ...
-                        } 
-                    },
-                    props: [...],
-                }
-            }, response => {
-                console.log("Component changed!");
-                this.pageLoaded = true;
-            }, response => {
-                console.log("Component could not be changed!", response);
-                this.pageLoaded = false;
-            });
-            
-        }
-    },
-    mounted() {
-        if(!pageLoaded) {
-            this.openPage("page1", "/page-1", "Page 1")
-        }
-    }
-});
-```
-
-# <a name="configurations"></a> Vue Ajax Configurations
+# <a name="configurations"></a> Ajax Configurations
 
 | Configuration                                | Type             | Default | Available                                  |
 | -------------------------------------------- | ---------------- | ------- | ------------------------------------------ |
-| [`assets`](#assets)                          | String \| Object | -       | -                                          |
+| [`assets`](#assets)                          | String Or Object | -       | -                                          |
 | [`async`](#async)                            | Boolean          | true    | true, false                                |
 | [`cache`](#cache)                            | Boolean          | false   | true, false                                |
 | [`complete`](#complete)                      | Function         | -       | -                                          |
@@ -258,7 +304,7 @@ Vue.ajax.get([url], [data], {
 
 ##### Pushing multiple asset files
 ```javascript
-Vue.ajax.get("http://example.com", [data], {
+Vue.ajax.get("http://example.com", {}, {
     assets: ["assets/css/style.css", "assets/js/script.js"]
 });
 ```
@@ -266,7 +312,7 @@ Vue.ajax.get("http://example.com", [data], {
 ## <a name="async"></a> Asynchronous
 By default, all requests are sent asynchronously (i.e. this is set to true by default). If you need synchronous requests, set this option to `false`. Default value is `true`.
 ```javascript
-Vue.ajax.get("http://example.com", [data], {
+Vue.ajax.get("http://example.com", {}, {
     async: true
 });
 ```
@@ -274,7 +320,7 @@ Vue.ajax.get("http://example.com", [data], {
 ## <a name="cache"></a> Cache
 If set to false, it will force requested pages not to be cached by the browser. Default value is `false`.
 ```javascript
-Vue.ajax.get("http://example.com", [data], {
+Vue.ajax.get("http://example.com", {}, {
     cache: false
 });
 ```
@@ -283,7 +329,7 @@ Vue.ajax.get("http://example.com", [data], {
 A function to be called when the request finishes (`Success` or `error` callbacks are executed).
 
 ```javascript
-Vue.ajax.get("http://example.com", [data], {
+Vue.ajax.get("http://example.com", {}, {
     complete: function(response) {
         console.log(response.status)
     }
@@ -293,7 +339,7 @@ Vue.ajax.get("http://example.com", [data], {
 ## <a name="csrf"></a> CSRF
 This setting provides protection against CSRF attacks. There is a detailed explanation [`here`](https://en.wikipedia.org/wiki/Cross-site_request_forgery). Default value is `true`.
 ```javascript
-Vue.ajax.get("http://example.com", [data], {
+Vue.ajax.get("http://example.com", {}, {
     csrf: true
 });
 ```
@@ -330,7 +376,7 @@ HTML:
 
 Javascript:
 ```javascript
-Vue.ajax.post("http://example.com", [data], {
+Vue.ajax.post("http://example.com", {}, {
     fileInputs: [
         document.getElementById("my-input")
     ]
@@ -351,7 +397,7 @@ You can add the `multiple` attribute to send multiple files with an input elemen
 Option to hard reloading when page can not be loaded. Default value is `false`.
 
 ```javascript
-Vue.ajax.get("http://example.com", [data], {
+Vue.ajax.get("http://example.com", {}, {
     hardReloadOnError: true
 });
 ```
@@ -362,7 +408,7 @@ History setting is usage of PushState (HTML history API). Default value is `fals
 PushState (changing the URL of the page without refreshing the page) to create a faster browsing experience.  This means less elements to load and therefore faster browsing.
 
 ```javascript
-Vue.ajax.get("http://example.com", [data], {
+Vue.ajax.get("http://example.com", {}, {
     history: true
 });
 ```
@@ -380,7 +426,7 @@ HTML:
 An object of additional header key/value pairs to send along with requests using the XMLHttpRequest transport.
 
 ```javascript
-Vue.ajax.get("http://example.com", [data], {
+Vue.ajax.get("http://example.com", {}, {
     headers: {
         "Content-Type": "application/json",
         "Accept": "application/json, text/plain, */*"
@@ -399,21 +445,21 @@ Vue.ajax({
 
 _Instead, you might prefer to use the following shorthand:_
 ```javascript
-Vue.ajax.post("http://example.com", [data]);
+Vue.ajax.post("http://example.com", {});
 ```
 
 ## <a name="prevent-duplicate"></a> Prevent Duplicate Requests
 This setting prevents sending duplicate requests to the same address or given key data. Default value is `true`.  
 The following example prevents sending requests over the same URL:
 ```javascript
-Vue.ajax.get("http://example.com", [data], {
+Vue.ajax.get("http://example.com", {}, {
     preventDuplicate: true
 });
 ```
 
 The following example prevents sending requests over the same given key data:
 ```javascript
-Vue.ajax.get("http://example.com", [data], {
+Vue.ajax.get("http://example.com", {}, {
     preventDuplicate: true,
     key: "ABCDEFGH"
 });
@@ -422,7 +468,7 @@ Vue.ajax.get("http://example.com", [data], {
 ## <a name="scroll-top"></a> Scroll Top
 This setting is used to scroll to top of the document when after loading the request. Default value is `true`.
 ```javascript
-Vue.ajax.get("http://example.com", [data], {
+Vue.ajax.get("http://example.com", {}, {
     scrollTop: true
 });
 ```
@@ -431,7 +477,7 @@ Vue.ajax.get("http://example.com", [data], {
 Set a timeout (in milliseconds) for the request. Default value is `60000`.
 
 ```javascript
-Vue.ajax.get("http://example.com", [data], {
+Vue.ajax.get("http://example.com", {}, {
     timeout: 60000
 });
 ```
@@ -439,16 +485,15 @@ Vue.ajax.get("http://example.com", [data], {
 ## <a name="title"></a> Title
 Title setting is used to change the document title value.
 ```javascript
-Vue.ajax.get("http://example.com", [data], {
+Vue.ajax.get("http://example.com", {}, {
     title: "New title"
 });
 ```
 
-
 ## <a name="url-data"></a> URL Data
 With this setting, you can add serialized query string to the URL you are sending.
 ```javascript
-Vue.ajax.get("http://example.com", [data], {
+Vue.ajax.get("http://example.com", {}, {
     urlData: [
         {category: "Accessories"},
         {page: 15}
@@ -464,7 +509,7 @@ http://example.com?category=Accessories&page=15
 ## <a name="with-credentials"></a> With Credentials
 There is a detailed explanation [here](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials). Default value is `false`.
 ```javascript
-Vue.ajax.get("http://example.com", data {
+Vue.ajax.get("http://example.com", data, {
     withCredentials: false
 });
 ```
@@ -474,35 +519,43 @@ The response returns the Object on the frontend.
 
 _Success and error together in `then()` method:_
 ```javascript
-Vue.ajax(object configurations)
-    .then(function success[, function error])
+Vue.ajax({url: "http://example.com"})
+    .then(function(response) {
+        console.log(response.data);
+    }, function(response) {
+        console.log(response);
+    })
 ```
 
 _Success and error together in in separate methods:_
 ```javascript
-Vue.ajax(object configurations)
-    .then(function success)
-    .catch(function error)
+Vue.ajax({url: "http://example.com"})
+    .then(function(response) {
+        console.log(response.data);
+    })
+    .catch(function(response) {
+        console.log(response);
+    })
 ```
 
 The object in general is the following structure:
 
 ```javascript
-Vue.ajax.get("http://example.com", [data])
+Vue.ajax.post("http://example.com", {pageNumber: 5})
     .then(function(response) {
         console.log(response.data)
     });
 ```
 
-| Response Property | Value Type      |
-| ----------------- | --------------- |
-| data              | Object\|String  |
-| status            | String          |
-| statusText        | String          |
-| headers           | String          |
-| config            | Object          |
-| xhrStatus         | String          |
-| request           | Object          |
+| Response Property | Value Type       |
+| ----------------- | ---------------- |
+| data              | Object Or String |
+| status            | String           |
+| statusText        | String           |
+| headers           | String           |
+| config            | Object           |
+| xhrStatus         | String           |
+| request           | Object           |
 
 ## <a name="response-format"></a> Response Format
 
@@ -523,7 +576,7 @@ Route::get("http://example.com", function () {
 
 VueJS
 ```javascript
-Vue.ajax.get("http://example.com", [data])
+Vue.ajax.get("http://example.com", {})
     .then(function(response) {
         console.log(response.data)
     });
@@ -551,6 +604,8 @@ Vue.ajax.get("http://example.com/not-existing-path", [data])
         console.log("Error: ", response.statusText);
     }); // "Error: Not Found"
 ```
+
+***
 
 # <a name="event-handlers"></a> Event Handlers
 
@@ -626,39 +681,6 @@ window.addEventListener("vueajaxhistorystart", function(e) {
 Attach a function to be executed whenever an `Vue.ajax history` request completes successfully.
 ```javascript
 window.addEventListener("vueajaxhistorysuccess", function(e) {
-    console.log(e);
-});
-```
-## <a name="component-shifter-events"></a> Component Shifter Events
-
-### componentshiftercomplete
-Register a handler to be called when `Component Shifter` requests complete.
-```javascript
-window.addEventListener("vueajaxhistorycomplete", function(e) {
-    console.log(e);
-});
-```
-
-### componentshiftererror
-Register a handler to be called when `Component Shifter` requests complete with an error.
-```javascript
-window.addEventListener("componentshiftererror", function(e) {
-    console.log(e);
-});
-```
-
-### componentshifterstart
-Register a handler to be called when `Component Shifter` requests begins.
-```javascript
-window.addEventListener("componentshifterstart", function(e) {
-    console.log(e);
-});
-```
-
-### componentshiftersuccess
-Attach a function to be executed whenever an `Component Shifter` request completes successfully.
-```javascript
-window.addEventListener("componentshiftersuccess", function(e) {
     console.log(e);
 });
 ```

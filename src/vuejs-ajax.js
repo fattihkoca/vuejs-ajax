@@ -523,6 +523,49 @@ const VueAjax = {
                 }
             },
 
+            // Object.assign
+            objectAssign(target, varArgs) {
+                let to = Object(target);
+
+                for (let index = 1; index < arguments.length; index++) {
+                    let nextSource = arguments[index];
+
+                    if (nextSource != null) {
+                        for (let nextKey in nextSource) {
+                            if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+                                to[nextKey] = nextSource[nextKey];
+                            }
+                        }
+                    }
+                }
+                return to;
+            },
+
+            /**
+             * Filter for keepAlive (componentShifter)
+             * @param name
+             * @param include
+             * @param exclude
+             * @returns {boolean}
+             */
+            keepAliveFilter(name, include = [], exclude = []) {
+                let filterResolve = data => {
+                    if (data != null && typeof data === "object") {
+                        return Object.values(data);
+                    } else if (typeof data === "string" && data.indexOf(",") !== -1) {
+                        return data.replace(/ /g, '').split(",");
+                    }
+
+                    return [];
+                };
+
+                include = filterResolve(include);
+                exclude = filterResolve(exclude);
+
+                return (!include.length || include.indexOf(name) !== -1)
+                    && (!exclude.length || exclude.indexOf(name) === -1);
+            },
+
             /**
              * XHR send method
              * @param config
@@ -868,7 +911,7 @@ const VueAjax = {
                         let resolveData = {template: template};
 
                         if (typeof library === 'object') {
-                            Object.assign(resolveData, library);
+                            utils.objectAssign(resolveData, library);
                         }
 
                         // Resolve async component template
@@ -894,7 +937,7 @@ const VueAjax = {
                         xhrStatus: "Uninitialized"
                     });
 
-                    if (config.keepAlive) {
+                    if (config.hasOwnProperty("keepAlive")) {
                         if (this.shifterCache === undefined) {
                             this.shifterCache = {};
                         }
@@ -930,12 +973,26 @@ const VueAjax = {
 
                         let template = response.data;
 
-                        if (config.keepAlive) {
-                            this.shifterCache[is][name] = {
-                                template: template,
-                                config: response.config,
-                                pushState: response.pushState,
-                            };
+                        // If keepAlive option is on, cache the component instance
+                        if (config.hasOwnProperty("keepAlive")
+                            && (!config.keepAlive.hasOwnProperty("max") || config.keepAlive.max > 0)) {
+                            let keepAlive = config.keepAlive,
+                                length = Object.keys(this.shifterCache[is]).length,
+                                survived = utils.keepAliveFilter(name, keepAlive.include, keepAlive.exclude);
+
+                            // If the limit is reached, delete the oldest component instance
+                            if (length > 1 && length > keepAlive.max) {
+                                delete this.shifterCache[is][Object.keys(this.shifterCache[is])[0]];
+                            }
+
+                            // If it is passed through filters, cache the component instance
+                            if(survived) {
+                                this.shifterCache[is][name] = {
+                                    template: template,
+                                    config: response.config,
+                                    pushState: response.pushState,
+                                };
+                            }
                         }
 
                         componentResolve(template, response);

@@ -576,6 +576,10 @@ const VueAjax = {
                     return !haystack.length || matchStat;
                 };
 
+                if(name == null) {
+                    return true;
+                }
+
                 return (filterResolve(include) && filterResolve(exclude, false));
             },
 

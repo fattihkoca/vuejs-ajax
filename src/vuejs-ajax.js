@@ -549,21 +549,34 @@ const VueAjax = {
              * @returns {boolean}
              */
             keepAliveFilter(name, include = [], exclude = []) {
-                let filterResolve = data => {
+                let filterResolve = (data, include = true) => {
+                    let haystack = [];
+
+                    // Object
                     if (data != null && typeof data === "object") {
-                        return Object.values(data);
-                    } else if (typeof data === "string" && data.indexOf(",") !== -1) {
-                        return data.replace(/ /g, '').split(",");
+                        // Regexp
+                        if(data instanceof RegExp) {
+                            let match = name.match(data);
+                            return include ? match !== null : match === null;
+                        }
+                        // Array
+                        else {
+                            haystack = Object.values(data);
+                        }
+                    }
+                    // String (comma separated)
+                    else if (typeof data === "string") {
+                        haystack = data.split(",");
                     }
 
-                    return [];
+                    let match = haystack.indexOf(name),
+                        matchStat = include ? match !== -1 : match === -1;
+
+                    // If is not a regexp instance
+                    return !haystack.length || matchStat;
                 };
 
-                include = filterResolve(include);
-                exclude = filterResolve(exclude);
-
-                return (!include.length || include.indexOf(name) !== -1)
-                    && (!exclude.length || exclude.indexOf(name) === -1);
+                return (filterResolve(include) && filterResolve(exclude, false));
             },
 
             /**

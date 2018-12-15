@@ -43,16 +43,16 @@ Vue.use(ajax)
 # <a name="component-shifter"></a> componentShifter()
 With componentShifter() you can load (with `Vue.ajax`) and render your `Vue template` (html) in your application by dynamic & async `Vue.component()`. You can also add components and run them nested.
 
+```
+this.componentShifter(object configurations[, function success] [,function error])
+```
+
 #### <a name="component-shifter-benefits"></a> Important benefits:
 1. You can organize the `async and dynamic components` by typing less. Check out the [events](/#component-shifter-events) for listeners.
 2. You can easily prepare common `callbacks` and `listeners` for dynamic components.
 3. With the `keepAlive` option caches the active components. Thus, when inactive components are called, they are loaded quickly without consuming data.
 4. With the `library` option you can create dynamic options for dynamic component instances (`data`, `props`, `computed`, ..., etc).
 5. And supports `Vue.ajax`'s all features (`history`, `data`, `title`, ..., etc).
-
-```
-this.componentShifter(object configurations[, function success] [,function error])
-```
 
 #### Basic Example 
 ```javascript

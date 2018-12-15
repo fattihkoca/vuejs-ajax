@@ -66,22 +66,26 @@ this.componentShifter({
 
 ## Options
 
-| Property | Required | Value    | Description                                                      |
-| -------- | -------- | -------- | ---------------------------------------------------------------- |
-| is       | Yes      | Object   | Component holder (key) and unique component name (value).        |
-| url      | Yes      | String   | Component resources url.                                         |
-| keepAlive| No       | Boolean or object  | Caches the inactive components. `Default: false`       |
-| library  | No       | Object   | Options of the new component instance (`data`, `props`, ..., etc)|
-| success  | No       | Function | Your custom callback on success.                                 |
-| error    | No       | Function | Your custom callback on error.                                   |
+| Property       | Required | Type     | Description                                                      |
+| -------------- | -------- | -------- | ---------------------------------------------------------------- |
+| **`is`**       | Yes      | Object   | Component holder (key) and unique component name (value).        |
+| **`url`**      | Yes      | String   | Component resources url.                                         |
+| **`keepAlive`**| No       | Boolean or object  | Caches the inactive components. `Default: false`       |
+| **`library`**  | No       | Object   | Options of the new component instance (`data`, `props`, ..., etc)|
 
-### `keepAlive` options
+#### `keepAlive` options
 
-| Property | Required | Value                               | Description                                               |
-| -------- | -------- | ----------------------------------- | --------------------------------------------------------- |
-| include  | No       | Array or string _(comma-delimited)_ | Only components with matching names will be cached.       |
-| exclude  | No       | Array or string _(comma-delimited)_ | Any component with a matching name will not be cached.    |
-| max      | No       | Number                              | The maximum number of component instances to cache.       |
+| Property       | Required | Type                                     | Description                                               |
+| -------------- | -------- | ---------------------------------------- | --------------------------------------------------------- |
+| **`include`**  | No       | Array, string _(comma-delimited)_, regex | Only components with matching names will be cached.       |
+| **`exclude`**  | No       | Array, string _(comma-delimited)_, regex | Any component with a matching name will not be cached.    |
+| **`max`**      | No       | Number                                   | The maximum number of component instances to cache.       |
+
+## Callbacks
+| Property     | Required | Type     | Description                                                      |
+| ------------ | -------- | -------- | ---------------------------------------------------------------- |
+| _`success`_  | No       | Function | Your custom callback on success. _(Second argument)_             |
+| _`error`_    | No       | Function | Your custom callback on error. _(Third argument)_                |
 
 ##### Detailed example
 
@@ -114,12 +118,14 @@ new Vue({
             this.componentShifter({
                 is: {pageComponent: componentName},
                 url: url,
-                title: title,
-                history: true,
                 keepAlive: {
                     max: 10,
-                    include: ["page1", "page2"], // Another usage: "page1,page2"
-                    exclude: ["page3", "page4"] // Another usage: "page3,page4"
+                    
+                    // Another usages: "page1,page2" and /page1|page2/
+                    include: ["page1", "page2"],
+                    
+                    // Another usages: "page3,page4" and /page3|page4/
+                    exclude: ["page3", "page4"]
                 },
                 library: {
                     data() {
@@ -269,8 +275,8 @@ Vue.ajax({
 
 # <a name="configurations"></a> Ajax Configurations
 
-| Configuration                                | Type             | Default | Available                                  |
-| -------------------------------------------- | ---------------- | ------- | ------------------------------------------ |
+| Configuration                                 | Type             | Default | Available                                  |
+| --------------------------------------------- | ---------------- | ------- | ------------------------------------------ |
 | [`assets`](/#assets)                          | String Or Object | -       | -                                          |
 | [`async`](/#async)                            | Boolean          | true    | true, false                                |
 | [`cache`](/#cache)                            | Boolean          | false   | true, false                                |
@@ -548,7 +554,7 @@ Vue.ajax.post("http://example.com", {pageNumber: 5})
     });
 ```
 
-| Response Property | Value Type       |
+| Response Property | Type             |
 | ----------------- | ---------------- |
 | data              | Object Or String |
 | status            | String           |

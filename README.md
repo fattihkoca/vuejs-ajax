@@ -43,7 +43,7 @@ Vue.use(ajax)
 # <a name="component-shifter"></a> componentShifter()
 With componentShifter() you can load (with `Vue.ajax`) and render your `Vue template` (html) in your application by dynamic & async `Vue.component()`. You can also add components and run them nested.
 
-Important benefits:
+#### <a name="component-shifter-benefits"></a> Important benefits:
 1. You can organize the `async and dynamic components` by typing less. Check out the [events](/#component-shifter-events) for listeners.
 2. You can easily prepare common `callbacks` and `listeners` for dynamic components.
 3. With the `keepAlive` option caches the active components. Thus, when inactive components are called, they are loaded quickly without consuming data.
@@ -54,7 +54,7 @@ Important benefits:
 this.componentShifter(object configurations[, function success] [,function error])
 ```
 
-##### Basic Example 
+#### Basic Example 
 ```javascript
 this.componentShifter({
     is: {componentHolder: componentName},
@@ -191,7 +191,7 @@ window.addEventListener("componentshiftersuccess", function(e) {
 
 # Vue.ajax()
 
-### Examples
+## Examples
 ```javascript
 Vue.ajax.get("http://example.com").then(function(response) {
     console.log("Success", response.data)
@@ -228,7 +228,7 @@ Vue.ajax.get("http://example.com", {
 })
 ```
 
-### Get Method
+#### Get Method
 ```
 Vue.ajax.get(string url[, object data] [,object configurations])
     .then(function success[, function error])
@@ -250,13 +250,13 @@ Vue.ajax.post(string url[, object data] [,object configurations])
 
 ##### All ajax request methods and uses are the same:
 
-* Delete method: `Vue.ajax.delete(...);`
-* Get method: `Vue.ajax.get(...);`
-* Head method: `Vue.ajax.head(...);`
-* Jsonp method: `Vue.ajax.jsonp(...);`
-* Patch method: `Vue.ajax.patch(...);`
-* Post method: `Vue.ajax.post(...);`
-* Put method: `Vue.ajax.put(...);`
+* Delete method: `Vue.ajax.delete(...)`
+* Get method: `Vue.ajax.get(...)`
+* Head method: `Vue.ajax.head(...)`
+* Jsonp method: `Vue.ajax.jsonp(...)`
+* Patch method: `Vue.ajax.patch(...)`
+* Post method: `Vue.ajax.post(...)`
+* Put method: `Vue.ajax.put(...)`
 
 All of the above methods are a shorthand method of the `Vue.ajax()`:
 
@@ -270,8 +270,6 @@ Vue.ajax({
     console.log("Error", response.statusText)
 })
 ```
-
-***
 
 # <a name="configurations"></a> Ajax Configurations
 
@@ -611,8 +609,6 @@ Vue.ajax.get("http://example.com/not-existing-path", [data])
         console.log("Error: ", response.statusText);
     }); // "Error: Not Found"
 ```
-
-***
 
 # <a name="event-handlers"></a> Event Handlers
 

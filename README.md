@@ -5,14 +5,14 @@
 [![Downloads](https://img.shields.io/npm/dm/vuejs-ajax.svg)](https://www.npmjs.com/package/vuejs-ajax)
 
 It is a XHR plugin that works in specific features for Vue.js 2.x and and above versions. It has many similar features with `jQuery`'s `ajax()` and `Angular`'s `$http()`. In addition to these, it also has its own important features: 
-* [`Assets`](/#assets)
-* [`Component shifter`](/#component-shifter)
-* [`Event handlers`](/#event-handlers)
-* [`File uploading`](/#file-uploading)
-* [`History`](/#history)
-* [`Title`](/#title)
-* [`Serialized query string`](/#url-data)
-* [`Prevent duplicate requests`](/#prevent-duplicate)
+* [`Assets`](#assets)
+* [`Component shifter`](#component-shifter)
+* [`Event handlers`](#event-handlers)
+* [`File uploading`](#file-uploading)
+* [`History`](#history)
+* [`Title`](#title)
+* [`Serialized query string`](#url-data)
+* [`Prevent duplicate requests`](#prevent-duplicate)
 
 # Setup
 
@@ -48,7 +48,7 @@ this.componentShifter(object configurations[, function success] [,function error
 ```
 
 #### <a name="component-shifter-benefits"></a> Important benefits:
-1. You can organize the `async and dynamic components` by typing less. Check out the [events](/#component-shifter-events) for listeners.
+1. You can organize the `async and dynamic components` by typing less. Check out the [events](#component-shifter-events) for listeners.
 2. You can easily prepare common `callbacks` and `listeners` for dynamic components.
 3. With the `keepAlive` option caches the active components. Thus, when inactive components are called, they are loaded quickly without consuming data.
 4. With the `library` option you can create dynamic options for dynamic component instances (`data`, `props`, `computed`, ..., etc).
@@ -275,24 +275,24 @@ Vue.ajax({
 
 | Configuration                                 | Type             | Default | Available                                  |
 | --------------------------------------------- | ---------------- | ------- | ------------------------------------------ |
-| [`assets`](/#assets)                          | String Or Object | -       | -                                          |
-| [`async`](/#async)                            | Boolean          | true    | true, false                                |
-| [`cache`](/#cache)                            | Boolean          | false   | true, false                                |
-| [`complete`](/#complete)                      | Function         | -       | -                                          |
-| [`csrf`](/#csrf)                              | Boolean          | true    | true, false                                |
-| [`data`](/#data)                              | Object           | -       | -                                          |
-| [`fileInputs`](/#file-uploading)              | Element Object   | -       | Input file upload objects                  |
-| [`hardReloadOnError`](/#hard-reload-on-error) | Boolean          | false   | true, false                                |
-| [`history`](/#history)                        | Boolean          | false   | true, false                                |
-| [`headers`](/#headers)                        | Object           | -       | -                                          |
-| [`method`](/#method)                          | String           | get     | delete, get, head, jsonp, patch, post, put |
-| [`preventDuplicate`](/#prevent-duplicate)     | Boolean          | true    | true, false                                |
-| [`scrollTop`](/#scroll-top)                   | Boolean          | false   | true, false                                |
-| [`timeout`](/#timeout)                        | Integer          | 60000   | Time in milliseconds                       |
-| [`title`](/#title)                            | String           | -       | -                                          |
-| [`url`](/#method)                             | String           | -       | -                                          |
-| [`urlData`](/#url-data)                       | Object           | -       | -                                          |
-| [`withCredentials`](/#with-credentials)       | Boolean          | false   | true, false                                |
+| [`assets`](#assets)                          | String Or Object | -       | -                                          |
+| [`async`](#async)                            | Boolean          | true    | true, false                                |
+| [`cache`](#cache)                            | Boolean          | false   | true, false                                |
+| [`complete`](#complete)                      | Function         | -       | -                                          |
+| [`csrf`](#csrf)                              | Boolean          | true    | true, false                                |
+| [`data`](#data)                              | Object           | -       | -                                          |
+| [`fileInputs`](#file-uploading)              | Element Object   | -       | Input file upload objects                  |
+| [`hardReloadOnError`](#hard-reload-on-error) | Boolean          | false   | true, false                                |
+| [`history`](#history)                        | Boolean          | false   | true, false                                |
+| [`headers`](#headers)                        | Object           | -       | -                                          |
+| [`method`](#method)                          | String           | get     | delete, get, head, jsonp, patch, post, put |
+| [`preventDuplicate`](#prevent-duplicate)     | Boolean          | true    | true, false                                |
+| [`scrollTop`](#scroll-top)                   | Boolean          | false   | true, false                                |
+| [`timeout`](#timeout)                        | Integer          | 60000   | Time in milliseconds                       |
+| [`title`](#title)                            | String           | -       | -                                          |
+| [`url`](#method)                             | String           | -       | -                                          |
+| [`urlData`](#url-data)                       | Object           | -       | -                                          |
+| [`withCredentials`](#with-credentials)       | Boolean          | false   | true, false                                |
 
 # <a name="examples"></a> Ajax Configuration Examples
 

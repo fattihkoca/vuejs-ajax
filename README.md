@@ -158,7 +158,7 @@ new Vue({
 #### `componentshiftercomplete`
 Register a handler to be called when `componentShifter()` requests complete.
 ```javascript
-window.addEventListener("vueajaxhistorycomplete", function(e) {
+window.addEventListener("componentshiftercomplete", function(e) {
     console.log(e);
 });
 ```
@@ -341,7 +341,7 @@ Vue.ajax.get("http://example.com", {}, {
 ```
 
 ## <a name="csrf"></a> CSRF
-This setting provides protection against CSRF attacks. There is a detailed explanation [`here`](https://en.wikipedia.org/wiki/Cross-site_request_forgery). Default value is `true`.
+This setting provides protection against CSRF attacks. There is a detailed explanation to [`here`](https://en.wikipedia.org/wiki/Cross-site_request_forgery). Default value is `true`.
 ```javascript
 Vue.ajax.get("http://example.com", {}, {
     csrf: true
@@ -532,7 +532,7 @@ Vue.ajax({url: "http://example.com"})
     })
 ```
 
-_Success and error together in in separate methods:_
+_Success and error together in separate methods:_
 ```javascript
 Vue.ajax({url: "http://example.com"})
     .then(function(response) {
@@ -684,6 +684,40 @@ window.addEventListener("vueajaxhistorystart", function(e) {
 Attach a function to be executed whenever an `Vue.ajax history` request completes successfully.
 ```javascript
 window.addEventListener("vueajaxhistorysuccess", function(e) {
+    console.log(e);
+});
+```
+
+## Component Shifter Events
+
+#### `componentshiftercomplete`
+Register a handler to be called when `componentShifter()` requests complete.
+```javascript
+window.addEventListener("componentshiftercomplete", function(e) {
+    console.log(e);
+});
+```
+
+#### `componentshiftererror`
+Register a handler to be called when `componentShifter()` requests complete with an error.
+```javascript
+window.addEventListener("componentshiftererror", function(e) {
+    console.log(e);
+});
+```
+
+#### `componentshifterstart`
+Register a handler to be called when `componentShifter()` requests begins.
+```javascript
+window.addEventListener("componentshifterstart", function(e) {
+    console.log(e);
+});
+```
+
+#### `componentshiftersuccess`
+Attach a function to be executed whenever an `componentShifter()` request completes successfully.
+```javascript
+window.addEventListener("componentshiftersuccess", function(e) {
     console.log(e);
 });
 ```

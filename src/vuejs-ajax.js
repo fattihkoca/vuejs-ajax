@@ -1148,6 +1148,20 @@ const VueAjax = {
             this.config.error = error;
             return this;
         };
+
+        Vue.ajax.abort = function(key = null) {
+            if(!requestAttempt.hasOwnProperty(key)) {
+                console.error('Vue.js Ajax Error: Key ' + key + ' not found.');
+                return;
+            }
+            requestAttempt[key].abort();
+        };
+
+        Vue.ajax.abortAll = function() {
+            for(let key in requestAttempt) {
+                requestAttempt[key].abort();
+            }
+        };
     }
 };
 

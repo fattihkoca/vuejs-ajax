@@ -826,22 +826,24 @@ const VueAjax = {
                     xhrStatus: "Uninitialized"
                 });
 
-                xhr.upload.addEventListener('progress', function (e) {
-                    let percent = 0,
-                        loaded = e.loaded || e.position,
-                        total = e.total;
+                if(xhr.upload) {
+                    xhr.upload.addEventListener('progress', function (e) {
+                        let percent = 0,
+                            loaded = e.loaded || e.position,
+                            total = e.total;
 
-                    if (e.lengthComputable) {
-                        percent = e.total ? Math.ceil(loaded / total * 100) : percent;
-                    }
+                        if (e.lengthComputable) {
+                            percent = e.total ? Math.ceil(loaded / total * 100) : percent;
+                        }
 
-                    utils.execCallback(config.progress, {
-                        key: key,
-                        loaded: loaded,
-                        total: total,
-                        percent: percent,
-                    });
-                }, false);
+                        utils.execCallback(config.progress, {
+                            key: key,
+                            loaded: loaded,
+                            total: total,
+                            percent: percent,
+                        });
+                    }, false);
+                }
 
                 // Sending XHR
                 xhr.send(postData);

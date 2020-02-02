@@ -428,10 +428,7 @@ const VueAjax = {
                         response.request = e;
 
                         utils.customEventDispatcher(utils.event.ajaxerror, response);
-
-                        if (typeof config.error === "function") {
-                            config.error(response);
-                        }
+                        utils.execCallback(config.error, response);
 
                         if (script) {
                             script.remove();
@@ -439,10 +436,7 @@ const VueAjax = {
                     };
                 } catch (error) {
                     utils.customEventDispatcher(utils.event.ajaxerror, error);
-
-                    if (typeof config.error === "function") {
-                        config.error(error);
-                    }
+                    utils.execCallback(config.error, error);
                 }
 
                 return script;
@@ -806,7 +800,7 @@ const VueAjax = {
                             utils.pushAssets(assets);
                         }
                         // Error callback
-                        else if (preventDuplicate && this.status !== 0) {
+                        else if (this.status !== 0) {
                             utils.customEventDispatcher(utils.event.ajaxerror, response);
 
                             // Error callback
@@ -833,7 +827,7 @@ const VueAjax = {
                             total = e.total;
 
                         if (e.lengthComputable) {
-                            percent = e.total ? Math.ceil(loaded / total * 100) : percent;
+                            percent = total ? Math.ceil(loaded / total * 100) : percent;
                         }
 
                         utils.execCallback(config.progress, {

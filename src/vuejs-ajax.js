@@ -555,7 +555,7 @@ const VueAjax = {
                     // Object
                     if (data != null && typeof data === "object") {
                         // Regexp
-                        if(data instanceof RegExp) {
+                        if (data instanceof RegExp) {
                             let match = name.match(data);
                             return include ? match !== null : match === null;
                         }
@@ -576,7 +576,7 @@ const VueAjax = {
                     return !haystack.length || matchStat;
                 };
 
-                if(name == null) {
+                if (name == null) {
                     return true;
                 }
 
@@ -826,6 +826,23 @@ const VueAjax = {
                     xhrStatus: "Uninitialized"
                 });
 
+                xhr.upload.addEventListener('progress', function (e) {
+                    let percent = 0,
+                        loaded = e.loaded || e.position,
+                        total = e.total;
+
+                    if (e.lengthComputable) {
+                        percent = e.total ? Math.ceil(loaded / total * 100) : percent;
+                    }
+
+                    utils.execCallback(config.progress, {
+                        key: key,
+                        loaded: loaded,
+                        total: total,
+                        percent: percent,
+                    });
+                }, false);
+
                 // Sending XHR
                 xhr.send(postData);
 
@@ -1003,7 +1020,7 @@ const VueAjax = {
                             }
 
                             // If it is passed through filters, cache the component instance
-                            if(survived) {
+                            if (survived) {
                                 this.shifterCache[is][name] = {
                                     template: template,
                                     config: response.config,
@@ -1149,16 +1166,16 @@ const VueAjax = {
             return this;
         };
 
-        Vue.ajax.abort = function(key = null) {
-            if(!requestAttempt.hasOwnProperty(key)) {
+        Vue.ajax.abort = function (key = null) {
+            if (!requestAttempt.hasOwnProperty(key)) {
                 console.error('Vue.js Ajax Error: Key ' + key + ' not found.');
                 return;
             }
             requestAttempt[key].abort();
         };
 
-        Vue.ajax.abortAll = function() {
-            for(let key in requestAttempt) {
+        Vue.ajax.abortAll = function () {
+            for (let key in requestAttempt) {
                 requestAttempt[key].abort();
             }
         };

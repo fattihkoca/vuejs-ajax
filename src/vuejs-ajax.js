@@ -251,7 +251,7 @@ const VueAjax = {
                     return;
                 }
 
-                let latestHistoryVersion = data.xhr.getResponseHeader(utils.names.version);
+                const latestHistoryVersion = data.xhr.getResponseHeader(utils.names.version);
 
                 // If version mismatching
                 if (data.currentHistoryVersion && latestHistoryVersion
@@ -260,6 +260,16 @@ const VueAjax = {
                 }
 
                 if (utils.isSupportPushState(data.url)) {
+                    // Mevcut URL'deki query parametrelerini koru
+                    const currentUrl = new URL(window.location.href);
+                    const targetUrl = new URL(data.url, window.location.origin);
+
+                    if (!targetUrl.search && currentUrl.search) {
+                        targetUrl.search = currentUrl.search;
+                    }
+
+                    const finalUrl = targetUrl.href;
+
                     window.history.pushState({
                         assets: data.assets,
                         callName: data.stateCallName,
@@ -267,9 +277,9 @@ const VueAjax = {
                         history: data.history,
                         method: data.method,
                         scrollTop: data.scrollTop,
-                        url: data.url,
+                        url: finalUrl,
                         hardReloadOnError: data.hardReloadOnError
-                    }, data.title, data.url);
+                    }, data.title, finalUrl);
                 }
             },
 
